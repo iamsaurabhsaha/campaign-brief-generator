@@ -1,3 +1,13 @@
+[server]
+enableStaticServing = false
+runOnSave = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+showSidebarNavigation = true
+
 [theme]
 base = "light"
 primaryColor = "#0064D2"

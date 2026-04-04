@@ -87,6 +87,20 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# ---------------------------------------------------------------------------
+# Keep-alive: prevents WebSocket disconnect on idle browser tabs
+# ---------------------------------------------------------------------------
+st.components.v1.html(
+    """
+    <script>
+    setInterval(() => {
+        fetch(window.location.href, {method: 'HEAD', cache: 'no-store'});
+    }, 120000);  // ping every 2 minutes
+    </script>
+    """,
+    height=0,
+)
+
 CUSTOM_CSS = """
 <style>
 /* Import Inter font */
