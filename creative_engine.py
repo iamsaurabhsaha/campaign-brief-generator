@@ -12,6 +12,8 @@ import os
 from datetime import datetime, timezone
 from typing import Any
 
+import llm_provider
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -488,21 +490,17 @@ class CreativeEngine:
     """Generates creative concepts, creative briefs, and email sequences from campaign briefs."""
 
     def __init__(self) -> None:
-        """Initialize the Anthropic client.
+        """Initialize the LLM provider.
 
-        If ANTHROPIC_API_KEY is not set, the engine runs in demo mode
+        If the LLM provider is not configured, the engine runs in demo mode
         and returns sample data instead of making API calls.
         """
-        self.model: str = "claude-sonnet-4-20250514"
-        self.demo_mode: bool = not bool(os.environ.get("ANTHROPIC_API_KEY"))
+        self.demo_mode: bool = not llm_provider.is_configured()
 
         if self.demo_mode:
-            self.client = None
-            logger.info("CreativeEngine initialized in DEMO mode (no API key found)")
+            logger.info("CreativeEngine initialized in DEMO mode (LLM provider not configured)")
         else:
-            from anthropic import Anthropic
-            self.client = Anthropic()
-            logger.info("CreativeEngine initialized with model %s", self.model)
+            logger.info("CreativeEngine initialized with %s", llm_provider.provider_display_name())
 
     # ------------------------------------------------------------------
     # Public methods
@@ -534,14 +532,11 @@ class CreativeEngine:
 
         logger.info("Generating %d creative concepts via Claude API", num_concepts)
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=4096,
+        raw_text = llm_provider.generate(
             system=CREATIVE_CONCEPTS_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
+            user_prompt=user_prompt,
+            max_tokens=4096,
         )
-
-        raw_text = response.content[0].text
         try:
             concepts = _parse_json_response(raw_text)
         except json.JSONDecodeError:
@@ -578,14 +573,11 @@ class CreativeEngine:
 
         logger.info("Generating creative brief via Claude API")
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=3072,
+        raw_text = llm_provider.generate(
             system=CREATIVE_BRIEF_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
+            user_prompt=user_prompt,
+            max_tokens=3072,
         )
-
-        raw_text = response.content[0].text
         try:
             creative_brief = _parse_json_response(raw_text)
         except json.JSONDecodeError:
@@ -621,14 +613,11 @@ class CreativeEngine:
 
         logger.info("Generating %d-email sequence via Claude API", num_emails)
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=6144,
+        raw_text = llm_provider.generate(
             system=EMAIL_SEQUENCE_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
+            user_prompt=user_prompt,
+            max_tokens=6144,
         )
-
-        raw_text = response.content[0].text
         try:
             emails = _parse_json_response(raw_text)
         except json.JSONDecodeError:

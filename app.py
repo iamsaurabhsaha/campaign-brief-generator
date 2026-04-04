@@ -33,6 +33,7 @@ from quality_checker import QualityChecker
 from creative_engine import CreativeEngine
 from templates import TemplateManager
 from config import *
+import llm_provider
 
 logger = logging.getLogger(__name__)
 
@@ -460,8 +461,7 @@ def init_session_state() -> None:
     if "briefs" not in st.session_state:
         st.session_state.briefs = _load_sample_briefs()
     if "demo_mode" not in st.session_state:
-        api_key = os.getenv("ANTHROPIC_API_KEY", "")
-        st.session_state.demo_mode = not bool(api_key)
+        st.session_state.demo_mode = not llm_provider.is_configured()
     if "generated_names" not in st.session_state:
         st.session_state.generated_names = []
     if "ai_insight" not in st.session_state:
@@ -3369,6 +3369,24 @@ def main() -> None:
         </div>
         """, unsafe_allow_html=True)
 
+        # Active LLM provider badge
+        _prov = llm_provider.get_provider()
+        _model = llm_provider.get_model()
+        _configured = llm_provider.is_configured()
+        _status_color = "#86B817" if _configured else "#E53238"
+        _status_label = "Connected" if _configured else "Not configured"
+        st.markdown(f"""
+        <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 10px 12px; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.65rem; color: #6C8EAD; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">LLM Provider</div>
+            <div style="font-size: 0.85rem; font-weight: 600; color: #FFFFFF;">{_prov.title()}</div>
+            <div style="font-size: 0.7rem; color: #9AAFBF; margin-top: 2px;">{_model}</div>
+            <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background: {_status_color};"></div>
+                <span style="font-size: 0.65rem; color: {_status_color};">{_status_label}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     # Header
     st.markdown("""
     <div style="margin-bottom: 2rem;">
@@ -3385,7 +3403,8 @@ def main() -> None:
     if st.session_state.demo_mode:
         st.info(
             "Running in **Demo Mode**. All features work with sample data. "
-            "Add `ANTHROPIC_API_KEY` to `.env` for live AI generation."
+            "Configure your LLM provider in `.env` for live AI generation. "
+            "Supports Anthropic, OpenAI, Azure, Gemini, Bedrock, and Ollama."
         )
 
     # Tabs

@@ -19,7 +19,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
-MODEL = "claude-sonnet-4-20250514"
+import llm_provider
 
 # The 14-section framework from CLAUDE.md
 BRIEF_SECTIONS = [
@@ -328,23 +328,14 @@ class QualityChecker:
     _MIN_CALL_INTERVAL: float = 0.5
 
     def __init__(self) -> None:
-        """Initialize the Anthropic client. Activates demo mode if no API key is found."""
+        """Initialize the LLM provider. Activates demo mode if not configured."""
         self._last_call_time: float = 0.0
-        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        if api_key:
-            try:
-                from anthropic import Anthropic
-                self.client: Optional[Any] = Anthropic()
-                self.demo_mode = False
-                logger.info("QualityChecker initialized with Claude API (model=%s)", MODEL)
-            except Exception as exc:
-                logger.warning("Failed to initialize Anthropic client: %s. Using demo mode.", exc)
-                self.client = None
-                self.demo_mode = True
+        if llm_provider.is_configured():
+            self.demo_mode = False
+            logger.info("QualityChecker initialized with %s", llm_provider.provider_display_name())
         else:
-            self.client = None
             self.demo_mode = True
-            logger.info("QualityChecker initialized in DEMO mode (no ANTHROPIC_API_KEY)")
+            logger.info("QualityChecker initialized in DEMO mode (LLM provider not configured)")
 
     def _rate_limit(self) -> None:
         """Enforce a minimum interval between API calls."""
@@ -354,25 +345,23 @@ class QualityChecker:
         self._last_call_time = time.time()
 
     def _call_claude(self, system: str, user_prompt: str, max_tokens: int = 4096) -> Optional[dict]:
-        """Send a prompt to Claude and return the parsed JSON response."""
-        if self.client is None:
+        """Send a prompt to the configured LLM and return the parsed JSON response."""
+        if self.demo_mode:
             return None
 
         self._rate_limit()
         try:
-            message = self.client.messages.create(
-                model=MODEL,
-                max_tokens=max_tokens,
+            raw_text = llm_provider.generate(
                 system=system,
-                messages=[{"role": "user", "content": user_prompt}],
+                user_prompt=user_prompt,
+                max_tokens=max_tokens,
             )
-            raw_text = message.content[0].text
             result = _parse_json_response(raw_text)
             if result is None:
-                logger.error("Could not parse JSON from Claude response.")
+                logger.error("Could not parse JSON from LLM response.")
             return result
         except Exception as exc:
-            logger.error("Claude API error: %s", exc)
+            logger.error("LLM API error: %s", exc)
             return None
 
     # ------------------------------------------------------------------
@@ -597,9 +586,9 @@ if __name__ == "__main__":
     checker = QualityChecker()
 
     if checker.demo_mode:
-        print("\n[DEMO MODE] No ANTHROPIC_API_KEY detected. Showing sample results.\n")
+        print("\n[DEMO MODE] LLM provider not configured. Showing sample results.\n")
     else:
-        print(f"\n[LIVE MODE] Using Claude API ({MODEL}).\n")
+        print(f"\n[LIVE MODE] Using {llm_provider.provider_display_name()}.\n")
 
     # --- Test 1: Full brief check ---
     sample_brief = """# Spring Product Launch Campaign

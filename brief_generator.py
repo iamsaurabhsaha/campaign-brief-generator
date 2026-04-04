@@ -76,7 +76,7 @@ Top mistakes to catch:
 
 Always return valid JSON. Never include markdown code fences or extra text outside the JSON."""
 
-MODEL = "claude-sonnet-4-20250514"
+import llm_provider
 
 # ---------------------------------------------------------------------------
 # JSON parsing helpers
@@ -370,21 +370,16 @@ class BriefGenerator:
     """
 
     def __init__(self) -> None:
-        """Initialize the Anthropic client and set demo mode if no API key."""
-        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        self.demo_mode: bool = not bool(api_key.strip())
+        """Initialize the LLM provider and set demo mode if not configured."""
+        self.demo_mode: bool = not llm_provider.is_configured()
 
         if self.demo_mode:
             logger.warning(
-                "No ANTHROPIC_API_KEY found. Running in DEMO MODE with sample data."
+                "LLM provider not configured. Running in DEMO MODE with sample data."
             )
-            self.client = None
         else:
-            from anthropic import Anthropic
-            self.client = Anthropic()
-            logger.info("BriefGenerator initialized with model %s", MODEL)
+            logger.info("BriefGenerator initialized with %s", llm_provider.provider_display_name())
 
-        self.model: str = MODEL
         self.system_prompt: str = SYSTEM_PROMPT
 
     # ------------------------------------------------------------------
@@ -397,7 +392,7 @@ class BriefGenerator:
         time.sleep(0.5)
 
     def _call_claude(self, user_prompt: str, max_tokens: int = 4096) -> dict[str, Any]:
-        """Send a prompt to Claude and return parsed JSON.
+        """Send a prompt to the configured LLM and return parsed JSON.
 
         Args:
             user_prompt: The user message to send.
@@ -408,18 +403,16 @@ class BriefGenerator:
 
         Raises:
             json.JSONDecodeError: If response cannot be parsed.
-            anthropic.APIError: If the API call fails.
         """
-        logger.info("Calling Claude API (%d max tokens)...", max_tokens)
+        logger.info("Calling LLM API (%d max tokens)...", max_tokens)
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=max_tokens,
+        raw_text = llm_provider.generate(
             system=self.system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
+            user_prompt=user_prompt,
+            max_tokens=max_tokens,
         )
 
-        raw_text = response.content[0].text.strip()
+        raw_text = raw_text.strip()
         logger.debug("Raw API response length: %d chars", len(raw_text))
 
         result = _parse_json_response(raw_text)
@@ -739,11 +732,10 @@ Return JSON: {{"raci": [{{"task": str, "responsible": str, "accountable": str, "
 
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": user_prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=user_prompt, max_tokens=2048,
             )
-            result = _parse_json_response(msg.content[0].text)
+            result = _parse_json_response(raw_text)
             if result and isinstance(result, dict):
                 return result.get("raci", [])
             if result and isinstance(result, list):
@@ -1012,11 +1004,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=256, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=256,
             )
-            return msg.content[0].text.strip()
+            return raw_text.strip()
         except Exception as e:
             logger.error("extract_insight error: %s", e)
             return "Unable to extract insight automatically."
@@ -1041,11 +1032,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
             )
-            return _parse_json_response(msg.content[0].text) or {
+            return _parse_json_response(raw_text) or {
                 "positioning_short": "", "positioning_detailed": ""
             }
         except Exception as e:
@@ -1069,11 +1059,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
             )
-            result = _parse_json_response(msg.content[0].text)
+            result = _parse_json_response(raw_text)
             return result.get("messages", []) if result else []
         except Exception as e:
             logger.error("generate_key_messages error: %s", e)
@@ -1097,11 +1086,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
             )
-            result = _parse_json_response(msg.content[0].text)
+            result = _parse_json_response(raw_text)
             return result.get("deliverables", []) if result else []
         except Exception as e:
             logger.error("generate_deliverables error: %s", e)
@@ -1123,11 +1111,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
             )
-            result = _parse_json_response(msg.content[0].text)
+            result = _parse_json_response(raw_text)
             return result.get("timeline", []) if result else []
         except Exception as e:
             logger.error("generate_timeline error: %s", e)
@@ -1150,11 +1137,10 @@ Return a JSON object:
         )
         self._rate_limit()
         try:
-            msg = self.client.messages.create(
-                model=MODEL, max_tokens=2048, system=self.system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+            raw_text = llm_provider.generate(
+                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
             )
-            result = _parse_json_response(msg.content[0].text)
+            result = _parse_json_response(raw_text)
             return result.get("kpis", []) if result else []
         except Exception as e:
             logger.error("generate_kpis error: %s", e)

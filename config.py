@@ -13,7 +13,10 @@ ACCENT_YELLOW = "#F39C12"
 ACCENT_GREEN = "#27AE60"
 
 # ── API Configuration ────────────────────────────────────────────────────────
-MODEL = "claude-sonnet-4-20250514"
+# LLM provider and model are now configured via environment variables.
+# See .env.example for all supported providers (Anthropic, OpenAI, Azure,
+# Google Gemini, AWS Bedrock, Ollama).
+# Legacy constant kept for backward compatibility with any external references.
 MAX_TOKENS = 4096
 
 # ── Brief Sections ───────────────────────────────────────────────────────────
