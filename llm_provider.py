@@ -28,11 +28,11 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 DEFAULT_MODELS = {
-    "anthropic": "claude-sonnet-4-20250514",
+    "anthropic": "claude-sonnet-4-6-20250627",
     "openai": "gpt-4o",
     "azure": "gpt-4o",
     "gemini": "gemini-2.5-flash",
-    "bedrock": "anthropic.claude-sonnet-4-20250514-v1:0",
+    "bedrock": "anthropic.claude-sonnet-4-6-20250627-v1:0",
     "ollama": "llama3.1",
 }
 
