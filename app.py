@@ -3387,15 +3387,31 @@ def main() -> None:
         </div>
         """, unsafe_allow_html=True)
 
-    # Header
-    st.markdown("""
-    <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
-            Campaign Brief Generator
-        </h1>
-        <p style="color: #727785; font-size: 0.9rem;">
-            AI-powered campaign brief creation with industry best practices
-        </p>
+    # Header with provider badge
+    _hdr_prov = llm_provider.get_provider()
+    _hdr_model = llm_provider.get_model()
+    _hdr_configured = llm_provider.is_configured()
+    _hdr_color = "#86B817" if _hdr_configured else "#E53238"
+    _hdr_label = _hdr_prov.title() if _hdr_prov != "azure" else "Azure OpenAI"
+    _hdr_badge_bg = "#f0faf0" if _hdr_configured else "#fdf0f0"
+    _hdr_badge_border = "#c3e6c3" if _hdr_configured else "#f5c6c6"
+    st.markdown(f"""
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
+                Campaign Brief Generator
+            </h1>
+            <p style="color: #727785; font-size: 0.9rem;">
+                AI-powered campaign brief creation with industry best practices
+            </p>
+        </div>
+        <div style="background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 8px; padding: 8px 14px; text-align: right; white-space: nowrap;">
+            <div style="display: flex; align-items: center; gap: 6px; justify-content: flex-end;">
+                <div style="width: 7px; height: 7px; border-radius: 50%; background: {_hdr_color};"></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #141d23;">{_hdr_label}</span>
+            </div>
+            <div style="font-size: 0.68rem; color: #727785; margin-top: 2px;">{_hdr_model}</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
