@@ -634,15 +634,17 @@ def _check_coherence(campaign_name: str, background: str, objective: str) -> str
     if not campaign_name.strip() or not background.strip():
         return None
 
-    # Extract significant words (3+ chars, lowercased) from the campaign name
     import re
     stop_words = {
         "the", "and", "for", "with", "from", "that", "this", "will", "are",
         "was", "been", "have", "has", "had", "not", "but", "all", "can",
         "our", "new", "one", "two", "into", "its", "also", "more", "how",
         "about", "launch", "campaign", "brief", "strategy", "plan", "drive",
-        "increase", "through", "using", "across", "over",
+        "increase", "through", "using", "across", "over", "product", "feature",
+        "market", "marketing", "key", "per", "via", "pro",
     }
+
+    # Extract significant words from campaign name
     name_words = {
         w.lower() for w in re.findall(r'[a-zA-Z]{3,}', campaign_name)
         if w.lower() not in stop_words
@@ -651,12 +653,21 @@ def _check_coherence(campaign_name: str, background: str, objective: str) -> str
     if not name_words:
         return None
 
-    # Check if any significant campaign name words appear in the background or objective
+    # Check if campaign name words appear in background/objective
     combined_text = (background + " " + objective).lower()
     matches = sum(1 for w in name_words if w in combined_text)
-    match_ratio = matches / len(name_words) if name_words else 1.0
+    match_ratio = matches / len(name_words)
 
-    if match_ratio < 0.25 and len(name_words) >= 2:
+    # For single significant word (e.g., "Airpods Launch" → {"airpods"}),
+    # that word MUST appear in the background
+    if len(name_words) == 1 and match_ratio == 0:
+        return (
+            f"The campaign name \"{campaign_name}\" doesn't seem to match the "
+            f"Background/Context content. Please verify they are about the same campaign."
+        )
+
+    # For multi-word names, require at least 25% overlap
+    if len(name_words) >= 2 and match_ratio < 0.25:
         return (
             f"The campaign name \"{campaign_name}\" doesn't seem to match the "
             f"Background/Context content. Please verify they are about the same campaign."
@@ -1564,6 +1575,17 @@ def render_brief_builder() -> None:
                 with st.expander(f"Extracted content from {len(uploaded_files)} document(s)", expanded=False):
                     st.text(doc_content[:2000] + ("..." if len(doc_content) > 2000 else ""))
 
+                # Check if uploaded document matches campaign name
+                doc_mismatch = _check_coherence(
+                    brief.get("campaign_name", ""), doc_content, ""
+                )
+                if doc_mismatch:
+                    st.warning(
+                        f"The uploaded document doesn't seem to match the campaign name "
+                        f"\"{brief.get('campaign_name', '')}\". Please verify you uploaded "
+                        f"the right document."
+                    )
+
         # Combine background with uploaded doc content for downstream use
         full_background = background
         if doc_content.strip():
@@ -1585,6 +1607,16 @@ def render_brief_builder() -> None:
                 if not background.strip() and not doc_content:
                     st.session_state.bg_warning = "Enter some notes in Background/Context or upload documents first, then click Help Me Write."
                     st.rerun()
+                # Check coherence before generating
+                elif background.strip() and doc_content:
+                    bg_doc_mismatch = _check_coherence(brief.get("campaign_name", ""), background + " " + doc_content, "")
+                    if bg_doc_mismatch and not st.session_state.get("bg_coherence_override"):
+                        st.session_state.bg_warning = (
+                            f"The background text and uploaded document may not match the campaign name "
+                            f"\"{brief.get('campaign_name', '')}\". Please verify, or click Help Me Write again to proceed."
+                        )
+                        st.session_state.bg_coherence_override = True
+                        st.rerun()
                 else:
                     campaign_name_val = brief.get("campaign_name", "")
                     input_context = background + ("\n\n" + doc_content if doc_content else "")
