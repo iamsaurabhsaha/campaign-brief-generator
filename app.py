@@ -599,7 +599,7 @@ def _proofread_or_approve(original: str, result: str) -> str:
     """Compare proofread result to original. If essentially unchanged, return approval message."""
     from difflib import SequenceMatcher
     ratio = SequenceMatcher(None, original.strip(), result.strip()).ratio()
-    if ratio > 0.95:
+    if ratio > 0.90:
         return "Looks good — no changes needed. Your text is clear and well-written."
     return result
 

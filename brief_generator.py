@@ -1247,15 +1247,17 @@ Return a JSON object with one key:
 Text to proofread:
 {text}
 
-Fix:
+Fix if needed:
 - Grammar and spelling errors
 - Passive voice → active voice
 - Vague language → specific, concrete language
 - Overly long sentences → concise, clear statements
 - Inconsistent tone → professional marketing tone
 
+If the text is already well-written and needs no changes, return it exactly as-is.
+
 Return a JSON object with one key:
-- "proofread": string (the improved text, same length or shorter)"""
+- "proofread": string (the improved text, or the original text unchanged if no improvements are needed)"""
 
         try:
             result = self._call_claude(user_prompt, max_tokens=800)
