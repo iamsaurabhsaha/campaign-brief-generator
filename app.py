@@ -184,18 +184,24 @@ section[data-testid="stSidebar"] .stMultiSelect label { color: #C8D0DA !importan
     font-weight: 600;
 }
 
-/* Form inputs matching Stitch - clean rounded with blue focus */
+/* Form inputs — neutral white to contrast with blue action buttons */
 div[data-testid="stTextInput"] input,
 div[data-testid="stTextArea"] textarea {
     border-radius: 8px !important;
-    border: 1.5px solid #c2c6d5 !important;
-    background: #ecf5fe !important;
-    transition: all 0.2s;
+    border: 1.5px solid #d0d5dd !important;
+    background: #FFFFFF !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 div[data-testid="stTextInput"] input:focus,
 div[data-testid="stTextArea"] textarea:focus {
     border-color: #0064D2 !important;
-    box-shadow: 0 0 0 3px rgba(0,100,210,0.1) !important;
+    box-shadow: 0 0 0 3px rgba(0,100,210,0.12) !important;
+    background: #FFFFFF !important;
+}
+
+/* Selectbox — neutral white to match inputs */
+div[data-testid="stSelectbox"] > div > div {
+    background: #FFFFFF !important;
 }
 
 /* Primary buttons (Next, Continue, Check Quality) - Brand Blue CTA */
@@ -218,19 +224,20 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 /* Secondary buttons (Help Me Write, Proofread, Generate) - Tonal blue */
 div[data-testid="stButton"] > button[kind="secondary"],
 div[data-testid="stButton"] > button:not([kind="primary"]) {
-    background: #E8F1FB !important;
-    border: 1.5px solid #B8D4F0 !important;
-    color: #0064D2 !important;
+    background: #DCE9F7 !important;
+    border: 1.5px solid #90B8E0 !important;
+    color: #0054B4 !important;
     font-weight: 600 !important;
     border-radius: 8px !important;
+    cursor: pointer !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
 }
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
 div[data-testid="stButton"] > button:not([kind="primary"]):hover {
-    background: #D0E3F7 !important;
+    background: #C5DAF0 !important;
     border-color: #0064D2 !important;
     color: #004da4 !important;
-    box-shadow: 0 2px 8px rgba(0,100,210,0.15) !important;
+    box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
 }
 
 /* AI Suggestion box matching Stitch - blue left border with light blue bg */
@@ -352,7 +359,8 @@ div[data-testid="stAlert"] div[data-testid="stAlertContentError"] {
 /* Selectbox styling */
 div[data-testid="stSelectbox"] > div > div {
     border-radius: 8px !important;
-    border-color: #c2c6d5 !important;
+    border-color: #d0d5dd !important;
+    background: #FFFFFF !important;
 }
 
 /* File uploader matching Stitch dashed border style */
