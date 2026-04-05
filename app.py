@@ -1287,6 +1287,10 @@ def render_brief_builder() -> None:
     # --- Step 2: Strategy ---
     elif step == 2:
         st.subheader("Step 2: Strategy")
+        is_light_brief = brief.get("launch_tier") == "Tier 2"
+
+        if is_light_brief:
+            st.info("Light brief mode (Tier 2) — only Background and Objective are required.")
 
         background = st.text_area(
             "Background / Context",
@@ -1486,7 +1490,7 @@ def render_brief_builder() -> None:
 
         # --- Target Audience (full width) with buttons below ---
         target_audience = st.text_area(
-            "Target Audience",
+            "Target Audience" + (" (optional for Tier 2)" if is_light_brief else ""),
             value=brief.get("target_audience", ""),
             height=100,
             placeholder="Who are we talking to? Be specific about demographics, behaviors, and needs.",
@@ -1587,7 +1591,7 @@ def render_brief_builder() -> None:
                     missing.append("Background/Context")
                 if not effective_objective.strip():
                     missing.append("Objective")
-                if not effective_audience.strip():
+                if not is_light_brief and not effective_audience.strip():
                     missing.append("Target Audience")
                 if missing:
                     st.error(f"Please fill in all required fields: {', '.join(missing)}")
@@ -1602,81 +1606,88 @@ def render_brief_builder() -> None:
     # --- Step 3: Messaging ---
     elif step == 3:
         st.subheader("Step 3: Messaging")
+        is_light_brief = brief.get("launch_tier") == "Tier 2"
 
-        # --- Key Insight ---
-        st.markdown("#### Key Insight")
-        key_insight = st.text_area(
-            "Key Insight",
-            value=brief.get("key_insight", ""),
-            height=80,
-            placeholder='What frustration or desire does your audience feel? e.g., "Sellers didn\'t start their business to write product descriptions..."',
-            help=(
-                "The key insight is the emotional reason your audience will care about this campaign. "
-                "It's not a data point — it's a **feeling**.\n\n"
-                "**Example for AI Magic Listing:**\n"
-                '*"Sellers spend hours crafting listings when all they really want is to hit publish '
-                'and start selling. Every minute spent writing descriptions feels like a minute stolen '
-                'from growing their business."*\n\n'
-                "Click **Extract Insight** to auto-generate from your background and audience."
-            ),
-            label_visibility="collapsed",
-        )
+        if is_light_brief:
+            st.info("Light brief mode — only Key Messages are required. Other messaging sections are optional.")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Extract Insight", key="btn_extract_insight", use_container_width=True):
-                if generator and not st.session_state.demo_mode:
-                    with st.spinner("Extracting key insight..."):
-                        try:
-                            insight = generator.extract_insight(
-                                brief.get("background", ""),
-                                brief.get("target_audience", ""),
-                            )
-                            st.session_state.ai_insight = insight
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                else:
-                    st.session_state.ai_insight = (
-                        "Professional sellers spend 15+ hours per week on listing creation -- "
-                        "they want more time selling, not typing descriptions. The tedium of "
-                        "manual listing isn't just annoying, it's actively costing them money."
-                    )
-                st.rerun()
-        with col2:
-            if st.button("Proofread", key="btn_proof_insight", use_container_width=True):
-                if not key_insight.strip():
-                    st.warning("Please type an insight first before proofreading.")
-                elif generator and not st.session_state.demo_mode:
-                    with st.spinner("Proofreading..."):
-                        try:
-                            proofed = generator.proofread_text(key_insight)
-                            st.session_state.ai_insight = proofed
-                        except Exception as e:
-                            st.error(f"Error: {e}")
+        # --- Key Insight (skip for Tier 2) ---
+        if not is_light_brief:
+            st.markdown("#### Key Insight")
+            key_insight = st.text_area(
+                "Key Insight",
+                value=brief.get("key_insight", ""),
+                height=80,
+                placeholder='What frustration or desire does your audience feel? e.g., "Sellers didn\'t start their business to write product descriptions..."',
+                help=(
+                    "The key insight is the emotional reason your audience will care about this campaign. "
+                    "It's not a data point — it's a **feeling**.\n\n"
+                    "**Example for AI Magic Listing:**\n"
+                    '*"Sellers spend hours crafting listings when all they really want is to hit publish '
+                    'and start selling. Every minute spent writing descriptions feels like a minute stolen '
+                    'from growing their business."*\n\n'
+                    "Click **Extract Insight** to auto-generate from your background and audience."
+                ),
+                label_visibility="collapsed",
+            )
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Extract Insight", key="btn_extract_insight", use_container_width=True):
+                    if generator and not st.session_state.demo_mode:
+                        with st.spinner("Extracting key insight..."):
+                            try:
+                                insight = generator.extract_insight(
+                                    brief.get("background", ""),
+                                    brief.get("target_audience", ""),
+                                )
+                                st.session_state.ai_insight = insight
+                            except Exception as e:
+                                st.error(f"Error: {e}")
+                    else:
+                        st.session_state.ai_insight = (
+                            "Professional sellers spend 15+ hours per week on listing creation -- "
+                            "they want more time selling, not typing descriptions. The tedium of "
+                            "manual listing isn't just annoying, it's actively costing them money."
+                        )
                     st.rerun()
-                else:
-                    st.session_state.ai_insight = key_insight.strip() + " [Proofread: looks good -- clear and emotionally resonant.]"
-                    st.rerun()
+            with col2:
+                if st.button("Proofread", key="btn_proof_insight", use_container_width=True):
+                    if not key_insight.strip():
+                        st.warning("Please type an insight first before proofreading.")
+                    elif generator and not st.session_state.demo_mode:
+                        with st.spinner("Proofreading..."):
+                            try:
+                                proofed = generator.proofread_text(key_insight)
+                                st.session_state.ai_insight = proofed
+                            except Exception as e:
+                                st.error(f"Error: {e}")
+                        st.rerun()
+                    else:
+                        st.session_state.ai_insight = key_insight.strip() + " [Proofread: looks good -- clear and emotionally resonant.]"
+                        st.rerun()
 
-        if st.session_state.get("ai_insight"):
-            col_ins_info, col_ins_close = st.columns([11, 1])
-            with col_ins_info:
-                st.info(st.session_state.ai_insight)
-            with col_ins_close:
-                st.write("")
-                if st.button("Close X", key="close_insight"):
+            if st.session_state.get("ai_insight"):
+                col_ins_info, col_ins_close = st.columns([11, 1])
+                with col_ins_info:
+                    st.info(st.session_state.ai_insight)
+                with col_ins_close:
+                    st.write("")
+                    if st.button("Close X", key="close_insight"):
+                        st.session_state.ai_insight = None
+                        st.rerun()
+                if st.button("Use This", key="use_insight"):
+                    brief["key_insight"] = st.session_state.ai_insight
                     st.session_state.ai_insight = None
+                    st.session_state.current_brief = brief
                     st.rerun()
-            if st.button("Use This", key="use_insight"):
-                brief["key_insight"] = st.session_state.ai_insight
-                st.session_state.ai_insight = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
-        st.divider()
+            st.divider()
+        else:
+            key_insight = brief.get("key_insight", "")
 
         # --- Short Positioning ---
-        st.markdown("#### Positioning Statement -- Short (25 words)")
+        st.markdown("#### Positioning Statement -- Short (25 words)" + (" (optional)" if is_light_brief else ""))
         positioning_short = st.text_input(
             "Short Positioning",
             value=brief.get("positioning_short", ""),
@@ -1684,15 +1695,18 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        # --- Detailed Positioning ---
-        st.markdown("#### Positioning Statement -- Detailed (100 words)")
-        positioning_detailed = st.text_area(
-            "Detailed Positioning",
-            value=brief.get("positioning_detailed", ""),
-            height=100,
-            placeholder="For [target audience] who [need], [product] is the [category] that [key benefit]...",
-            label_visibility="collapsed",
-        )
+        # --- Detailed Positioning (skip for Tier 2) ---
+        if not is_light_brief:
+            st.markdown("#### Positioning Statement -- Detailed (100 words)")
+            positioning_detailed = st.text_area(
+                "Detailed Positioning",
+                value=brief.get("positioning_detailed", ""),
+                height=100,
+                placeholder="For [target audience] who [need], [product] is the [category] that [key benefit]...",
+                label_visibility="collapsed",
+            )
+        else:
+            positioning_detailed = brief.get("positioning_detailed", "")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -1744,7 +1758,8 @@ def render_brief_builder() -> None:
             col_pos_info, col_pos_close = st.columns([11, 1])
             with col_pos_info:
                 st.info(f"**Short:** {pos.get('positioning_short', pos.get('short', ''))}")
-                st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
+                if not is_light_brief:
+                    st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
             with col_pos_close:
                 st.write("")
                 if st.button("Close X", key="close_pos"):
@@ -1828,58 +1843,61 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        st.divider()
+        # --- Single-Minded Proposition (SMP) (skip for Tier 2) ---
+        if not is_light_brief:
+            st.divider()
 
-        # --- Single-Minded Proposition (SMP) ---
-        st.markdown("#### Single-Minded Proposition (SMP)")
-        st.caption("The ONE thing this campaign communicates. If it says two things, it's not single-minded.")
-        smp_text = st.text_input(
-            "SMP",
-            value=brief.get("smp", ""),
-            placeholder="e.g., AI Magic Listing cuts your listing time in half.",
-            label_visibility="collapsed",
-        )
+            st.markdown("#### Single-Minded Proposition (SMP)")
+            st.caption("The ONE thing this campaign communicates. If it says two things, it's not single-minded.")
+            smp_text = st.text_input(
+                "SMP",
+                value=brief.get("smp", ""),
+                placeholder="e.g., AI Magic Listing cuts your listing time in half.",
+                label_visibility="collapsed",
+            )
 
-        if st.button("Generate SMP", key="btn_gen_smp", use_container_width=True):
-            if generator and not st.session_state.demo_mode:
-                with st.spinner("Generating Single-Minded Proposition..."):
-                    try:
-                        smp = generator.generate_smp(brief)
-                        st.session_state.ai_smp = smp
-                    except Exception as e:
-                        st.error(f"Error: {e}")
-            else:
-                st.session_state.ai_smp = {
-                    "smp": "One photo. One tap. One perfect listing.",
-                    "pass": True,
-                    "reason": "No 'and/also' language detected. Proposition is genuinely single-minded.",
-                }
-            st.rerun()
-
-        if st.session_state.get("ai_smp"):
-            smp_data = st.session_state.ai_smp
-            smp_val = smp_data.get("smp", "")
-            qc = smp_data.get("quality_check", smp_data.get("pass", ""))
-            qr = smp_data.get("quality_reason", smp_data.get("reason", ""))
-
-            col_smp_info, col_smp_close = st.columns([11, 1])
-            with col_smp_info:
-                if qc == "pass" or qc is True:
-                    st.success(f"**SMP:** {smp_val}  \n**Quality Check:** PASS -- {qr}")
+            if st.button("Generate SMP", key="btn_gen_smp", use_container_width=True):
+                if generator and not st.session_state.demo_mode:
+                    with st.spinner("Generating Single-Minded Proposition..."):
+                        try:
+                            smp = generator.generate_smp(brief)
+                            st.session_state.ai_smp = smp
+                        except Exception as e:
+                            st.error(f"Error: {e}")
                 else:
-                    st.error(f"**SMP:** {smp_val}  \n**Quality Check:** FAIL -- {qr}")
-            with col_smp_close:
-                st.write("")
-                if st.button("Close X", key="close_smp"):
-                    st.session_state.ai_smp = None
-                    st.rerun()
-
-            if st.button("Use This", key="use_smp"):
-                brief["smp"] = smp_val
-                brief["smp_pass"] = (qc == "pass" or qc is True)
-                st.session_state.ai_smp = None
-                st.session_state.current_brief = brief
+                    st.session_state.ai_smp = {
+                        "smp": "One photo. One tap. One perfect listing.",
+                        "pass": True,
+                        "reason": "No 'and/also' language detected. Proposition is genuinely single-minded.",
+                    }
                 st.rerun()
+
+            if st.session_state.get("ai_smp"):
+                smp_data = st.session_state.ai_smp
+                smp_val = smp_data.get("smp", "")
+                qc = smp_data.get("quality_check", smp_data.get("pass", ""))
+                qr = smp_data.get("quality_reason", smp_data.get("reason", ""))
+
+                col_smp_info, col_smp_close = st.columns([11, 1])
+                with col_smp_info:
+                    if qc == "pass" or qc is True:
+                        st.success(f"**SMP:** {smp_val}  \n**Quality Check:** PASS -- {qr}")
+                    else:
+                        st.error(f"**SMP:** {smp_val}  \n**Quality Check:** FAIL -- {qr}")
+                with col_smp_close:
+                    st.write("")
+                    if st.button("Close X", key="close_smp"):
+                        st.session_state.ai_smp = None
+                        st.rerun()
+
+                if st.button("Use This", key="use_smp"):
+                    brief["smp"] = smp_val
+                    brief["smp_pass"] = (qc == "pass" or qc is True)
+                    st.session_state.ai_smp = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
+        else:
+            smp_text = brief.get("smp", "")
 
         # --- Navigation ---
         st.write("")
@@ -1901,14 +1919,20 @@ def render_brief_builder() -> None:
 
                 # Validation
                 missing = []
-                if not brief.get("key_insight") and not key_insight.strip():
-                    missing.append("Key Insight")
-                if not brief.get("positioning_short") and not positioning_short.strip():
-                    missing.append("Positioning (Short)")
-                if not brief.get("key_messages") and not key_messages.strip():
-                    missing.append("Key Messages")
-                if not brief.get("smp") and not smp_text.strip():
-                    missing.append("SMP")
+                if is_light_brief:
+                    # Light brief: only Key Messages required
+                    if not brief.get("key_messages") and not key_messages.strip():
+                        missing.append("Key Messages")
+                else:
+                    # Full brief: all messaging sections required
+                    if not brief.get("key_insight") and not key_insight.strip():
+                        missing.append("Key Insight")
+                    if not brief.get("positioning_short") and not positioning_short.strip():
+                        missing.append("Positioning (Short)")
+                    if not brief.get("key_messages") and not key_messages.strip():
+                        missing.append("Key Messages")
+                    if not brief.get("smp") and not smp_text.strip():
+                        missing.append("SMP")
 
                 if missing:
                     st.error(f"Please fill in: {', '.join(missing)}")
@@ -1920,9 +1944,13 @@ def render_brief_builder() -> None:
     # --- Step 4: Execution ---
     elif step == 4:
         st.subheader("Step 4: Execution Plan")
+        is_light_brief = brief.get("launch_tier") == "Tier 2"
+
+        if is_light_brief:
+            st.info("Light brief mode — only Content Deliverables are required.")
 
         # --- Channel Plan ---
-        st.markdown("#### Channel Plan")
+        st.markdown("#### Channel Plan" + (" (optional)" if is_light_brief else ""))
         channel_plan_text = st.text_area(
             "Channel Plan",
             value=brief.get("channel_plan_text", ""),
@@ -2122,7 +2150,7 @@ def render_brief_builder() -> None:
         st.divider()
 
         # --- Timeline ---
-        st.markdown("#### Campaign Timeline")
+        st.markdown("#### Campaign Timeline" + (" (optional)" if is_light_brief else ""))
         timeline_text = st.text_area(
             "Timeline",
             value=brief.get("timeline_text", ""),
@@ -2216,35 +2244,38 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        st.divider()
+        # --- Budget (optional, skip for Tier 2) ---
+        if not is_light_brief:
+            st.divider()
 
-        # --- Budget (optional) ---
-        st.markdown("#### Budget (optional)")
-        budget_input = st.text_input(
-            "Total Budget",
-            value=brief.get("budget", ""),
-            placeholder="e.g., $150,000",
-        )
+            st.markdown("#### Budget (optional)")
+            budget_input = st.text_input(
+                "Total Budget",
+                value=brief.get("budget", ""),
+                placeholder="e.g., $150,000",
+            )
 
-        # Show budget pie chart if we have channel plan with budget %
-        if budget_input and brief.get("channel_plan"):
-            channels = brief["channel_plan"]
-            labels = [ch.get("channel", "") for ch in channels]
-            values = [ch.get("budget_pct", 0) for ch in channels]
-            if any(values):
-                fig = px.pie(
-                    names=labels,
-                    values=values,
-                    title="Budget Allocation by Channel",
-                    color_discrete_sequence=[PRIMARY_BLUE, ACCENT_RED, ACCENT_YELLOW, ACCENT_GREEN, "#9B59B6", "#1ABC9C"],
-                )
-                fig.update_layout(
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    font=dict(size=12),
-                    height=350,
-                )
-                st.plotly_chart(fig, use_container_width=True)
+            # Show budget pie chart if we have channel plan with budget %
+            if budget_input and brief.get("channel_plan"):
+                channels = brief["channel_plan"]
+                labels = [ch.get("channel", "") for ch in channels]
+                values = [ch.get("budget_pct", 0) for ch in channels]
+                if any(values):
+                    fig = px.pie(
+                        names=labels,
+                        values=values,
+                        title="Budget Allocation by Channel",
+                        color_discrete_sequence=[PRIMARY_BLUE, ACCENT_RED, ACCENT_YELLOW, ACCENT_GREEN, "#9B59B6", "#1ABC9C"],
+                    )
+                    fig.update_layout(
+                        plot_bgcolor="rgba(0,0,0,0)",
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        font=dict(size=12),
+                        height=350,
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+        else:
+            budget_input = brief.get("budget", "")
 
         # --- Navigation ---
         st.write("")
@@ -2265,12 +2296,20 @@ def render_brief_builder() -> None:
                 if budget_input:
                     brief["budget"] = budget_input
 
-                # Validation — need at least channel plan and timeline
+                # Validation
                 missing = []
-                if not brief.get("channel_plan") and not channel_plan_text.strip():
-                    missing.append("Channel Plan")
-                if not brief.get("timeline") and not timeline_text.strip():
-                    missing.append("Timeline")
+                if is_light_brief:
+                    # Light brief: only Deliverables required
+                    if not brief.get("deliverables") and not deliverables_text.strip():
+                        missing.append("Content Deliverables")
+                else:
+                    # Full brief: Channel Plan and Timeline required
+                    if not brief.get("channel_plan") and not channel_plan_text.strip():
+                        missing.append("Channel Plan")
+                    if not brief.get("deliverables") and not deliverables_text.strip():
+                        missing.append("Content Deliverables")
+                    if not brief.get("timeline") and not timeline_text.strip():
+                        missing.append("Timeline")
 
                 if missing:
                     st.error(f"Please fill in: {', '.join(missing)}")
@@ -2282,6 +2321,10 @@ def render_brief_builder() -> None:
     # --- Step 5: Governance ---
     elif step == 5:
         st.subheader("Step 5: Governance")
+        is_light_brief = brief.get("launch_tier") == "Tier 2"
+
+        if is_light_brief:
+            st.info("Light brief mode — only KPIs are required.")
 
         # --- Success Metrics / KPIs ---
         kpis_text = st.text_area(
@@ -2341,67 +2384,68 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        st.divider()
+        # --- RACI Matrix (skip for Tier 2) ---
+        if not is_light_brief:
+            st.divider()
 
-        # --- RACI Matrix ---
-        raci_text = st.text_area(
-            "RACI Matrix",
-            value=brief.get("raci_text", ""),
-            height=120,
-            placeholder="Who is Responsible, Accountable, Consulted, and Informed for each workstream?",
-        )
-        if raci_text != brief.get("raci_text", ""):
-            brief["raci_text"] = raci_text
-            st.session_state.current_brief = brief
-
-        if st.button("Generate RACI", use_container_width=True):
-            if generator and not st.session_state.demo_mode:
-                with st.spinner("Generating RACI matrix..."):
-                    try:
-                        raci = generator.generate_raci_matrix(brief.get("brief_type", "product_launch"))
-                        st.session_state.generated_raci = raci
-                    except Exception as e:
-                        st.error(f"Error: {e}")
-            else:
-                st.session_state.generated_raci = [
-                    {"task": "Campaign Strategy & Brief", "responsible": "PMM Lead", "accountable": "VP Marketing", "consulted": "Product, Data Science", "informed": "Executive Team"},
-                    {"task": "Creative Asset Development", "responsible": "Creative Team", "accountable": "PMM Lead", "consulted": "Brand Guidelines", "informed": "PMM"},
-                    {"task": "Email Campaign Execution", "responsible": "Email Marketing", "accountable": "PMM Lead", "consulted": "CRM Team", "informed": "Analytics"},
-                    {"task": "Social Media Campaign", "responsible": "Social Team", "accountable": "PMM Lead", "consulted": "Creative, Legal", "informed": "PR"},
-                    {"task": "Paid Search Management", "responsible": "Performance Marketing", "accountable": "PMM Lead", "consulted": "Finance", "informed": "Analytics"},
-                    {"task": "Performance Reporting", "responsible": "Analytics Team", "accountable": "PMM Lead", "consulted": "Data Science", "informed": "Executive Team"},
-                ]
-            st.rerun()
-
-        if st.session_state.generated_raci:
-            raci_display = []
-            for r in st.session_state.generated_raci:
-                raci_display.append({
-                    "Task": r.get("task", r.get("role", "")),
-                    "Responsible": r.get("responsible", r.get("R", "")),
-                    "Accountable": r.get("accountable", r.get("A", "")),
-                    "Consulted": r.get("consulted", r.get("C", "")),
-                    "Informed": r.get("informed", r.get("I", "")),
-                })
-            df_raci = pd.DataFrame(raci_display)
-            col_raci_info, col_raci_close = st.columns([11, 1])
-            with col_raci_info:
-                st.dataframe(df_raci, use_container_width=True, hide_index=True)
-            with col_raci_close:
-                st.write("")
-                if st.button("Close X", key="close_raci"):
-                    st.session_state.generated_raci = None
-                    st.rerun()
-            if st.button("Use This RACI", key="use_raci"):
-                brief["raci"] = st.session_state.generated_raci
-                # Also populate the text box with a readable version
-                raci_lines = []
-                for r in st.session_state.generated_raci:
-                    raci_lines.append(f"- {r.get('task', r.get('role', ''))}: R={r.get('responsible', '')} | A={r.get('accountable', '')} | C={r.get('consulted', '')} | I={r.get('informed', '')}")
-                brief["raci_text"] = "\n".join(raci_lines)
-                st.session_state.generated_raci = None
+            raci_text = st.text_area(
+                "RACI Matrix",
+                value=brief.get("raci_text", ""),
+                height=120,
+                placeholder="Who is Responsible, Accountable, Consulted, and Informed for each workstream?",
+            )
+            if raci_text != brief.get("raci_text", ""):
+                brief["raci_text"] = raci_text
                 st.session_state.current_brief = brief
+
+            if st.button("Generate RACI", use_container_width=True):
+                if generator and not st.session_state.demo_mode:
+                    with st.spinner("Generating RACI matrix..."):
+                        try:
+                            raci = generator.generate_raci_matrix(brief.get("brief_type", "product_launch"))
+                            st.session_state.generated_raci = raci
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+                else:
+                    st.session_state.generated_raci = [
+                        {"task": "Campaign Strategy & Brief", "responsible": "PMM Lead", "accountable": "VP Marketing", "consulted": "Product, Data Science", "informed": "Executive Team"},
+                        {"task": "Creative Asset Development", "responsible": "Creative Team", "accountable": "PMM Lead", "consulted": "Brand Guidelines", "informed": "PMM"},
+                        {"task": "Email Campaign Execution", "responsible": "Email Marketing", "accountable": "PMM Lead", "consulted": "CRM Team", "informed": "Analytics"},
+                        {"task": "Social Media Campaign", "responsible": "Social Team", "accountable": "PMM Lead", "consulted": "Creative, Legal", "informed": "PR"},
+                        {"task": "Paid Search Management", "responsible": "Performance Marketing", "accountable": "PMM Lead", "consulted": "Finance", "informed": "Analytics"},
+                        {"task": "Performance Reporting", "responsible": "Analytics Team", "accountable": "PMM Lead", "consulted": "Data Science", "informed": "Executive Team"},
+                    ]
                 st.rerun()
+
+            if st.session_state.generated_raci:
+                raci_display = []
+                for r in st.session_state.generated_raci:
+                    raci_display.append({
+                        "Task": r.get("task", r.get("role", "")),
+                        "Responsible": r.get("responsible", r.get("R", "")),
+                        "Accountable": r.get("accountable", r.get("A", "")),
+                        "Consulted": r.get("consulted", r.get("C", "")),
+                        "Informed": r.get("informed", r.get("I", "")),
+                    })
+                df_raci = pd.DataFrame(raci_display)
+                col_raci_info, col_raci_close = st.columns([11, 1])
+                with col_raci_info:
+                    st.dataframe(df_raci, use_container_width=True, hide_index=True)
+                with col_raci_close:
+                    st.write("")
+                    if st.button("Close X", key="close_raci"):
+                        st.session_state.generated_raci = None
+                        st.rerun()
+                if st.button("Use This RACI", key="use_raci"):
+                    brief["raci"] = st.session_state.generated_raci
+                    # Also populate the text box with a readable version
+                    raci_lines = []
+                    for r in st.session_state.generated_raci:
+                        raci_lines.append(f"- {r.get('task', r.get('role', ''))}: R={r.get('responsible', '')} | A={r.get('accountable', '')} | C={r.get('consulted', '')} | I={r.get('informed', '')}")
+                    brief["raci_text"] = "\n".join(raci_lines)
+                    st.session_state.generated_raci = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
 
         st.write("")
         col_back, col_next = st.columns(2)
@@ -2414,8 +2458,9 @@ def render_brief_builder() -> None:
                 missing = []
                 if not st.session_state.generated_kpis and not brief.get("kpis") and not brief.get("kpis_text", "").strip():
                     missing.append("KPIs (enter text or click 'Generate KPIs')")
-                if not st.session_state.generated_raci and not brief.get("raci") and not brief.get("raci_text", "").strip():
-                    missing.append("RACI Matrix (enter text or click 'Generate RACI')")
+                if not is_light_brief:
+                    if not st.session_state.generated_raci and not brief.get("raci") and not brief.get("raci_text", "").strip():
+                        missing.append("RACI Matrix (enter text or click 'Generate RACI')")
                 if missing:
                     st.error(f"Please complete the following before proceeding: {', '.join(missing)}")
                 else:
