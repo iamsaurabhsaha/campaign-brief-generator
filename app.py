@@ -49,14 +49,12 @@ TIER_DESCRIPTIONS = {
     "Tier 0": "Company-defining (new platform) -- Full brief + war room",
     "Tier 1": "Major feature launch -- Full brief required",
     "Tier 2": "Enhancement or update -- Light brief",
-    "Tier 3": "Bug fix / minor -- No brief needed",
 }
 
 TIER_COLORS = {
     "Tier 0": ACCENT_RED,
     "Tier 1": PRIMARY_BLUE,
     "Tier 2": ACCENT_YELLOW,
-    "Tier 3": ACCENT_GREEN,
 }
 
 BRIEF_TYPES = ["Campaign Brief", "Creative Brief", "GTM Brief"]
@@ -1264,9 +1262,7 @@ def render_brief_builder() -> None:
                 "**Tier 1 — Major feature launch:** Significant new capability. "
                 "Requires a full campaign brief with cross-functional alignment.\n\n"
                 "**Tier 2 — Enhancement or update:** Improvement to an existing feature. "
-                "A lighter brief covering key sections is sufficient.\n\n"
-                "**Tier 3 — Bug fix / minor:** Small change with minimal marketing impact. "
-                "Typically no brief needed."
+                "A lighter brief covering key sections is sufficient."
             ),
         )
 
@@ -2662,7 +2658,7 @@ def render_quality_checker() -> None:
     with col_tier:
         qc_tier = st.selectbox(
             "Launch Tier",
-            options=["", "Tier 0", "Tier 1", "Tier 2", "Tier 3"],
+            options=["", "Tier 0", "Tier 1", "Tier 2"],
             index=0,
             format_func=lambda x: "Select tier (optional)..." if x == "" else x,
             key="qc_tier",
