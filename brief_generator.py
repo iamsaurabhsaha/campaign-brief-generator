@@ -399,24 +399,35 @@ class BriefGenerator:
             max_tokens: Maximum tokens in the response.
 
         Returns:
-            Parsed JSON response as a Python dict or list.
-
-        Raises:
-            json.JSONDecodeError: If response cannot be parsed.
+            Parsed JSON response as a Python dict or list. Returns empty dict on parse failure.
         """
         logger.info("Calling LLM API (%d max tokens)...", max_tokens)
 
         raw_text = llm_provider.generate(
             system=self.system_prompt,
-            user_prompt=user_prompt,
+            user_prompt=user_prompt + "\n\nIMPORTANT: Return ONLY valid JSON. No markdown fences, no explanatory text before or after the JSON.",
             max_tokens=max_tokens,
         )
 
         raw_text = raw_text.strip()
         logger.debug("Raw API response length: %d chars", len(raw_text))
 
-        result = _parse_json_response(raw_text)
-        return result
+        try:
+            result = _parse_json_response(raw_text)
+            return result
+        except json.JSONDecodeError:
+            logger.error("JSON parse failed. Raw response: %s", raw_text[:500])
+            # Try one more time with a stricter prompt
+            try:
+                retry_text = llm_provider.generate(
+                    system="You are a JSON generator. Return ONLY valid JSON. No other text.",
+                    user_prompt=user_prompt + "\n\nReturn ONLY a valid JSON object or array. No markdown, no explanations.",
+                    max_tokens=max_tokens,
+                )
+                return _parse_json_response(retry_text.strip())
+            except Exception:
+                logger.error("Retry also failed.")
+                return {}
 
     # ------------------------------------------------------------------
     # 1. generate_full_brief
