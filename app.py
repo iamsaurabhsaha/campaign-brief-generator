@@ -2590,13 +2590,32 @@ def render_brief_builder() -> None:
                      "This creates an execution-focused document for your creative team or agency.")
         if st.button("Generate Creative Brief  >>", use_container_width=True):
             if generator and not st.session_state.demo_mode:
-                with st.spinner("Generating creative brief..."):
+                with st.spinner("Generating creative brief... (this may take 15-20 seconds)"):
                     try:
                         creative = CreativeEngine().generate_creative_brief(brief)
-                        st.session_state.generated_creative_brief = creative
+                        if creative and isinstance(creative, dict) and len(creative) > 0:
+                            st.session_state.generated_creative_brief = creative
+                            st.rerun()
+                        else:
+                            # Fallback to demo data
+                            st.warning("AI returned empty results. Using template instead.")
+                            st.session_state.generated_creative_brief = None  # Will fall through to demo below
                     except Exception as e:
-                        st.error(f"Error: {e}")
-                st.rerun()
+                        st.error(f"Error generating creative brief: {e}")
+                # If AI failed or returned empty, use template data
+                if not st.session_state.get("generated_creative_brief"):
+                    st.session_state.generated_creative_brief = {
+                        "project_name": f"{brief.get('campaign_name', 'Untitled')} Creative Campaign",
+                        "objective": brief.get("objective", "TBD"),
+                        "target_audience": brief.get("target_audience", "TBD"),
+                        "single_minded_proposition": brief.get("smp", "TBD"),
+                        "tone_and_manner": "Empowering, approachable, innovative. Speak as a trusted partner — not as a tech company pushing features.",
+                        "mandatories": ["Brand guidelines compliance", "AI disclosure where applicable", "Legal disclaimers on claims", "Accessible design (WCAG 2.1 AA)"],
+                        "deliverables": brief.get("deliverables", ["TBD"]),
+                        "inspiration_references": ["Canva's empowering tool-focused campaigns", "Shopify's authentic seller success stories", "Apple's clean product demo videos"],
+                        "do_nots": ["Don't use overly technical jargon", "Don't make unrealistic promises", "Don't show competitor platforms"],
+                    }
+                    st.rerun()
             else:
                 st.session_state.generated_creative_brief = {
                     "project_name": f"{brief.get('campaign_name', 'Untitled')} Creative Campaign",
