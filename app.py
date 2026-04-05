@@ -1710,12 +1710,19 @@ def render_brief_builder() -> None:
                     with st.spinner("Generating SMART objective..."):
                         try:
                             smart = generator.make_objective_smart(smart_input)
-                            st.session_state.smart_objective = smart
+                            st.session_state.smart_objective = _proofread_or_approve(
+                                objective.strip(), smart
+                            ).replace(
+                                "Your text is clear and well-written.",
+                                "Your objective is already SMART — specific, measurable, achievable, relevant, and time-bound."
+                            )
                         except Exception as e:
                             st.error(f"Error: {e}")
                 else:
                     st.session_state.smart_objective = (
-                        "Increase Magical Listing adoption by 40% (from 25% to 35% of total listings) "
+                        "Looks good — no changes needed. Your objective is already SMART — specific, measurable, achievable, relevant, and time-bound."
+                        if objective.strip() and len(objective.strip()) > 50
+                        else "Increase Magical Listing adoption by 40% (from 25% to 35% of total listings) "
                         "among professional sellers (500+ active listings) within 90 days of "
                         "campaign launch, measured via product analytics dashboard."
                     )
@@ -1750,10 +1757,11 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_smart"):
                     st.session_state.smart_objective = None
                     st.rerun()
-            if st.button("Apply Objective", key="use_smart"):
-                brief["objective"] = st.session_state.smart_objective
-                st.session_state.current_brief = brief
-                st.session_state.smart_objective = None
+            if not st.session_state.smart_objective.startswith("Looks good"):
+                if st.button("Apply Objective", key="use_smart"):
+                    brief["objective"] = st.session_state.smart_objective
+                    st.session_state.current_brief = brief
+                    st.session_state.smart_objective = None
                 st.rerun()
 
         if st.session_state.get("ai_generated_objective"):
