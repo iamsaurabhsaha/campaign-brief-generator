@@ -255,6 +255,11 @@ div[data-testid="stAlert"] div[data-testid="stAlertContentInfo"] {
     padding-left: 0 !important;
 }
 
+/* Vertically center columns that contain alert + dismiss button pairs */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) {
+    align-items: center !important;
+}
+
 /* Success box - clean card style */
 div[data-testid="stAlert"] div[data-testid="stAlertContentSuccess"] {
     background: #f0f8e4 !important;
@@ -1362,7 +1367,6 @@ def render_brief_builder() -> None:
             with col_names_info:
                 st.info("**Suggested names:** " + " | ".join(st.session_state.generated_names))
             with col_names_close:
-                st.write("")
                 if st.button("Dismiss", key="close_names"):
                     st.session_state.generated_names = []
                     st.rerun()
@@ -1518,7 +1522,6 @@ def render_brief_builder() -> None:
             with col_bg_info:
                 st.info(st.session_state.ai_background)
             with col_bg_close:
-                st.write("")
                 if st.button("Dismiss", key="close_bg"):
                     st.session_state.ai_background = None
                     st.rerun()
@@ -1584,7 +1587,6 @@ def render_brief_builder() -> None:
             with col_smart_info:
                 st.success(f"**SMART Objective:** {st.session_state.smart_objective}")
             with col_smart_close:
-                st.write("")
                 if st.button("Dismiss", key="close_smart"):
                     st.session_state.smart_objective = None
                     st.rerun()
@@ -1599,7 +1601,6 @@ def render_brief_builder() -> None:
             with col_obj_info:
                 st.info(f"**Generated Objective:** {st.session_state.ai_generated_objective}")
             with col_obj_close:
-                st.write("")
                 if st.button("Dismiss", key="close_obj"):
                     st.session_state.ai_generated_objective = None
                     st.rerun()
@@ -1671,7 +1672,6 @@ def render_brief_builder() -> None:
                 with st.expander("Generated Audience Profile", expanded=True):
                     st.markdown(st.session_state.audience_profile)
             with col_prof_close:
-                st.write("")
                 if st.button("Dismiss", key="close_profile"):
                     st.session_state.audience_profile = None
                     st.rerun()
@@ -1686,7 +1686,6 @@ def render_brief_builder() -> None:
             with col_aud_info:
                 st.info(st.session_state.ai_generated_audience)
             with col_aud_close:
-                st.write("")
                 if st.button("Dismiss", key="close_aud"):
                     st.session_state.ai_generated_audience = None
                     st.rerun()
@@ -1887,7 +1886,6 @@ def render_brief_builder() -> None:
                 if not is_light_brief:
                     st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
             with col_pos_close:
-                st.write("")
                 if st.button("Dismiss", key="close_pos"):
                     st.session_state.ai_positioning = None
                     st.rerun()
@@ -1955,7 +1953,6 @@ def render_brief_builder() -> None:
                 else:
                     st.info(msgs)
             with col_msgs_close:
-                st.write("")
                 if st.button("Dismiss", key="close_msgs"):
                     st.session_state.ai_messages = None
                     st.rerun()
@@ -2146,7 +2143,6 @@ def render_brief_builder() -> None:
             with col_ch_info:
                 st.info(st.session_state.ai_channels_proofed)
             with col_ch_close:
-                st.write("")
                 if st.button("Dismiss", key="close_channels_proofed"):
                     st.session_state.ai_channels_proofed = None
                     st.rerun()
@@ -2247,7 +2243,6 @@ def render_brief_builder() -> None:
             with col_del_info:
                 st.info(st.session_state.ai_deliverables_proofed)
             with col_del_close:
-                st.write("")
                 if st.button("Dismiss", key="close_deliverables_proofed"):
                     st.session_state.ai_deliverables_proofed = None
                     st.rerun()
@@ -2341,7 +2336,6 @@ def render_brief_builder() -> None:
             with col_tl_info:
                 st.info(st.session_state.ai_timeline_proofed)
             with col_tl_close:
-                st.write("")
                 if st.button("Dismiss", key="close_timeline_proofed"):
                     st.session_state.ai_timeline_proofed = None
                     st.rerun()
@@ -2503,7 +2497,6 @@ def render_brief_builder() -> None:
             with col_kpi_info:
                 st.dataframe(df_kpis, use_container_width=True, hide_index=True)
             with col_kpi_close:
-                st.write("")
                 if st.button("Dismiss", key="close_kpis"):
                     st.session_state.generated_kpis = None
                     st.rerun()
