@@ -914,37 +914,45 @@ DEMO_PREFILLED_BRIEF = {
 # ---------------------------------------------------------------------------
 
 
+def _escape_markdown(text: str) -> str:
+    """Escape dollar signs to prevent Streamlit from rendering LaTeX."""
+    if not isinstance(text, str):
+        return str(text)
+    return text.replace("$", "\\$")
+
+
 def _format_audience_profile(profile) -> str:
     """Format an audience profile dict into readable markdown."""
     if isinstance(profile, str):
-        return profile
+        return _escape_markdown(profile)
     if not isinstance(profile, dict):
         return str(profile)
 
+    _e = _escape_markdown
     lines = []
     if profile.get("demographics"):
-        lines.append(f"**Demographics:** {profile['demographics']}\n")
+        lines.append(f"**Demographics:** {_e(profile['demographics'])}\n")
     if profile.get("psychographics"):
-        lines.append(f"**Psychographics:** {profile['psychographics']}\n")
+        lines.append(f"**Psychographics:** {_e(profile['psychographics'])}\n")
     if profile.get("pain_points"):
         lines.append("**Pain Points:**")
         for p in profile["pain_points"]:
-            lines.append(f"- {p}")
+            lines.append(f"- {_e(p)}")
         lines.append("")
     if profile.get("motivations"):
         lines.append("**Motivations:**")
         for m in profile["motivations"]:
-            lines.append(f"- {m}")
+            lines.append(f"- {_e(m)}")
         lines.append("")
     if profile.get("media_habits"):
         lines.append("**Media Habits:**")
         for h in profile["media_habits"]:
-            lines.append(f"- {h}")
+            lines.append(f"- {_e(h)}")
         lines.append("")
     if profile.get("objections"):
         lines.append("**Likely Objections:**")
         for o in profile["objections"]:
-            lines.append(f"- {o}")
+            lines.append(f"- {_e(o)}")
         lines.append("")
     return "\n".join(lines)
 
