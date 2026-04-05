@@ -1270,21 +1270,6 @@ def render_brief_builder() -> None:
             ),
         )
 
-        brief_type = st.radio(
-            "Brief Type",
-            BRIEF_TYPES,
-            index=BRIEF_TYPES.index(brief.get("brief_type", "Campaign Brief")),
-            horizontal=True,
-            help=(
-                "**Campaign Brief:** Strategic document covering the full 'what & why' "
-                "-- objectives, audience, channels, budget, KPIs. Used to align cross-functional teams.\n\n"
-                "**Creative Brief:** Execution doc for designers/agencies -- tone, visuals, "
-                "mandatories, deliverable specs. Created AFTER the campaign brief.\n\n"
-                "**GTM Brief:** Launch-specific doc including pricing, sales enablement, "
-                "training plans, competitive positioning. For new product/feature launches."
-            ),
-        )
-
         st.write("")
         if st.button("Next  >>", type="primary", use_container_width=True):
             # Validation
@@ -1298,7 +1283,7 @@ def render_brief_builder() -> None:
             else:
                 brief["campaign_name"] = campaign_name
                 brief["launch_tier"] = launch_tier
-                brief["brief_type"] = brief_type
+                brief["brief_type"] = "Campaign Brief"
                 st.session_state.current_brief = brief
                 st.session_state.wizard_step = 2
                 st.rerun()
