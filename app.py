@@ -246,12 +246,13 @@ div[data-testid="stButton"] > button:not([kind="primary"]):hover {
     box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
 }
 
-/* AI Suggestion box - clean card style, no left border */
+/* AI Suggestion box - clean, no background or border */
 div[data-testid="stAlert"] div[data-testid="stAlertContentInfo"] {
-    background: #E8F1FB !important;
+    background: transparent !important;
+    border: none !important;
     border-left: none !important;
-    border: 1px solid #B8D4F0 !important;
-    border-radius: 8px !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
 }
 
 /* Success box - clean card style */
