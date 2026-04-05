@@ -1265,6 +1265,9 @@ def render_brief_builder() -> None:
         )
 
         st.write("")
+        # Validation message placeholder (above buttons)
+        validation_placeholder = st.empty()
+
         if st.button("Next  >>", type="primary", use_container_width=True):
             # Validation
             missing = []
@@ -1273,7 +1276,7 @@ def render_brief_builder() -> None:
             if launch_tier == "":
                 missing.append("Launch Tier")
             if missing:
-                st.error(f"Please fill in all required fields: {', '.join(missing)}")
+                validation_placeholder.error(f"Please fill in all required fields: {', '.join(missing)}")
             else:
                 brief["campaign_name"] = campaign_name
                 brief["launch_tier"] = launch_tier
@@ -1574,6 +1577,9 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         st.write("")
+        # Validation message placeholder (above buttons)
+        validation_placeholder = st.empty()
+
         col_back, col_next = st.columns(2)
         with col_back:
             if st.button("<<  Back", use_container_width=True):
@@ -1592,7 +1598,7 @@ def render_brief_builder() -> None:
                 if not is_light_brief and not effective_audience.strip():
                     missing.append("Target Audience")
                 if missing:
-                    st.error(f"Please fill in all required fields: {', '.join(missing)}")
+                    validation_placeholder.error(f"Please fill in all required fields: {', '.join(missing)}")
                 else:
                     brief["background"] = full_background
                     brief["objective"] = effective_objective
@@ -1899,6 +1905,9 @@ def render_brief_builder() -> None:
 
         # --- Navigation ---
         st.write("")
+        # Validation message placeholder (above buttons)
+        validation_placeholder = st.empty()
+
         col_back, col_next = st.columns(2)
         with col_back:
             if st.button("<<  Back", use_container_width=True, key="back3"):
@@ -1933,7 +1942,7 @@ def render_brief_builder() -> None:
                         missing.append("SMP")
 
                 if missing:
-                    st.error(f"Please fill in: {', '.join(missing)}")
+                    validation_placeholder.error(f"Please fill in: {', '.join(missing)}")
                 else:
                     st.session_state.current_brief = brief
                     st.session_state.wizard_step = 4
@@ -2277,6 +2286,9 @@ def render_brief_builder() -> None:
 
         # --- Navigation ---
         st.write("")
+        # Validation message placeholder (above buttons)
+        validation_placeholder = st.empty()
+
         col_back, col_next = st.columns(2)
         with col_back:
             if st.button("<<  Back", use_container_width=True, key="back4"):
@@ -2310,7 +2322,7 @@ def render_brief_builder() -> None:
                         missing.append("Timeline")
 
                 if missing:
-                    st.error(f"Please fill in: {', '.join(missing)}")
+                    validation_placeholder.error(f"Please fill in: {', '.join(missing)}")
                 else:
                     st.session_state.current_brief = brief
                     st.session_state.wizard_step = 5
@@ -2446,6 +2458,9 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         st.write("")
+        # Validation message placeholder (above buttons)
+        validation_placeholder = st.empty()
+
         col_back, col_next = st.columns(2)
         with col_back:
             if st.button("<<  Back", use_container_width=True, key="back5"):
@@ -2460,7 +2475,7 @@ def render_brief_builder() -> None:
                     if not st.session_state.generated_raci and not brief.get("raci") and not brief.get("raci_text", "").strip():
                         missing.append("RACI Matrix (enter text or click 'Generate RACI')")
                 if missing:
-                    st.error(f"Please complete the following before proceeding: {', '.join(missing)}")
+                    validation_placeholder.error(f"Please complete the following before proceeding: {', '.join(missing)}")
                 else:
                     if st.session_state.generated_kpis:
                         brief["kpis"] = st.session_state.generated_kpis
