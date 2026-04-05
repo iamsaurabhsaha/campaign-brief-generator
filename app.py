@@ -1610,9 +1610,20 @@ def render_brief_builder() -> None:
             placeholder="What is the single most important goal?",
         )
 
+        if st.session_state.get("obj_warning"):
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+            with col_warn:
+                st.warning(st.session_state.obj_warning)
+            with col_warn_dismiss:
+                if st.button("Dismiss", key="dismiss_obj_warn"):
+                    st.session_state.obj_warning = None
+                    st.rerun()
         col_gen_obj, col_smart = st.columns(2)
         with col_smart:
             if st.button("Make it SMART", use_container_width=True, key="btn_smart"):
+                if not objective.strip() and not full_background.strip():
+                    st.session_state.obj_warning = "Enter an objective or fill in Background/Context first, then click Make it SMART."
+                    st.rerun()
                 bg_context = f" Context: {full_background[:300]}" if full_background else ""
                 if objective.strip():
                     smart_input = f"{objective.strip()}.{bg_context}"
@@ -1637,6 +1648,9 @@ def render_brief_builder() -> None:
                 st.rerun()
         with col_gen_obj:
             if st.button("Generate Objective", use_container_width=True, key="btn_gen_obj"):
+                if not full_background.strip():
+                    st.session_state.obj_warning = "Fill in Background/Context first so the AI has context to generate an objective."
+                    st.rerun()
                 campaign_name_val = brief.get("campaign_name", "")
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating objective..."):
@@ -1691,9 +1705,20 @@ def render_brief_builder() -> None:
             placeholder="Who are we talking to? Be specific about demographics, behaviors, and needs.",
         )
 
+        if st.session_state.get("aud_warning"):
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+            with col_warn:
+                st.warning(st.session_state.aud_warning)
+            with col_warn_dismiss:
+                if st.button("Dismiss", key="dismiss_aud_warn"):
+                    st.session_state.aud_warning = None
+                    st.rerun()
         col_profile, col_help_aud = st.columns(2)
         with col_profile:
             if st.button("Generate Profile", use_container_width=True, key="btn_gen_profile"):
+                if not full_background.strip() and not target_audience.strip():
+                    st.session_state.aud_warning = "Fill in Background/Context or enter some audience notes first."
+                    st.rerun()
                 audience_input = target_audience.strip() if target_audience.strip() else (
                     f"Target audience for: {brief.get('campaign_name', 'campaign')}. "
                     f"Context: {full_background[:200] if full_background else 'e-commerce feature launch'}. "
@@ -1719,6 +1744,9 @@ def render_brief_builder() -> None:
                 st.rerun()
         with col_help_aud:
             if st.button("Help Me Write", key="aud_help", use_container_width=True):
+                if not full_background.strip() and not target_audience.strip():
+                    st.session_state.aud_warning = "Fill in Background/Context or enter some audience notes first."
+                    st.rerun()
                 campaign_name_val = brief.get("campaign_name", "")
                 obj_val = st.session_state.smart_objective or objective or brief.get("objective", "")
                 if generator and not st.session_state.demo_mode:
