@@ -1,5 +1,7 @@
 # Campaign Brief Generator
 
+**Live App:** [campaign-brief-generator.streamlit.app](https://campaign-brief-generator.streamlit.app)
+
 An AI-powered tool that helps Product Marketing Managers create comprehensive, high-quality campaign briefs in minutes instead of hours. Built with Streamlit and the Anthropic Claude API.
 
 ## What It Does
@@ -68,7 +70,8 @@ The app works **without an API key** using sample data. Every feature is functio
 
    ```bash
    cp .env.example .env
-   # Edit .env and add your Anthropic API key
+   # Edit .env and set your preferred LLM provider + API key
+   # Supports: Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, Ollama
    ```
 
 4. **Run the app:**
@@ -134,11 +137,11 @@ campaign-brief-generator/
 
 ## Tech Stack
 
-- **Frontend:** [Streamlit](https://streamlit.io/) with custom CSS
-- **AI:** [Anthropic Claude API](https://www.anthropic.com/) (claude-sonnet-4-20250514)
+- **Frontend:** [Streamlit](https://streamlit.io/) with custom CSS (Inter font, light theme)
+- **AI:** [Anthropic Claude API](https://www.anthropic.com/) (claude-sonnet-4-20250514) — also supports OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, and Ollama via `.env` config
 - **Charts:** Plotly
 - **Export:** python-docx (Word documents)
-- **Design:** eBay-inspired color scheme (Blue #0064D2, Red #E53238, Yellow #F5AF02, Green #86B817)
+- **Design:** E-commerce-inspired color scheme (Blue #0064D2, Red #E53238, Yellow #F5AF02, Green #86B817)
 
 ## Brief Framework
 

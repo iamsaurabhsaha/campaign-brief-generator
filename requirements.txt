@@ -2,9 +2,7 @@ streamlit
 python-dotenv
 plotly
 pandas
-
-# LLM Providers (install only the ones you need)
-anthropic          # Anthropic Claude
-openai             # OpenAI, Azure OpenAI, Ollama (OpenAI-compatible API)
-google-genai       # Google Gemini
-boto3              # AWS Bedrock
+anthropic
+openai
+google-genai
+boto3
