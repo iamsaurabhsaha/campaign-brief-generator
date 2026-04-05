@@ -219,11 +219,11 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
     transform: translateY(-1px);
 }
 
-/* Secondary buttons (Help Me Write, Proofread, Generate, Back) - Blue outline matching Stitch */
+/* Secondary buttons (Help Me Write, Proofread, Generate, Back) - Light blue fill */
 div[data-testid="stButton"] > button[kind="secondary"],
 div[data-testid="stButton"] > button:not([kind="primary"]) {
-    background: transparent !important;
-    border: 2px solid #004da4 !important;
+    background: #e8f1fb !important;
+    border: 1.5px solid #0064D2 !important;
     color: #004da4 !important;
     font-weight: 600 !important;
     border-radius: 8px !important;
@@ -231,7 +231,8 @@ div[data-testid="stButton"] > button:not([kind="primary"]) {
 }
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
 div[data-testid="stButton"] > button:not([kind="primary"]):hover {
-    background: rgba(0,77,164,0.05) !important;
+    background: #0064D2 !important;
+    color: #FFFFFF !important;
     border-color: #004493 !important;
 }
 
