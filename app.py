@@ -441,7 +441,9 @@ div[data-testid="stDownloadButton"] button:active {
 }
 
 /* Navigation Back button — filled slate, equal weight to primary */
-.nav-back div[data-testid="stButton"] button {
+.nav-back div[data-testid="stButton"] button,
+.nav-back div[data-testid="stButton"] button[kind="secondary"],
+.nav-back div[data-testid="stButton"] button:not([kind="primary"]) {
     background: #475569 !important;
     border: none !important;
     color: #FFFFFF !important;
@@ -452,27 +454,32 @@ div[data-testid="stDownloadButton"] button:active {
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
     box-shadow: 0 4px 12px rgba(71,85,105,0.15) !important;
 }
-.nav-back div[data-testid="stButton"] button:hover {
+.nav-back div[data-testid="stButton"] button:hover,
+.nav-back div[data-testid="stButton"] button[kind="secondary"]:hover,
+.nav-back div[data-testid="stButton"] button:not([kind="primary"]):hover {
     background: #334155 !important;
     box-shadow: 0 4px 20px rgba(71,85,105,0.25) !important;
     transform: translateY(-1px);
 }
 
 /* Destructive button styling (Delete) */
-.destructive-btn div[data-testid="stButton"] button {
+.destructive-btn div[data-testid="stButton"] button,
+.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]) {
     background: transparent !important;
     border: 1.5px solid #E53238 !important;
     color: #E53238 !important;
     font-weight: 600 !important;
 }
-.destructive-btn div[data-testid="stButton"] button:hover {
+.destructive-btn div[data-testid="stButton"] button:hover,
+.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {
     background: #E53238 !important;
     color: #FFFFFF !important;
     box-shadow: 0 2px 8px rgba(229,50,56,0.25) !important;
 }
 
 /* Dismiss/Close ghost button styling */
-.dismiss-btn div[data-testid="stButton"] button {
+.dismiss-btn div[data-testid="stButton"] button,
+.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]) {
     background: transparent !important;
     border: none !important;
     color: #727785 !important;
@@ -480,7 +487,8 @@ div[data-testid="stDownloadButton"] button:active {
     padding: 0.3rem 0.6rem !important;
     font-size: 0.85rem !important;
 }
-.dismiss-btn div[data-testid="stButton"] button:hover {
+.dismiss-btn div[data-testid="stButton"] button:hover,
+.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {
     background: #f0f2f5 !important;
     color: #141d23 !important;
     box-shadow: none !important;
