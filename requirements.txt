@@ -6,3 +6,4 @@ anthropic
 openai
 google-genai
 boto3
+python-docx

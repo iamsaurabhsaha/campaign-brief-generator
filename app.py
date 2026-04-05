@@ -2413,160 +2413,134 @@ def render_brief_builder() -> None:
             st.markdown(md)
 
         st.write("")
-        col_dl, col_save = st.columns(2)
+        # Generate Word document
+        try:
+            from docx import Document as DocxDocument
+            from docx.shared import Pt, Inches, RGBColor
+            from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-        with col_dl:
-            # Generate Word document
-            try:
-                from docx import Document as DocxDocument
-                from docx.shared import Pt, Inches, RGBColor
-                from docx.enum.text import WD_ALIGN_PARAGRAPH
+            doc = DocxDocument()
 
-                doc = DocxDocument()
+            # Title
+            title = doc.add_heading(f"Campaign Brief: {brief.get('campaign_name', 'Untitled')}", level=0)
+            meta = doc.add_paragraph()
+            meta.add_run(f"Type: {brief.get('brief_type', 'N/A')}  |  Tier: {brief.get('launch_tier', 'N/A')}  |  Date: {brief.get('created', '')[:10]}").font.size = Pt(10)
 
-                # Title
-                title = doc.add_heading(f"Campaign Brief: {brief.get('campaign_name', 'Untitled')}", level=0)
-                meta = doc.add_paragraph()
-                meta.add_run(f"Type: {brief.get('brief_type', 'N/A')}  |  Tier: {brief.get('launch_tier', 'N/A')}  |  Date: {brief.get('created', '')[:10]}").font.size = Pt(10)
+            def _docx_section(title, content):
+                doc.add_heading(title, level=2)
+                doc.add_paragraph(str(content) if content else "Not specified")
 
-                def _docx_section(title, content):
-                    doc.add_heading(title, level=2)
-                    doc.add_paragraph(str(content) if content else "Not specified")
+            _docx_section("Background & Context", brief.get("background"))
+            _docx_section("Objective", brief.get("objective"))
+            _docx_section("Target Audience", brief.get("target_audience"))
+            _docx_section("Key Insight", brief.get("key_insight"))
 
-                _docx_section("Background & Context", brief.get("background"))
-                _docx_section("Objective", brief.get("objective"))
-                _docx_section("Target Audience", brief.get("target_audience"))
-                _docx_section("Key Insight", brief.get("key_insight"))
+            if brief.get("positioning_short"):
+                doc.add_heading("Positioning Statement", level=2)
+                p = doc.add_paragraph()
+                p.add_run("Short: ").bold = True
+                p.add_run(brief["positioning_short"])
+                if brief.get("positioning_detailed"):
+                    p2 = doc.add_paragraph()
+                    p2.add_run("Detailed: ").bold = True
+                    p2.add_run(brief["positioning_detailed"])
 
-                if brief.get("positioning_short"):
-                    doc.add_heading("Positioning Statement", level=2)
-                    p = doc.add_paragraph()
-                    p.add_run("Short: ").bold = True
-                    p.add_run(brief["positioning_short"])
-                    if brief.get("positioning_detailed"):
-                        p2 = doc.add_paragraph()
-                        p2.add_run("Detailed: ").bold = True
-                        p2.add_run(brief["positioning_detailed"])
-
-                if brief.get("key_messages"):
-                    doc.add_heading("Key Messages", level=2)
-                    msgs = brief["key_messages"]
-                    if isinstance(msgs, list):
-                        for i, m in enumerate(msgs, 1):
-                            doc.add_paragraph(f"{m}", style="List Number")
-                    else:
-                        doc.add_paragraph(str(msgs))
-
-                if brief.get("smp"):
-                    doc.add_heading("Single-Minded Proposition (SMP)", level=2)
-                    p = doc.add_paragraph()
-                    p.add_run(brief["smp"]).bold = True
-                    if brief.get("smp_pass") is not None:
-                        doc.add_paragraph(f"Quality Check: {'PASS' if brief['smp_pass'] else 'FAIL'}")
-
-                if brief.get("channel_plan"):
-                    doc.add_heading("Channel Plan", level=2)
-                    table = doc.add_table(rows=1, cols=4)
-                    table.style = "Light Grid Accent 1"
-                    hdr = table.rows[0].cells
-                    hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = "Channel", "Tactic", "Rationale", "Budget %"
-                    for ch in brief["channel_plan"]:
-                        row = table.add_row().cells
-                        row[0].text = str(ch.get("channel", ""))
-                        row[1].text = str(ch.get("tactic", ""))
-                        row[2].text = str(ch.get("rationale", ""))
-                        row[3].text = str(ch.get("budget_pct", ""))
-
-                if brief.get("deliverables"):
-                    doc.add_heading("Content Deliverables", level=2)
-                    for d in brief["deliverables"]:
-                        if isinstance(d, dict):
-                            p = doc.add_paragraph(style="List Bullet")
-                            p.add_run(f"{d.get('asset', '')}").bold = True
-                            p.add_run(f" — {d.get('spec', '')} (Owner: {d.get('owner', '')})")
-                        else:
-                            doc.add_paragraph(str(d), style="List Bullet")
-
-                if brief.get("timeline"):
-                    doc.add_heading("Timeline", level=2)
-                    table = doc.add_table(rows=1, cols=3)
-                    table.style = "Light Grid Accent 1"
-                    hdr = table.rows[0].cells
-                    hdr[0].text, hdr[1].text, hdr[2].text = "Phase", "Duration", "Activities"
-                    for t in brief["timeline"]:
-                        row = table.add_row().cells
-                        row[0].text = str(t.get("phase", ""))
-                        row[1].text = str(t.get("duration", ""))
-                        acts = t.get("actions", t.get("activities", ""))
-                        row[2].text = ", ".join(acts) if isinstance(acts, list) else str(acts)
-
-                if brief.get("budget"):
-                    doc.add_heading("Budget", level=2)
-                    doc.add_paragraph(f"Total: {brief['budget']}")
-
-                if brief.get("kpis"):
-                    doc.add_heading("Success Metrics / KPIs", level=2)
-                    table = doc.add_table(rows=1, cols=3)
-                    table.style = "Light Grid Accent 1"
-                    hdr = table.rows[0].cells
-                    hdr[0].text, hdr[1].text, hdr[2].text = "Metric", "Target", "Measurement"
-                    for k in brief["kpis"]:
-                        row = table.add_row().cells
-                        row[0].text = str(k.get("metric", ""))
-                        row[1].text = str(k.get("target", ""))
-                        row[2].text = str(k.get("measurement", ""))
-
-                if brief.get("raci"):
-                    doc.add_heading("RACI Matrix", level=2)
-                    table = doc.add_table(rows=1, cols=5)
-                    table.style = "Light Grid Accent 1"
-                    hdr = table.rows[0].cells
-                    hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text, hdr[4].text = "Task", "Responsible", "Accountable", "Consulted", "Informed"
-                    for r in brief["raci"]:
-                        row = table.add_row().cells
-                        row[0].text = str(r.get("task", ""))
-                        row[1].text = str(r.get("responsible", ""))
-                        row[2].text = str(r.get("accountable", ""))
-                        row[3].text = str(r.get("consulted", ""))
-                        row[4].text = str(r.get("informed", ""))
-
-                # Save to bytes
-                _docx_buffer = io.BytesIO()
-                doc.save(_docx_buffer)
-                _docx_bytes = _docx_buffer.getvalue()
-
-                st.download_button(
-                    "Download as Word (.docx)",
-                    data=_docx_bytes,
-                    file_name=f"{brief.get('campaign_name', 'brief').replace(' ', '_').lower()}_brief.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
-                )
-            except ImportError:
-                st.download_button(
-                    "Download as Markdown",
-                    data=md,
-                    file_name=f"{brief.get('campaign_name', 'brief').replace(' ', '_').lower()}_brief.md",
-                    mime="text/markdown",
-                    use_container_width=True,
-                )
-
-        with col_save:
-            if st.button("Save to Library", type="primary", use_container_width=True):
-                brief["id"] = brief.get("id", str(uuid.uuid4()))
-                brief["quality_score"] = quality_score
-                # Check for duplicates
-                existing_ids = {b["id"] for b in st.session_state.briefs}
-                if brief["id"] not in existing_ids:
-                    st.session_state.briefs.append(brief.copy())
-                    st.success("Brief saved to library!")
+            if brief.get("key_messages"):
+                doc.add_heading("Key Messages", level=2)
+                msgs = brief["key_messages"]
+                if isinstance(msgs, list):
+                    for i, m in enumerate(msgs, 1):
+                        doc.add_paragraph(f"{m}", style="List Number")
                 else:
-                    # Update existing
-                    for i, b in enumerate(st.session_state.briefs):
-                        if b["id"] == brief["id"]:
-                            st.session_state.briefs[i] = brief.copy()
-                            break
-                    st.success("Brief updated in library!")
+                    doc.add_paragraph(str(msgs))
+
+            if brief.get("smp"):
+                doc.add_heading("Single-Minded Proposition (SMP)", level=2)
+                p = doc.add_paragraph()
+                p.add_run(brief["smp"]).bold = True
+                if brief.get("smp_pass") is not None:
+                    doc.add_paragraph(f"Quality Check: {'PASS' if brief['smp_pass'] else 'FAIL'}")
+
+            if brief.get("channel_plan"):
+                doc.add_heading("Channel Plan", level=2)
+                table = doc.add_table(rows=1, cols=4)
+                table.style = "Light Grid Accent 1"
+                hdr = table.rows[0].cells
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = "Channel", "Tactic", "Rationale", "Budget %"
+                for ch in brief["channel_plan"]:
+                    row = table.add_row().cells
+                    row[0].text = str(ch.get("channel", ""))
+                    row[1].text = str(ch.get("tactic", ""))
+                    row[2].text = str(ch.get("rationale", ""))
+                    row[3].text = str(ch.get("budget_pct", ""))
+
+            if brief.get("deliverables"):
+                doc.add_heading("Content Deliverables", level=2)
+                for d in brief["deliverables"]:
+                    if isinstance(d, dict):
+                        p = doc.add_paragraph(style="List Bullet")
+                        p.add_run(f"{d.get('asset', '')}").bold = True
+                        p.add_run(f" — {d.get('spec', '')} (Owner: {d.get('owner', '')})")
+                    else:
+                        doc.add_paragraph(str(d), style="List Bullet")
+
+            if brief.get("timeline"):
+                doc.add_heading("Timeline", level=2)
+                table = doc.add_table(rows=1, cols=3)
+                table.style = "Light Grid Accent 1"
+                hdr = table.rows[0].cells
+                hdr[0].text, hdr[1].text, hdr[2].text = "Phase", "Duration", "Activities"
+                for t in brief["timeline"]:
+                    row = table.add_row().cells
+                    row[0].text = str(t.get("phase", ""))
+                    row[1].text = str(t.get("duration", ""))
+                    acts = t.get("actions", t.get("activities", ""))
+                    row[2].text = ", ".join(acts) if isinstance(acts, list) else str(acts)
+
+            if brief.get("budget"):
+                doc.add_heading("Budget", level=2)
+                doc.add_paragraph(f"Total: {brief['budget']}")
+
+            if brief.get("kpis"):
+                doc.add_heading("Success Metrics / KPIs", level=2)
+                table = doc.add_table(rows=1, cols=3)
+                table.style = "Light Grid Accent 1"
+                hdr = table.rows[0].cells
+                hdr[0].text, hdr[1].text, hdr[2].text = "Metric", "Target", "Measurement"
+                for k in brief["kpis"]:
+                    row = table.add_row().cells
+                    row[0].text = str(k.get("metric", ""))
+                    row[1].text = str(k.get("target", ""))
+                    row[2].text = str(k.get("measurement", ""))
+
+            if brief.get("raci"):
+                doc.add_heading("RACI Matrix", level=2)
+                table = doc.add_table(rows=1, cols=5)
+                table.style = "Light Grid Accent 1"
+                hdr = table.rows[0].cells
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text, hdr[4].text = "Task", "Responsible", "Accountable", "Consulted", "Informed"
+                for r in brief["raci"]:
+                    row = table.add_row().cells
+                    row[0].text = str(r.get("task", ""))
+                    row[1].text = str(r.get("responsible", ""))
+                    row[2].text = str(r.get("accountable", ""))
+                    row[3].text = str(r.get("consulted", ""))
+                    row[4].text = str(r.get("informed", ""))
+
+            # Save to bytes
+            _docx_buffer = io.BytesIO()
+            doc.save(_docx_buffer)
+            _docx_bytes = _docx_buffer.getvalue()
+
+            st.download_button(
+                "Download as Word (.docx)",
+                data=_docx_bytes,
+                file_name=f"{brief.get('campaign_name', 'brief').replace(' ', '_').lower()}_brief.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                use_container_width=True,
+            )
+        except ImportError:
+            st.warning("python-docx not installed. Install it with: `pip install python-docx`")
 
         st.divider()
         st.markdown("**Next Step:** Generate a Creative Brief based on the full campaign brief above. "
