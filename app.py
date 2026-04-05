@@ -198,38 +198,39 @@ div[data-testid="stTextArea"] textarea:focus {
     box-shadow: 0 0 0 3px rgba(0,100,210,0.1) !important;
 }
 
-/* Primary buttons (Next, Generate, Check Quality) - Red CTA matching Stitch secondary #ba081f */
+/* Primary buttons (Next, Continue, Check Quality) - Brand Blue CTA */
 div[data-testid="stButton"] > button[kind="primary"] {
-    background: #ba081f !important;
+    background: #0064D2 !important;
     border: none !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     padding: 0.6rem 1.5rem !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 4px 12px rgba(186,8,31,0.2) !important;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
+    box-shadow: 0 4px 12px rgba(0,100,210,0.2) !important;
 }
 div[data-testid="stButton"] > button[kind="primary"]:hover {
-    background: #930014 !important;
-    box-shadow: 0 4px 20px rgba(186,8,31,0.3) !important;
+    background: #004da4 !important;
+    box-shadow: 0 4px 20px rgba(0,100,210,0.3) !important;
     transform: translateY(-1px);
 }
 
-/* Secondary buttons (Help Me Write, Proofread, Generate, Back) - Light blue fill */
+/* Secondary buttons (Help Me Write, Proofread, Generate) - Tonal blue */
 div[data-testid="stButton"] > button[kind="secondary"],
 div[data-testid="stButton"] > button:not([kind="primary"]) {
-    background: #4D9EF5 !important;
-    border: none !important;
-    color: #FFFFFF !important;
-    font-weight: 700 !important;
+    background: #E8F1FB !important;
+    border: 1.5px solid #B8D4F0 !important;
+    color: #0064D2 !important;
+    font-weight: 600 !important;
     border-radius: 8px !important;
-    transition: all 0.2s ease !important;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
 }
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
 div[data-testid="stButton"] > button:not([kind="primary"]):hover {
-    background: #2B6CB0 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 12px rgba(0,100,210,0.3) !important;
+    background: #D0E3F7 !important;
+    border-color: #0064D2 !important;
+    color: #004da4 !important;
+    box-shadow: 0 2px 8px rgba(0,100,210,0.15) !important;
 }
 
 /* AI Suggestion box matching Stitch - blue left border with light blue bg */
@@ -372,7 +373,7 @@ div[data-testid="stDataFrame"] {
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
-/* Download button styling */
+/* Download button styling (standard) */
 div[data-testid="stDownloadButton"] > button {
     background: transparent !important;
     border: 2px solid #004da4 !important;
@@ -383,6 +384,74 @@ div[data-testid="stDownloadButton"] > button {
 div[data-testid="stDownloadButton"] > button:hover {
     background: #004da4 !important;
     color: #FFFFFF !important;
+}
+
+/* Primary download button (final export — step 6 climax) */
+.primary-download div[data-testid="stDownloadButton"] > button {
+    background: #0064D2 !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    padding: 0.75rem 1.5rem !important;
+    box-shadow: 0 4px 16px rgba(0,100,210,0.25) !important;
+}
+.primary-download div[data-testid="stDownloadButton"] > button:hover {
+    background: #004da4 !important;
+    box-shadow: 0 6px 24px rgba(0,100,210,0.35) !important;
+    transform: translateY(-1px);
+}
+
+/* Focus-visible ring for keyboard accessibility (WCAG 2.4.7) */
+div[data-testid="stButton"] > button:focus-visible,
+div[data-testid="stDownloadButton"] > button:focus-visible {
+    outline: 3px solid #0064D2 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 6px rgba(0,100,210,0.15) !important;
+}
+
+/* Active/pressed feedback — must feel instant */
+div[data-testid="stButton"] > button:active,
+div[data-testid="stDownloadButton"] > button:active {
+    transform: scale(0.97) !important;
+    transition: transform 50ms ease !important;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    div[data-testid="stButton"] > button,
+    div[data-testid="stDownloadButton"] > button {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Destructive button styling (Delete) */
+.destructive-btn div[data-testid="stButton"] > button {
+    background: transparent !important;
+    border: 1.5px solid #E53238 !important;
+    color: #E53238 !important;
+    font-weight: 600 !important;
+}
+.destructive-btn div[data-testid="stButton"] > button:hover {
+    background: #E53238 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 8px rgba(229,50,56,0.25) !important;
+}
+
+/* Dismiss/Close ghost button styling */
+.dismiss-btn div[data-testid="stButton"] > button {
+    background: transparent !important;
+    border: none !important;
+    color: #727785 !important;
+    font-weight: 500 !important;
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.85rem !important;
+}
+.dismiss-btn div[data-testid="stButton"] > button:hover {
+    background: #f0f2f5 !important;
+    color: #141d23 !important;
+    box-shadow: none !important;
 }
 
 /* Divider */
@@ -1242,7 +1311,7 @@ def render_brief_builder() -> None:
                 st.info("**Suggested names:** " + " | ".join(st.session_state.generated_names))
             with col_names_close:
                 st.write("")
-                if st.button("Close X", key="close_names"):
+                if st.button("Dismiss", key="close_names"):
                     st.session_state.generated_names = []
                     st.rerun()
 
@@ -1268,7 +1337,7 @@ def render_brief_builder() -> None:
         # Validation message placeholder (above buttons)
         validation_placeholder = st.empty()
 
-        if st.button("Next  >>", type="primary", use_container_width=True):
+        if st.button("Continue →", type="primary", use_container_width=True):
             # Validation
             missing = []
             if not campaign_name.strip():
@@ -1398,10 +1467,10 @@ def render_brief_builder() -> None:
                 st.info(st.session_state.ai_background)
             with col_bg_close:
                 st.write("")
-                if st.button("Close X", key="close_bg"):
+                if st.button("Dismiss", key="close_bg"):
                     st.session_state.ai_background = None
                     st.rerun()
-            if st.button("Use This", key="use_bg"):
+            if st.button("Apply Background", key="use_bg"):
                 brief["background"] = st.session_state.ai_background
                 st.session_state.ai_background = None
                 st.session_state.current_brief = brief
@@ -1464,10 +1533,10 @@ def render_brief_builder() -> None:
                 st.success(f"**SMART Objective:** {st.session_state.smart_objective}")
             with col_smart_close:
                 st.write("")
-                if st.button("Close X", key="close_smart"):
+                if st.button("Dismiss", key="close_smart"):
                     st.session_state.smart_objective = None
                     st.rerun()
-            if st.button("Use This", key="use_smart"):
+            if st.button("Apply Objective", key="use_smart"):
                 brief["objective"] = st.session_state.smart_objective
                 st.session_state.current_brief = brief
                 st.session_state.smart_objective = None
@@ -1479,10 +1548,10 @@ def render_brief_builder() -> None:
                 st.info(f"**Generated Objective:** {st.session_state.ai_generated_objective}")
             with col_obj_close:
                 st.write("")
-                if st.button("Close X", key="close_obj"):
+                if st.button("Dismiss", key="close_obj"):
                     st.session_state.ai_generated_objective = None
                     st.rerun()
-            if st.button("Use This Objective", key="use_obj"):
+            if st.button("Apply Objective", key="use_obj"):
                 brief["objective"] = st.session_state.ai_generated_objective
                 st.session_state.smart_objective = st.session_state.ai_generated_objective
                 st.session_state.ai_generated_objective = None
@@ -1551,10 +1620,10 @@ def render_brief_builder() -> None:
                     st.markdown(st.session_state.audience_profile)
             with col_prof_close:
                 st.write("")
-                if st.button("Close X", key="close_profile"):
+                if st.button("Dismiss", key="close_profile"):
                     st.session_state.audience_profile = None
                     st.rerun()
-            if st.button("Use This", key="use_profile"):
+            if st.button("Apply Profile", key="use_profile"):
                 brief["target_audience"] = st.session_state.audience_profile
                 st.session_state.current_brief = brief
                 st.session_state.audience_profile = None
@@ -1566,10 +1635,10 @@ def render_brief_builder() -> None:
                 st.info(st.session_state.ai_generated_audience)
             with col_aud_close:
                 st.write("")
-                if st.button("Close X", key="close_aud"):
+                if st.button("Dismiss", key="close_aud"):
                     st.session_state.ai_generated_audience = None
                     st.rerun()
-            if st.button("Use This Audience", key="use_aud"):
+            if st.button("Apply Audience", key="use_aud"):
                 brief["target_audience"] = st.session_state.ai_generated_audience
                 st.session_state.audience_profile = st.session_state.ai_generated_audience
                 st.session_state.ai_generated_audience = None
@@ -1582,11 +1651,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
-            if st.button("<<  Back", use_container_width=True):
+            if st.button("← Back", use_container_width=True):
                 st.session_state.wizard_step = 1
                 st.rerun()
         with col_next:
-            if st.button("Next  >>", type="primary", use_container_width=True):
+            if st.button("Continue →", type="primary", use_container_width=True):
                 # Validation
                 effective_objective = st.session_state.smart_objective or objective
                 effective_audience = st.session_state.audience_profile or target_audience
@@ -1677,10 +1746,10 @@ def render_brief_builder() -> None:
                     st.info(st.session_state.ai_insight)
                 with col_ins_close:
                     st.write("")
-                    if st.button("Close X", key="close_insight"):
+                    if st.button("Dismiss", key="close_insight"):
                         st.session_state.ai_insight = None
                         st.rerun()
-                if st.button("Use This", key="use_insight"):
+                if st.button("Apply Insight", key="use_insight"):
                     brief["key_insight"] = st.session_state.ai_insight
                     st.session_state.ai_insight = None
                     st.session_state.current_brief = brief
@@ -1766,10 +1835,10 @@ def render_brief_builder() -> None:
                     st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
             with col_pos_close:
                 st.write("")
-                if st.button("Close X", key="close_pos"):
+                if st.button("Dismiss", key="close_pos"):
                     st.session_state.ai_positioning = None
                     st.rerun()
-            if st.button("Use This", key="use_pos"):
+            if st.button("Apply Positioning", key="use_pos"):
                 brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
                 brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
                 st.session_state.ai_positioning = None
@@ -1834,10 +1903,10 @@ def render_brief_builder() -> None:
                     st.info(msgs)
             with col_msgs_close:
                 st.write("")
-                if st.button("Close X", key="close_msgs"):
+                if st.button("Dismiss", key="close_msgs"):
                     st.session_state.ai_messages = None
                     st.rerun()
-            if st.button("Use These", key="use_msgs"):
+            if st.button("Apply Messages", key="use_msgs"):
                 if isinstance(msgs, list):
                     brief["key_messages"] = msgs
                     brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
@@ -1890,11 +1959,11 @@ def render_brief_builder() -> None:
                         st.error(f"**SMP:** {smp_val}  \n**Quality Check:** FAIL -- {qr}")
                 with col_smp_close:
                     st.write("")
-                    if st.button("Close X", key="close_smp"):
+                    if st.button("Dismiss", key="close_smp"):
                         st.session_state.ai_smp = None
                         st.rerun()
 
-                if st.button("Use This", key="use_smp"):
+                if st.button("Apply SMP", key="use_smp"):
                     brief["smp"] = smp_val
                     brief["smp_pass"] = (qc == "pass" or qc is True)
                     st.session_state.ai_smp = None
@@ -1910,11 +1979,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
-            if st.button("<<  Back", use_container_width=True, key="back3"):
+            if st.button("← Back", use_container_width=True, key="back3"):
                 st.session_state.wizard_step = 2
                 st.rerun()
         with col_next:
-            if st.button("Next  >>", type="primary", use_container_width=True, key="next3"):
+            if st.button("Continue →", type="primary", use_container_width=True, key="next3"):
                 # Save whatever the user has typed or accepted
                 brief["key_insight"] = key_insight or brief.get("key_insight", "")
                 brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
@@ -2024,10 +2093,10 @@ def render_brief_builder() -> None:
                 st.info(st.session_state.ai_channels_proofed)
             with col_ch_close:
                 st.write("")
-                if st.button("Close X", key="close_channels_proofed"):
+                if st.button("Dismiss", key="close_channels_proofed"):
                     st.session_state.ai_channels_proofed = None
                     st.rerun()
-            if st.button("Use This", key="use_channels_proofed"):
+            if st.button("Apply Channels", key="use_channels_proofed"):
                 brief["channel_plan_text"] = st.session_state.ai_channels_proofed
                 st.session_state.ai_channels_proofed = None
                 st.session_state.current_brief = brief
@@ -2044,7 +2113,7 @@ def render_brief_builder() -> None:
                 })
             df_channels = pd.DataFrame(channel_display)
             st.dataframe(df_channels, use_container_width=True, hide_index=True)
-            if st.button("Use This", key="use_channels"):
+            if st.button("Apply Channel Plan", key="use_channels"):
                 brief["channel_plan"] = st.session_state.ai_channels
                 brief["channel_plan_text"] = "\n".join(
                     f"{ch.get('channel', '')}: {ch.get('tactic', '')} ({ch.get('budget_pct', '')}%)"
@@ -2125,10 +2194,10 @@ def render_brief_builder() -> None:
                 st.info(st.session_state.ai_deliverables_proofed)
             with col_del_close:
                 st.write("")
-                if st.button("Close X", key="close_deliverables_proofed"):
+                if st.button("Dismiss", key="close_deliverables_proofed"):
                     st.session_state.ai_deliverables_proofed = None
                     st.rerun()
-            if st.button("Use This", key="use_deliverables_proofed"):
+            if st.button("Apply Deliverables", key="use_deliverables_proofed"):
                 brief["deliverables_text"] = st.session_state.ai_deliverables_proofed
                 st.session_state.ai_deliverables_proofed = None
                 st.session_state.current_brief = brief
@@ -2143,7 +2212,7 @@ def render_brief_builder() -> None:
             else:
                 for d in del_data:
                     st.write(f"- {d}")
-            if st.button("Use This", key="use_deliverables"):
+            if st.button("Apply Deliverables", key="use_deliverables"):
                 brief["deliverables"] = st.session_state.ai_deliverables
                 if isinstance(del_data[0], dict):
                     brief["deliverables_text"] = "\n".join(
@@ -2219,10 +2288,10 @@ def render_brief_builder() -> None:
                 st.info(st.session_state.ai_timeline_proofed)
             with col_tl_close:
                 st.write("")
-                if st.button("Close X", key="close_timeline_proofed"):
+                if st.button("Dismiss", key="close_timeline_proofed"):
                     st.session_state.ai_timeline_proofed = None
                     st.rerun()
-            if st.button("Use This", key="use_timeline_proofed"):
+            if st.button("Apply Timeline", key="use_timeline_proofed"):
                 brief["timeline_text"] = st.session_state.ai_timeline_proofed
                 st.session_state.ai_timeline_proofed = None
                 st.session_state.current_brief = brief
@@ -2241,7 +2310,7 @@ def render_brief_builder() -> None:
                 })
             df_timeline = pd.DataFrame(timeline_display)
             st.dataframe(df_timeline, use_container_width=True, hide_index=True)
-            if st.button("Use This", key="use_timeline"):
+            if st.button("Apply Timeline", key="use_timeline"):
                 brief["timeline"] = st.session_state.ai_timeline
                 brief["timeline_text"] = "\n".join(
                     f"{t.get('phase', '')} ({t.get('duration', '')}): {', '.join(t.get('actions', t.get('activities', []))) if isinstance(t.get('actions', t.get('activities', '')), list) else t.get('actions', t.get('activities', ''))}"
@@ -2291,11 +2360,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
-            if st.button("<<  Back", use_container_width=True, key="back4"):
+            if st.button("← Back", use_container_width=True, key="back4"):
                 st.session_state.wizard_step = 3
                 st.rerun()
         with col_next:
-            if st.button("Next  >>", type="primary", use_container_width=True, key="next4"):
+            if st.button("Continue →", type="primary", use_container_width=True, key="next4"):
                 # Save text fields
                 if channel_plan_text.strip():
                     brief["channel_plan_text"] = channel_plan_text
@@ -2380,10 +2449,10 @@ def render_brief_builder() -> None:
                 st.dataframe(df_kpis, use_container_width=True, hide_index=True)
             with col_kpi_close:
                 st.write("")
-                if st.button("Close X", key="close_kpis"):
+                if st.button("Dismiss", key="close_kpis"):
                     st.session_state.generated_kpis = None
                     st.rerun()
-            if st.button("Use These KPIs", key="use_kpis"):
+            if st.button("Apply KPIs", key="use_kpis"):
                 brief["kpis"] = st.session_state.generated_kpis
                 # Also populate the text box with a readable version
                 kpi_lines = []
@@ -2443,10 +2512,10 @@ def render_brief_builder() -> None:
                     st.dataframe(df_raci, use_container_width=True, hide_index=True)
                 with col_raci_close:
                     st.write("")
-                    if st.button("Close X", key="close_raci"):
+                    if st.button("Dismiss", key="close_raci"):
                         st.session_state.generated_raci = None
                         st.rerun()
-                if st.button("Use This RACI", key="use_raci"):
+                if st.button("Apply RACI", key="use_raci"):
                     brief["raci"] = st.session_state.generated_raci
                     # Also populate the text box with a readable version
                     raci_lines = []
@@ -2463,11 +2532,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
-            if st.button("<<  Back", use_container_width=True, key="back5"):
+            if st.button("← Back", use_container_width=True, key="back5"):
                 st.session_state.wizard_step = 4
                 st.rerun()
         with col_next:
-            if st.button("Next  >>", type="primary", use_container_width=True, key="next5"):
+            if st.button("Continue →", type="primary", use_container_width=True, key="next5"):
                 missing = []
                 if not st.session_state.generated_kpis and not brief.get("kpis") and not brief.get("kpis_text", "").strip():
                     missing.append("KPIs (enter text or click 'Generate KPIs')")
@@ -2616,6 +2685,7 @@ def render_brief_builder() -> None:
             doc.save(_docx_buffer)
             _docx_bytes = _docx_buffer.getvalue()
 
+            st.markdown('<div class="primary-download">', unsafe_allow_html=True)
             st.download_button(
                 "Download as Word (.docx)",
                 data=_docx_bytes,
@@ -2623,37 +2693,46 @@ def render_brief_builder() -> None:
                 mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 use_container_width=True,
             )
+            st.markdown('</div>', unsafe_allow_html=True)
         except ImportError:
             st.warning("python-docx not installed. Install it with: `pip install python-docx`")
 
         st.write("")
         col_back2, col_reset = st.columns(2)
         with col_back2:
-            if st.button("<<  Back", use_container_width=True, key="back6"):
+            if st.button("← Back", use_container_width=True, key="back6"):
                 st.session_state.wizard_step = 5
                 st.rerun()
         with col_reset:
-            if st.button("Start New Brief", use_container_width=True):
-                st.session_state.wizard_step = 1
-                st.session_state.current_brief = {}
-                st.session_state.generated_names = []
-                st.session_state.ai_insight = None
-                st.session_state.ai_positioning = None
-                st.session_state.ai_messages = None
-                st.session_state.ai_smp = None
-                st.session_state.ai_channels = None
-                st.session_state.ai_deliverables = None
-                st.session_state.ai_timeline = None
-                st.session_state.generated_kpis = None
-                st.session_state.generated_raci = None
-                st.session_state.generated_creative_brief = None
-                st.session_state.audience_profile = None
-                st.session_state.smart_objective = None
-                st.session_state.budget_breakdown = None
-                st.session_state.ai_background = None
-                st.session_state.ai_generated_objective = None
-                st.session_state.ai_generated_audience = None
-                st.rerun()
+            if st.session_state.get("confirm_new_brief"):
+                st.markdown('<div class="destructive-btn">', unsafe_allow_html=True)
+                if st.button("Confirm: discard and start fresh?", use_container_width=True):
+                    st.session_state.confirm_new_brief = False
+                    st.session_state.wizard_step = 1
+                    st.session_state.current_brief = {}
+                    st.session_state.generated_names = []
+                    st.session_state.ai_insight = None
+                    st.session_state.ai_positioning = None
+                    st.session_state.ai_messages = None
+                    st.session_state.ai_smp = None
+                    st.session_state.ai_channels = None
+                    st.session_state.ai_deliverables = None
+                    st.session_state.ai_timeline = None
+                    st.session_state.generated_kpis = None
+                    st.session_state.generated_raci = None
+                    st.session_state.generated_creative_brief = None
+                    st.session_state.audience_profile = None
+                    st.session_state.smart_objective = None
+                    st.session_state.budget_breakdown = None
+                    st.session_state.ai_background = None
+                    st.session_state.ai_generated_objective = None
+                    st.session_state.ai_generated_audience = None
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                if st.button("Start New Brief", use_container_width=True):
+                    st.session_state.confirm_new_brief = True
+                    st.rerun()
 
 
 # ---------------------------------------------------------------------------
@@ -3125,12 +3204,23 @@ def render_brief_library() -> None:
                             st.session_state.briefs.append(dup)
                             st.rerun()
                     with btn_cols[2]:
-                        if st.button("Delete", key=f"del_{i}", use_container_width=True):
-                            st.session_state.briefs = [
-                                b for b in st.session_state.briefs
-                                if b.get("id") != brief.get("id")
-                            ]
-                            st.rerun()
+                        confirm_key = f"confirm_del_{i}"
+                        if st.session_state.get(confirm_key):
+                            st.markdown('<div class="destructive-btn">', unsafe_allow_html=True)
+                            if st.button("Confirm delete?", key=f"del_{i}", use_container_width=True):
+                                st.session_state.briefs = [
+                                    b for b in st.session_state.briefs
+                                    if b.get("id") != brief.get("id")
+                                ]
+                                st.session_state[confirm_key] = False
+                                st.rerun()
+                            st.markdown('</div>', unsafe_allow_html=True)
+                        else:
+                            st.markdown('<div class="destructive-btn">', unsafe_allow_html=True)
+                            if st.button("Delete", key=f"del_{i}", use_container_width=True):
+                                st.session_state[confirm_key] = True
+                                st.rerun()
+                            st.markdown('</div>', unsafe_allow_html=True)
                     with btn_cols[3]:
                         md = brief_to_markdown(brief)
                         st.download_button(
