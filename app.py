@@ -624,6 +624,48 @@ def _proofread_or_approve(original: str, result: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Coherence check: campaign name vs background/context
+# ---------------------------------------------------------------------------
+def _check_coherence(campaign_name: str, background: str, objective: str) -> str | None:
+    """Check if the campaign name, background, and objective are about the same topic.
+
+    Returns a warning message string if a mismatch is detected, or None if coherent.
+    """
+    if not campaign_name.strip() or not background.strip():
+        return None
+
+    # Extract significant words (3+ chars, lowercased) from the campaign name
+    import re
+    stop_words = {
+        "the", "and", "for", "with", "from", "that", "this", "will", "are",
+        "was", "been", "have", "has", "had", "not", "but", "all", "can",
+        "our", "new", "one", "two", "into", "its", "also", "more", "how",
+        "about", "launch", "campaign", "brief", "strategy", "plan", "drive",
+        "increase", "through", "using", "across", "over",
+    }
+    name_words = {
+        w.lower() for w in re.findall(r'[a-zA-Z]{3,}', campaign_name)
+        if w.lower() not in stop_words
+    }
+
+    if not name_words:
+        return None
+
+    # Check if any significant campaign name words appear in the background or objective
+    combined_text = (background + " " + objective).lower()
+    matches = sum(1 for w in name_words if w in combined_text)
+    match_ratio = matches / len(name_words) if name_words else 1.0
+
+    if match_ratio < 0.25 and len(name_words) >= 2:
+        return (
+            f"The campaign name \"{campaign_name}\" doesn't seem to match the "
+            f"Background/Context content. Please verify they are about the same campaign."
+        )
+
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Session state initialization
 # ---------------------------------------------------------------------------
 def init_session_state() -> None:
@@ -1797,6 +1839,22 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         st.write("")
+
+        # Coherence mismatch warning (if detected)
+        if st.session_state.get("coherence_mismatch"):
+            st.warning(st.session_state.coherence_mismatch)
+            col_fix, col_proceed = st.columns(2)
+            with col_fix:
+                if st.button("← Go back and fix", use_container_width=True, key="fix_coherence"):
+                    st.session_state.coherence_mismatch = None
+                    st.session_state.coherence_override = False
+                    st.rerun()
+            with col_proceed:
+                if st.button("Continue anyway →", type="primary", use_container_width=True, key="override_coherence"):
+                    st.session_state.coherence_override = True
+                    st.session_state.coherence_mismatch = None
+                    st.rerun()
+
         # Validation message placeholder (above buttons)
         validation_placeholder = st.empty()
 
@@ -1821,10 +1879,24 @@ def render_brief_builder() -> None:
                 if missing:
                     validation_placeholder.error(f"Please fill in all required fields: {', '.join(missing)}")
                 else:
+                    # Coherence check: campaign name vs background/context
+                    coherence_ok = st.session_state.get("coherence_override", False)
+                    if not coherence_ok:
+                        mismatch = _check_coherence(
+                            brief.get("campaign_name", ""),
+                            full_background,
+                            effective_objective,
+                        )
+                        if mismatch:
+                            st.session_state.coherence_mismatch = mismatch
+                            st.rerun()
+
                     brief["background"] = full_background
                     brief["objective"] = effective_objective
                     brief["target_audience"] = effective_audience
                     st.session_state.current_brief = brief
+                    st.session_state.coherence_override = False
+                    st.session_state.coherence_mismatch = None
                     st.session_state.wizard_step = 3
                     st.rerun()
 
