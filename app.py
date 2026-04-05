@@ -1649,7 +1649,7 @@ def render_brief_builder() -> None:
         with col_gen_obj:
             if st.button("Generate Objective", use_container_width=True, key="btn_gen_obj"):
                 if not full_background.strip():
-                    st.session_state.obj_warning = "Fill in Background/Context first so the AI has context to generate an objective."
+                    st.session_state.obj_warning = "Fill in Background/Context first so an objective can be generated."
                     st.rerun()
                 campaign_name_val = brief.get("campaign_name", "")
                 if generator and not st.session_state.demo_mode:
