@@ -1955,7 +1955,11 @@ def render_brief_builder() -> None:
                     with st.spinner("Generating channel plan..."):
                         try:
                             channels = generator.generate_channel_plan(brief)
-                            st.session_state.ai_channels = channels
+                            if channels:
+                                st.session_state.ai_channels = channels
+                                st.rerun()
+                            else:
+                                st.warning("No channel plan generated. Try again.")
                         except Exception as e:
                             st.error(f"Error: {e}")
                 else:
@@ -1967,7 +1971,7 @@ def render_brief_builder() -> None:
                         {"channel": "YouTube", "tactic": "Tutorial series: Magical Listing mastery", "rationale": "Educational content for adoption", "budget_pct": 15},
                         {"channel": "Paid Search", "tactic": "Target 'sell on eBay' and competitor queries", "rationale": "Capture high-intent sellers", "budget_pct": 15},
                     ]
-                st.rerun()
+                    st.rerun()
         with col2:
             if st.button("Proofread", key="btn_proof_channels", use_container_width=True):
                 if not channel_plan_text.strip():
