@@ -126,7 +126,25 @@ def _parse_json_response(raw_text: str) -> Any:
             except json.JSONDecodeError:
                 pass
 
-    logger.error("All JSON parsing strategies failed for: %s", text[:300])
+    # Strategy 4: try to find JSON after common preamble patterns
+    for prefix in ["here is", "here's", "json:", "response:", "result:", "output:"]:
+        idx = text.lower().find(prefix)
+        if idx != -1:
+            remainder = text[idx + len(prefix):].strip()
+            try:
+                return json.loads(remainder)
+            except json.JSONDecodeError:
+                # Try brace extraction on remainder
+                for oc, cc in [("{", "}"), ("[", "]")]:
+                    f = remainder.find(oc)
+                    l = remainder.rfind(cc)
+                    if f != -1 and l != -1 and l > f:
+                        try:
+                            return json.loads(remainder[f : l + 1])
+                        except json.JSONDecodeError:
+                            pass
+
+    logger.error("All JSON parsing strategies failed for: %s", text[:500])
     raise json.JSONDecodeError("Could not extract JSON from response", text, 0)
 
 

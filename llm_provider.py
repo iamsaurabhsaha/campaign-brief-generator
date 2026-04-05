@@ -55,6 +55,11 @@ def _call_anthropic(
         system=system,
         messages=[{"role": "user", "content": user_prompt}],
     )
+    # Handle potential thinking blocks — find the text block
+    for block in response.content:
+        if hasattr(block, "text"):
+            return block.text
+    # Fallback to first block
     return response.content[0].text
 
 
