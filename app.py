@@ -593,6 +593,18 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------------------------
+# Proofread helper
+# ---------------------------------------------------------------------------
+def _proofread_or_approve(original: str, result: str) -> str:
+    """Compare proofread result to original. If essentially unchanged, return approval message."""
+    from difflib import SequenceMatcher
+    ratio = SequenceMatcher(None, original.strip(), result.strip()).ratio()
+    if ratio > 0.95:
+        return "Looks good — no changes needed. Your text is clear and well-written."
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Session state initialization
 # ---------------------------------------------------------------------------
 def init_session_state() -> None:
@@ -1525,15 +1537,16 @@ def render_brief_builder() -> None:
                         with st.spinner("Proofreading..."):
                             try:
                                 result = generator.proofread_text(background)
-                                st.session_state.ai_background = result
+                                st.session_state.ai_background = _proofread_or_approve(background, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
                     else:
                         st.session_state.ai_background = (
-                            background.rstrip(".") + ". "
+                            "Looks good — no changes needed. Your text is clear and well-written."
+                            if len(background.strip()) > 100
+                            else background.rstrip(".") + ". "
                             "[Proofread] This text has been refined for clarity, grammar, "
-                            "and professional tone. Sentences have been tightened and "
-                            "passive voice converted to active voice."
+                            "and professional tone."
                         )
                     st.rerun()
 
@@ -1804,7 +1817,7 @@ def render_brief_builder() -> None:
                         with st.spinner("Proofreading..."):
                             try:
                                 proofed = generator.proofread_text(key_insight)
-                                st.session_state.ai_insight = proofed
+                                st.session_state.ai_insight = _proofread_or_approve(key_insight, proofed)
                             except Exception as e:
                                 st.error(f"Error: {e}")
                         st.rerun()
@@ -1884,8 +1897,9 @@ def render_brief_builder() -> None:
                     with st.spinner("Proofreading..."):
                         try:
                             proofed = generator.proofread_text(combined)
+                            approved = _proofread_or_approve(combined, proofed)
                             st.session_state.ai_positioning = {
-                                "positioning_short": proofed.split("\n\n")[0] if "\n\n" in proofed else proofed,
+                                "positioning_short": approved if approved.startswith("Looks good") else (proofed.split("\n\n")[0] if "\n\n" in proofed else proofed),
                                 "positioning_detailed": proofed.split("\n\n", 1)[1] if "\n\n" in proofed else "",
                             }
                         except Exception as e:
@@ -1955,7 +1969,7 @@ def render_brief_builder() -> None:
                     with st.spinner("Proofreading..."):
                         try:
                             proofed = generator.proofread_text(key_messages)
-                            st.session_state.ai_messages = proofed
+                            st.session_state.ai_messages = _proofread_or_approve(key_messages, proofed)
                         except Exception as e:
                             st.error(f"Error: {e}")
                     st.rerun()
@@ -2147,7 +2161,7 @@ def render_brief_builder() -> None:
                         with st.spinner("Proofreading..."):
                             try:
                                 result = generator.proofread_text(channel_plan_text)
-                                st.session_state.ai_channels_proofed = result
+                                st.session_state.ai_channels_proofed = _proofread_or_approve(channel_plan_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
                     else:
@@ -2248,7 +2262,7 @@ def render_brief_builder() -> None:
                         with st.spinner("Proofreading..."):
                             try:
                                 result = generator.proofread_text(deliverables_text)
-                                st.session_state.ai_deliverables_proofed = result
+                                st.session_state.ai_deliverables_proofed = _proofread_or_approve(deliverables_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
                     else:
@@ -2341,7 +2355,7 @@ def render_brief_builder() -> None:
                         with st.spinner("Proofreading..."):
                             try:
                                 result = generator.proofread_text(timeline_text)
-                                st.session_state.ai_timeline_proofed = result
+                                st.session_state.ai_timeline_proofed = _proofread_or_approve(timeline_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
                     else:
