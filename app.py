@@ -499,6 +499,25 @@ div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child butto
     transform: translateY(-1px);
 }
 
+/* Dismiss buttons next to alerts — neutral gray (color only) */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
+  > div:last-child button,
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
+  > div:last-child button:not([kind="primary"]) {
+    background: #F3F4F6 !important;
+    border-color: #D1D5DB !important;
+    color: #6B7280 !important;
+}
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
+  > div:last-child button:hover,
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
+  > div:last-child button:not([kind="primary"]):hover {
+    background: #E5E7EB !important;
+    border-color: #9CA3AF !important;
+    color: #374151 !important;
+    box-shadow: none !important;
+}
+
 /* Destructive button styling (Delete) */
 .destructive-btn div[data-testid="stButton"] button,
 .destructive-btn div[data-testid="stButton"] button:not([kind="primary"]) {
