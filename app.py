@@ -442,9 +442,12 @@ div[data-testid="stDownloadButton"] button:active {
 
 /* Navigation Back button — filled slate, equal weight to primary.
    Targets: any secondary button in the first column of a horizontal
-   block that also contains a primary button (the Back + Continue pair). */
-div[data-testid="stHorizontalBlock"]:has(button[kind="primary"])
-  div[data-testid="column"]:first-child button:not([kind="primary"]) {
+   block that also contains a primary button (the Back + Continue pair).
+   Uses multiple selector variants to handle Streamlit DOM variations. */
+div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]),
+div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button[kind="secondary"],
+[data-testid="stHorizontalBlock"]:has([kind="primary"]) > :first-child button:not([kind="primary"]),
+div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]) {
     background: #475569 !important;
     border: none !important;
     color: #FFFFFF !important;
@@ -455,8 +458,10 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="primary"])
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
     box-shadow: 0 4px 12px rgba(71,85,105,0.15) !important;
 }
-div[data-testid="stHorizontalBlock"]:has(button[kind="primary"])
-  div[data-testid="column"]:first-child button:not([kind="primary"]):hover {
+div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]):hover,
+div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button[kind="secondary"]:hover,
+[data-testid="stHorizontalBlock"]:has([kind="primary"]) > :first-child button:not([kind="primary"]):hover,
+div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]):hover {
     background: #334155 !important;
     box-shadow: 0 4px 20px rgba(71,85,105,0.25) !important;
     transform: translateY(-1px);
