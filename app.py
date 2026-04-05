@@ -2035,7 +2035,11 @@ def render_brief_builder() -> None:
                     with st.spinner("Generating deliverables..."):
                         try:
                             deliverables = generator.generate_deliverables(brief)
-                            st.session_state.ai_deliverables = deliverables
+                            if deliverables:
+                                st.session_state.ai_deliverables = deliverables
+                                st.rerun()
+                            else:
+                                st.warning("No deliverables generated. Try again.")
                         except Exception as e:
                             st.error(f"Error generating deliverables: {e}")
                 else:
@@ -2048,7 +2052,7 @@ def render_brief_builder() -> None:
                         {"asset": "In-App Notifications (x10)", "spec": "100 chars max each", "owner": "Product"},
                         {"asset": "Blog Post", "spec": "800 words, SEO optimized", "owner": "Content"},
                     ]
-                st.rerun()
+                    st.rerun()
         with col2:
             if st.button("Proofread", key="btn_proof_deliverables", use_container_width=True):
                 if not deliverables_text.strip():
@@ -2122,7 +2126,11 @@ def render_brief_builder() -> None:
                     with st.spinner("Generating timeline..."):
                         try:
                             timeline = generator.generate_timeline(brief)
-                            st.session_state.ai_timeline = timeline
+                            if timeline:
+                                st.session_state.ai_timeline = timeline
+                                st.rerun()
+                            else:
+                                st.warning("No timeline generated. Try again.")
                         except Exception as e:
                             st.error(f"Error generating timeline: {e}")
                 else:
@@ -2132,7 +2140,7 @@ def render_brief_builder() -> None:
                         {"phase": "Sustain", "duration": "Weeks 5-8", "actions": "Success stories, re-engagement emails, A/B testing, community engagement"},
                         {"phase": "Optimize", "duration": "Weeks 9-12", "actions": "Analyze results, scale winning channels, cut underperformers, report"},
                     ]
-                st.rerun()
+                    st.rerun()
         with col2:
             if st.button("Proofread", key="btn_proof_timeline", use_container_width=True):
                 if not timeline_text.strip():
