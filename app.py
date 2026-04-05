@@ -1219,11 +1219,13 @@ def render_brief_builder() -> None:
         with col2:
             st.markdown("<div style='height: 28px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
-                if generator and not st.session_state.demo_mode:
+                if not campaign_name.strip():
+                    st.warning("Please enter a campaign name or description first, then click Suggest Names.")
+                elif generator and not st.session_state.demo_mode:
                     with st.spinner("Generating name suggestions..."):
                         try:
                             names = generator.generate_campaign_names(
-                                campaign_name or brief.get("background", "AI feature launch"),
+                                campaign_name,
                                 brief.get("target_audience", "") or "e-commerce sellers",
                             )
                             st.session_state.generated_names = names
