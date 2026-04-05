@@ -1363,7 +1363,14 @@ def render_brief_builder() -> None:
     # --- Step 1: Setup ---
     if step == 1:
         st.subheader("Step 1: Campaign Setup")
-        name_btn_warning = st.empty()
+        if st.session_state.get("name_warning"):
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+            with col_warn:
+                st.warning(st.session_state.name_warning)
+            with col_warn_dismiss:
+                if st.button("Dismiss", key="dismiss_name_warn"):
+                    st.session_state.name_warning = None
+                    st.rerun()
         col1, col2 = st.columns([3, 1])
         with col1:
             campaign_name = st.text_input(
@@ -1375,7 +1382,8 @@ def render_brief_builder() -> None:
             st.markdown("<div style='height: 28px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
                 if not campaign_name.strip():
-                    name_btn_warning.warning("Please enter a campaign name or description first, then click Suggest Names.")
+                    st.session_state.name_warning = "Please enter a campaign name or description first, then click Suggest Names."
+                    st.rerun()
                 elif generator and not st.session_state.demo_mode:
                     with st.spinner("Generating name suggestions..."):
                         try:
@@ -1501,13 +1509,21 @@ def render_brief_builder() -> None:
             full_background = background + "\n\n--- Uploaded Documents ---\n" + doc_content if background else doc_content
 
         # --- AI writing assistance buttons for Background ---
-        bg_btn_warning = st.empty()
+        if st.session_state.get("bg_warning"):
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+            with col_warn:
+                st.warning(st.session_state.bg_warning)
+            with col_warn_dismiss:
+                if st.button("Dismiss", key="dismiss_bg_warn"):
+                    st.session_state.bg_warning = None
+                    st.rerun()
         col_help_bg, col_proof_bg = st.columns(2)
         with col_help_bg:
             if st.button("Help Me Write", key="bg_help", use_container_width=True,
                          help="Expands your notes and uploaded docs into a full background paragraph"):
                 if not background.strip() and not doc_content:
-                    bg_btn_warning.warning("Enter some notes in Background/Context or upload documents first, then click Help Me Write.")
+                    st.session_state.bg_warning = "Enter some notes in Background/Context or upload documents first, then click Help Me Write."
+                    st.rerun()
                 else:
                     campaign_name_val = brief.get("campaign_name", "")
                     input_context = background + ("\n\n" + doc_content if doc_content else "")
@@ -1533,7 +1549,8 @@ def render_brief_builder() -> None:
             if st.button("Proofread", key="bg_proof", use_container_width=True,
                          help="Refines your background text for grammar, clarity, and professional tone"):
                 if not background.strip():
-                    bg_btn_warning.warning("Write some background text first, then click Proofread.")
+                    st.session_state.bg_warning = "Write some background text first, then click Proofread."
+                    st.rerun()
                 else:
                     if generator and not st.session_state.demo_mode:
                         with st.spinner("Proofreading..."):
@@ -1792,7 +1809,28 @@ def render_brief_builder() -> None:
                 label_visibility="collapsed",
             )
 
-            insight_btn_warning = st.empty()
+            if st.session_state.get("insight_warning"):
+
+
+                col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+                with col_warn:
+
+
+                    st.warning(st.session_state.insight_warning)
+
+
+                with col_warn_dismiss:
+
+
+                    if st.button("Dismiss", key="dismiss_insight_warn"):
+
+
+                        st.session_state.insight_warning = None
+
+
+                        st.rerun()
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("Extract Insight", key="btn_extract_insight", use_container_width=True):
@@ -1816,7 +1854,8 @@ def render_brief_builder() -> None:
             with col2:
                 if st.button("Proofread", key="btn_proof_insight", use_container_width=True):
                     if not key_insight.strip():
-                        insight_btn_warning.warning("Please type an insight first before proofreading.")
+                        st.session_state.insight_warning = "Please type an insight first before proofreading."
+                        st.rerun()
                     elif generator and not st.session_state.demo_mode:
                         with st.spinner("Proofreading..."):
                             try:
@@ -1871,7 +1910,28 @@ def render_brief_builder() -> None:
         else:
             positioning_detailed = brief.get("positioning_detailed", "")
 
-        pos_btn_warning = st.empty()
+        if st.session_state.get("pos_warning"):
+
+
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+            with col_warn:
+
+
+                st.warning(st.session_state.pos_warning)
+
+
+            with col_warn_dismiss:
+
+
+                if st.button("Dismiss", key="dismiss_pos_warn"):
+
+
+                    st.session_state.pos_warning = None
+
+
+                    st.rerun()
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Positioning", key="btn_gen_pos", use_container_width=True):
@@ -1898,7 +1958,8 @@ def render_brief_builder() -> None:
             if st.button("Proofread", key="btn_proof_pos", use_container_width=True):
                 combined = f"{positioning_short}\n\n{positioning_detailed}".strip()
                 if not combined.strip():
-                    pos_btn_warning.warning("Please type positioning text first before proofreading.")
+                    st.session_state.pos_warning = "Please type positioning text first before proofreading."
+                    st.rerun()
                 elif generator and not st.session_state.demo_mode:
                     with st.spinner("Proofreading..."):
                         try:
@@ -1949,7 +2010,28 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        msgs_btn_warning = st.empty()
+        if st.session_state.get("msgs_warning"):
+
+
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+            with col_warn:
+
+
+                st.warning(st.session_state.msgs_warning)
+
+
+            with col_warn_dismiss:
+
+
+                if st.button("Dismiss", key="dismiss_msgs_warn"):
+
+
+                    st.session_state.msgs_warning = None
+
+
+                    st.rerun()
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Key Messages", key="btn_gen_msgs", use_container_width=True):
@@ -1972,7 +2054,8 @@ def render_brief_builder() -> None:
         with col2:
             if st.button("Proofread", key="btn_proof_msgs", use_container_width=True):
                 if not key_messages.strip():
-                    msgs_btn_warning.warning("Please type key messages first before proofreading.")
+                    st.session_state.msgs_warning = "Please type key messages first before proofreading."
+                    st.rerun()
                 elif generator and not st.session_state.demo_mode:
                     with st.spinner("Proofreading..."):
                         try:
@@ -2129,7 +2212,28 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        ch_btn_warning = st.empty()
+        if st.session_state.get("ch_warning"):
+
+
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+            with col_warn:
+
+
+                st.warning(st.session_state.ch_warning)
+
+
+            with col_warn_dismiss:
+
+
+                if st.button("Dismiss", key="dismiss_ch_warn"):
+
+
+                    st.session_state.ch_warning = None
+
+
+                    st.rerun()
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Channel Plan", key="btn_gen_channels", use_container_width=True):
@@ -2165,7 +2269,8 @@ def render_brief_builder() -> None:
         with col2:
             if st.button("Proofread", key="btn_proof_channels", use_container_width=True):
                 if not channel_plan_text.strip():
-                    ch_btn_warning.warning("Write some channel plan text first, then click Proofread.")
+                    st.session_state.ch_warning = "Write some channel plan text first, then click Proofread."
+                    st.rerun()
                 else:
                     if generator and not st.session_state.demo_mode:
                         with st.spinner("Proofreading..."):
@@ -2229,7 +2334,28 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        del_btn_warning = st.empty()
+        if st.session_state.get("del_warning"):
+
+
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+            with col_warn:
+
+
+                st.warning(st.session_state.del_warning)
+
+
+            with col_warn_dismiss:
+
+
+                if st.button("Dismiss", key="dismiss_del_warn"):
+
+
+                    st.session_state.del_warning = None
+
+
+                    st.rerun()
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Deliverables", key="btn_gen_deliverables", use_container_width=True):
@@ -2267,7 +2393,8 @@ def render_brief_builder() -> None:
         with col2:
             if st.button("Proofread", key="btn_proof_deliverables", use_container_width=True):
                 if not deliverables_text.strip():
-                    del_btn_warning.warning("Write some deliverables text first, then click Proofread.")
+                    st.session_state.del_warning = "Write some deliverables text first, then click Proofread."
+                    st.rerun()
                 else:
                     if generator and not st.session_state.demo_mode:
                         with st.spinner("Proofreading..."):
@@ -2329,7 +2456,28 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        tl_btn_warning = st.empty()
+        if st.session_state.get("tl_warning"):
+
+
+            col_warn, col_warn_dismiss = st.columns([11, 1])
+
+
+            with col_warn:
+
+
+                st.warning(st.session_state.tl_warning)
+
+
+            with col_warn_dismiss:
+
+
+                if st.button("Dismiss", key="dismiss_tl_warn"):
+
+
+                    st.session_state.tl_warning = None
+
+
+                    st.rerun()
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Timeline", key="btn_gen_timeline", use_container_width=True):
@@ -2361,7 +2509,8 @@ def render_brief_builder() -> None:
         with col2:
             if st.button("Proofread", key="btn_proof_timeline", use_container_width=True):
                 if not timeline_text.strip():
-                    tl_btn_warning.warning("Write some timeline text first, then click Proofread.")
+                    st.session_state.tl_warning = "Write some timeline text first, then click Proofread."
+                    st.rerun()
                 else:
                     if generator and not st.session_state.demo_mode:
                         with st.spinner("Proofreading..."):
