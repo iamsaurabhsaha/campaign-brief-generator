@@ -46,15 +46,13 @@ ACCENT_YELLOW = "#F5AF02"
 ACCENT_GREEN = "#86B817"
 
 TIER_DESCRIPTIONS = {
-    "Tier 1": "Company-defining (new platform) -- Full brief + war room",
-    "Tier 2": "Major feature launch -- Full brief required",
-    "Tier 3": "Enhancement or update -- Light brief",
+    "Full Brief": "Major launch or new feature -- All sections required",
+    "Light Brief": "Enhancement or update -- Key sections only",
 }
 
 TIER_COLORS = {
-    "Tier 1": ACCENT_RED,
-    "Tier 2": PRIMARY_BLUE,
-    "Tier 3": ACCENT_YELLOW,
+    "Full Brief": PRIMARY_BLUE,
+    "Light Brief": ACCENT_YELLOW,
 }
 
 BRIEF_TYPES = ["Campaign Brief", "Creative Brief", "GTM Brief"]
@@ -515,7 +513,7 @@ def _load_sample_briefs() -> list[dict]:
             "id": str(uuid.uuid4()),
             "campaign_name": "AI Listing Magic",
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 2",
+            "launch_tier": "Full Brief",
             "created": (base - timedelta(days=3)).isoformat(),
             "quality_score": 8.5,
             "background": (
@@ -596,7 +594,7 @@ def _load_sample_briefs() -> list[dict]:
             "id": str(uuid.uuid4()),
             "campaign_name": "Smart Ship, Happy Sellers",
             "brief_type": "GTM Brief",
-            "launch_tier": "Tier 3",
+            "launch_tier": "Light Brief",
             "created": (base - timedelta(days=10)).isoformat(),
             "quality_score": 7.2,
             "background": "eBay is launching improved shipping label integration with discounted USPS and UPS rates for high-volume sellers.",
@@ -648,7 +646,7 @@ def _load_sample_briefs() -> list[dict]:
             "id": str(uuid.uuid4()),
             "campaign_name": "Collect with Confidence",
             "brief_type": "Creative Brief",
-            "launch_tier": "Tier 2",
+            "launch_tier": "Full Brief",
             "created": (base - timedelta(days=20)).isoformat(),
             "quality_score": 6.1,
             "background": "eBay's Authenticity Guarantee program has expanded to cover more collectible categories. Need to drive awareness among collectors.",
@@ -884,7 +882,7 @@ Channels: Email, social media, in-app
 
 DEMO_PREFILLED_BRIEF = {
     "campaign_name": "AI-Powered Listing Generator Launch",
-    "launch_tier": "Tier 2",
+    "launch_tier": "Full Brief",
     "brief_type": "Campaign Brief",
     "background": (
         "Amazon recently launched an AI-powered listing generator, reducing seller "
@@ -1257,11 +1255,11 @@ def render_brief_builder() -> None:
             index=tier_index,
             format_func=lambda t: "Select a launch tier..." if t == "" else f"{t} -- {TIER_DESCRIPTIONS[t]}",
             help=(
-                "**Tier 1 — Company-defining:** New platform or company-wide initiative. "
+                "**Full Brief:** New platform or company-wide initiative. "
                 "Requires a full 14-section brief plus a dedicated war room.\n\n"
-                "**Tier 2 — Major feature launch:** Significant new capability. "
+                "**Full Brief:** Significant new capability. "
                 "Requires a full campaign brief with cross-functional alignment.\n\n"
-                "**Tier 3 — Enhancement or update:** Improvement to an existing feature. "
+                "**Light Brief:** Improvement to an existing feature. "
                 "A lighter brief covering key sections is sufficient."
             ),
         )
@@ -1287,10 +1285,10 @@ def render_brief_builder() -> None:
     # --- Step 2: Strategy ---
     elif step == 2:
         st.subheader("Step 2: Strategy")
-        is_light_brief = brief.get("launch_tier") == "Tier 3"
+        is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
-            st.info("Light brief mode (Tier 3) — only Background and Objective are required.")
+            st.info("Light Brief mode — only Background and Objective are required.")
 
         background = st.text_area(
             "Background / Context",
@@ -1490,7 +1488,7 @@ def render_brief_builder() -> None:
 
         # --- Target Audience (full width) with buttons below ---
         target_audience = st.text_area(
-            "Target Audience" + (" (optional for Tier 3)" if is_light_brief else ""),
+            "Target Audience" + (" (optional for Light Brief)" if is_light_brief else ""),
             value=brief.get("target_audience", ""),
             height=100,
             placeholder="Who are we talking to? Be specific about demographics, behaviors, and needs.",
@@ -1606,12 +1604,12 @@ def render_brief_builder() -> None:
     # --- Step 3: Messaging ---
     elif step == 3:
         st.subheader("Step 3: Messaging")
-        is_light_brief = brief.get("launch_tier") == "Tier 3"
+        is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
             st.info("Light brief mode — only Key Messages are required. Other messaging sections are optional.")
 
-        # --- Key Insight (skip for Tier 3) ---
+        # --- Key Insight (skip for Light Brief) ---
         if not is_light_brief:
             st.markdown("#### Key Insight")
             key_insight = st.text_area(
@@ -1695,7 +1693,7 @@ def render_brief_builder() -> None:
             label_visibility="collapsed",
         )
 
-        # --- Detailed Positioning (skip for Tier 3) ---
+        # --- Detailed Positioning (skip for Light Brief) ---
         if not is_light_brief:
             st.markdown("#### Positioning Statement -- Detailed (100 words)")
             positioning_detailed = st.text_area(
@@ -1843,7 +1841,7 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        # --- Single-Minded Proposition (SMP) (skip for Tier 3) ---
+        # --- Single-Minded Proposition (SMP) (skip for Light Brief) ---
         if not is_light_brief:
             st.divider()
 
@@ -1944,7 +1942,7 @@ def render_brief_builder() -> None:
     # --- Step 4: Execution ---
     elif step == 4:
         st.subheader("Step 4: Execution Plan")
-        is_light_brief = brief.get("launch_tier") == "Tier 3"
+        is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
             st.info("Light brief mode — only Content Deliverables are required.")
@@ -2244,7 +2242,7 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        # --- Budget (optional, skip for Tier 3) ---
+        # --- Budget (optional, skip for Light Brief) ---
         if not is_light_brief:
             st.divider()
 
@@ -2321,7 +2319,7 @@ def render_brief_builder() -> None:
     # --- Step 5: Governance ---
     elif step == 5:
         st.subheader("Step 5: Governance")
-        is_light_brief = brief.get("launch_tier") == "Tier 3"
+        is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
             st.info("Light brief mode — only KPIs are required.")
@@ -2384,7 +2382,7 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
                 st.rerun()
 
-        # --- RACI Matrix (skip for Tier 3) ---
+        # --- RACI Matrix (skip for Light Brief) ---
         if not is_light_brief:
             st.divider()
 
@@ -2703,11 +2701,11 @@ def render_quality_checker() -> None:
     with col_tier:
         qc_tier = st.selectbox(
             "Launch Tier",
-            options=["", "Tier 1", "Tier 2", "Tier 3"],
+            options=["", "Full Brief", "Light Brief"],
             index=0,
             format_func=lambda x: "Select tier (optional)..." if x == "" else x,
             key="qc_tier",
-            help="Tier 1/1 briefs are scored more strictly (all 14 sections expected). Tier 3/3 briefs are lighter.",
+            help="Full Briefs are scored more strictly (all 14 sections expected). Light Brief/3 briefs are lighter.",
         )
 
     if st.button("Check Quality", type="primary", use_container_width=True):
@@ -3081,7 +3079,7 @@ def render_brief_library() -> None:
             with st.container():
                 col_info, col_actions = st.columns([3, 2])
                 with col_info:
-                    tier_html = render_tier_badge(brief.get("launch_tier", "Tier 3"))
+                    tier_html = render_tier_badge(brief.get("launch_tier", "Light Brief"))
                     score = brief.get("quality_score", 0)
                     score_color = ACCENT_GREEN if score > 7 else (ACCENT_YELLOW if score >= 5 else ACCENT_RED)
                     st.markdown(
@@ -3155,10 +3153,10 @@ TEMPLATES = [
         "icon": "🚀",
         "name": "Product Launch",
         "description": "Full campaign brief for a major product or feature launch.",
-        "tier": "Tier 2",
+        "tier": "Full Brief",
         "defaults": {
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 2",
+            "launch_tier": "Full Brief",
             "background": "A new product/feature is launching that requires full marketing support across all channels.",
             "objective": "Drive [X]% adoption among [target segment] within [timeframe] of launch.",
         },
@@ -3167,10 +3165,10 @@ TEMPLATES = [
         "icon": "⬆️",
         "name": "Feature Update",
         "description": "Light brief for an enhancement to an existing product.",
-        "tier": "Tier 3",
+        "tier": "Light Brief",
         "defaults": {
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 3",
+            "launch_tier": "Light Brief",
             "background": "An existing feature is being improved with significant enhancements that users should know about.",
             "objective": "Increase awareness of [feature update] to [X]% of active users within [timeframe].",
         },
@@ -3179,10 +3177,10 @@ TEMPLATES = [
         "icon": "⚔️",
         "name": "Competitive Response",
         "description": "Rapid-response brief when a competitor makes a major move.",
-        "tier": "Tier 2",
+        "tier": "Full Brief",
         "defaults": {
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 2",
+            "launch_tier": "Full Brief",
             "background": "A key competitor has launched [feature/product] that directly challenges our position in [area].",
             "objective": "Counter competitive narrative and reinforce our leadership position within [timeframe].",
         },
@@ -3191,10 +3189,10 @@ TEMPLATES = [
         "icon": "🎄",
         "name": "Seasonal Campaign",
         "description": "Time-bound campaign aligned with a holiday or seasonal event.",
-        "tier": "Tier 3",
+        "tier": "Light Brief",
         "defaults": {
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 3",
+            "launch_tier": "Light Brief",
             "background": "[Season/Holiday] is approaching and we need to drive engagement with timely, relevant messaging.",
             "objective": "Increase [metric] by [X]% during the [season/holiday] period vs. prior year.",
         },
@@ -3203,10 +3201,10 @@ TEMPLATES = [
         "icon": "🔄",
         "name": "Re-engagement Campaign",
         "description": "Win back lapsed users or inactive sellers.",
-        "tier": "Tier 3",
+        "tier": "Light Brief",
         "defaults": {
             "brief_type": "Campaign Brief",
-            "launch_tier": "Tier 3",
+            "launch_tier": "Light Brief",
             "background": "[X]% of users who were active [timeframe] ago have become inactive. We need to re-engage them.",
             "objective": "Re-activate [X]% of lapsed [users/sellers] within [timeframe].",
         },
@@ -3215,10 +3213,10 @@ TEMPLATES = [
         "icon": "🌟",
         "name": "Brand Awareness",
         "description": "Top-of-funnel campaign to build brand recognition.",
-        "tier": "Tier 1",
+        "tier": "Full Brief",
         "defaults": {
             "brief_type": "Creative Brief",
-            "launch_tier": "Tier 1",
+            "launch_tier": "Full Brief",
             "background": "Brand awareness in [market/segment] is below target. We need a high-impact campaign to establish presence.",
             "objective": "Increase unaided brand awareness from [X]% to [Y]% in [market] within [timeframe].",
         },
