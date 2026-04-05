@@ -222,18 +222,18 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 /* Secondary buttons (Help Me Write, Proofread, Generate, Back) - Light blue fill */
 div[data-testid="stButton"] > button[kind="secondary"],
 div[data-testid="stButton"] > button:not([kind="primary"]) {
-    background: #e8f1fb !important;
-    border: 1.5px solid #0064D2 !important;
-    color: #004da4 !important;
+    background: #4D9EF5 !important;
+    border: none !important;
+    color: #FFFFFF !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
 }
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
 div[data-testid="stButton"] > button:not([kind="primary"]):hover {
-    background: #0064D2 !important;
+    background: #2B6CB0 !important;
     color: #FFFFFF !important;
-    border-color: #004493 !important;
+    box-shadow: 0 4px 12px rgba(0,100,210,0.3) !important;
 }
 
 /* AI Suggestion box matching Stitch - blue left border with light blue bg */
