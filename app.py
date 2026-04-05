@@ -246,6 +246,23 @@ div[data-testid="stButton"] > button:not([kind="primary"]):hover {
     box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
 }
 
+/* Refinement buttons (Proofread, Make it SMART) — second column in
+   2-column layouts where both buttons are secondary (no primary present).
+   Uses a warm purple tonal to distinguish from blue generative buttons. */
+div[data-testid="stHorizontalBlock"]:not(:has(button[kind="primary"]))
+  > div:last-child button:not([kind="primary"]) {
+    background: #EDE9F3 !important;
+    border: 1.5px solid #C4B5D6 !important;
+    color: #5B3E8A !important;
+}
+div[data-testid="stHorizontalBlock"]:not(:has(button[kind="primary"]))
+  > div:last-child button:not([kind="primary"]):hover {
+    background: #DDD6E8 !important;
+    border-color: #7C5BAD !important;
+    color: #4A2D75 !important;
+    box-shadow: 0 2px 8px rgba(91,62,138,0.15) !important;
+}
+
 /* Remove double-box: make outer alert container transparent */
 div[data-testid="stAlert"] {
     background: transparent !important;
