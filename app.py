@@ -225,7 +225,7 @@ div[data-testid="stButton"] > button:not([kind="primary"]) {
     background: #e8f1fb !important;
     border: 1.5px solid #0064D2 !important;
     color: #004da4 !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
 }
