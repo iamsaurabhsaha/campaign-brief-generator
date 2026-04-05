@@ -246,12 +246,18 @@ div[data-testid="stButton"] > button:not([kind="primary"]):hover {
     box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
 }
 
-/* AI Suggestion box - clean, no background or border */
-div[data-testid="stAlert"] div[data-testid="stAlertContentInfo"] {
+/* Remove double-box: make outer alert container transparent */
+div[data-testid="stAlert"] {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* Info box - clean, no background */
+div[data-testid="stAlertContentInfo"] {
     background: transparent !important;
     border: none !important;
     border-left: none !important;
-    border-radius: 0 !important;
     padding-left: 0 !important;
 }
 
@@ -260,28 +266,25 @@ div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) {
     align-items: center !important;
 }
 
-/* Success box - clean card style */
-div[data-testid="stAlert"] div[data-testid="stAlertContentSuccess"] {
+/* Success box */
+div[data-testid="stAlertContentSuccess"] {
     background: #f0f8e4 !important;
+    border: none !important;
     border-left: none !important;
-    border: 1px solid #b5d88c !important;
-    border-radius: 8px !important;
 }
 
 /* Warning box */
-div[data-testid="stAlert"] div[data-testid="stAlertContentWarning"] {
+div[data-testid="stAlertContentWarning"] {
     background: #FFF7E0 !important;
+    border: none !important;
     border-left: none !important;
-    border: 1px solid #f0d68a !important;
-    border-radius: 8px !important;
 }
 
 /* Error box */
-div[data-testid="stAlert"] div[data-testid="stAlertContentError"] {
+div[data-testid="stAlertContentError"] {
     background: #FDE8E9 !important;
+    border: none !important;
     border-left: none !important;
-    border: 1px solid #f0a5a8 !important;
-    border-radius: 8px !important;
 }
 
 /* Quality score circle matching Stitch gradient */
