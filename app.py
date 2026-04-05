@@ -440,6 +440,24 @@ div[data-testid="stDownloadButton"] button:active {
     }
 }
 
+/* Navigation Back button — filled slate, equal weight to primary */
+.nav-back div[data-testid="stButton"] button {
+    background: #475569 !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1.5rem !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
+    box-shadow: 0 4px 12px rgba(71,85,105,0.15) !important;
+}
+.nav-back div[data-testid="stButton"] button:hover {
+    background: #334155 !important;
+    box-shadow: 0 4px 20px rgba(71,85,105,0.25) !important;
+    transform: translateY(-1px);
+}
+
 /* Destructive button styling (Delete) */
 .destructive-btn div[data-testid="stButton"] button {
     background: transparent !important;
@@ -1665,9 +1683,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
+            st.markdown('<div class="nav-back">', unsafe_allow_html=True)
             if st.button("← Back", use_container_width=True):
                 st.session_state.wizard_step = 1
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_next:
             if st.button("Continue →", type="primary", use_container_width=True):
                 # Validation
@@ -1993,9 +2013,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
+            st.markdown('<div class="nav-back">', unsafe_allow_html=True)
             if st.button("← Back", use_container_width=True, key="back3"):
                 st.session_state.wizard_step = 2
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_next:
             if st.button("Continue →", type="primary", use_container_width=True, key="next3"):
                 # Save whatever the user has typed or accepted
@@ -2374,9 +2396,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
+            st.markdown('<div class="nav-back">', unsafe_allow_html=True)
             if st.button("← Back", use_container_width=True, key="back4"):
                 st.session_state.wizard_step = 3
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_next:
             if st.button("Continue →", type="primary", use_container_width=True, key="next4"):
                 # Save text fields
@@ -2546,9 +2570,11 @@ def render_brief_builder() -> None:
 
         col_back, col_next = st.columns(2)
         with col_back:
+            st.markdown('<div class="nav-back">', unsafe_allow_html=True)
             if st.button("← Back", use_container_width=True, key="back5"):
                 st.session_state.wizard_step = 4
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_next:
             if st.button("Continue →", type="primary", use_container_width=True, key="next5"):
                 missing = []
@@ -2714,9 +2740,11 @@ def render_brief_builder() -> None:
         st.write("")
         col_back2, col_reset = st.columns(2)
         with col_back2:
+            st.markdown('<div class="nav-back">', unsafe_allow_html=True)
             if st.button("← Back", use_container_width=True, key="back6"):
                 st.session_state.wizard_step = 5
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_reset:
             if st.session_state.get("confirm_new_brief"):
                 st.markdown('<div class="destructive-btn">', unsafe_allow_html=True)
