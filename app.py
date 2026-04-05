@@ -1558,11 +1558,12 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_bg"):
                     st.session_state.ai_background = None
                     st.rerun()
-            if st.button("Apply Background", key="use_bg"):
-                brief["background"] = st.session_state.ai_background
-                st.session_state.ai_background = None
-                st.session_state.current_brief = brief
-                st.rerun()
+            if not st.session_state.ai_background.startswith("Looks good"):
+                if st.button("Apply Background", key="use_bg"):
+                    brief["background"] = st.session_state.ai_background
+                    st.session_state.ai_background = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
 
         # --- Objective (full width) with buttons below ---
         objective = st.text_input(
@@ -1834,9 +1835,10 @@ def render_brief_builder() -> None:
                     if st.button("Dismiss", key="close_insight"):
                         st.session_state.ai_insight = None
                         st.rerun()
-                if st.button("Apply Insight", key="use_insight"):
-                    brief["key_insight"] = st.session_state.ai_insight
-                    st.session_state.ai_insight = None
+                if not str(st.session_state.ai_insight).startswith("Looks good"):
+                    if st.button("Apply Insight", key="use_insight"):
+                        brief["key_insight"] = st.session_state.ai_insight
+                        st.session_state.ai_insight = None
                     st.session_state.current_brief = brief
                     st.rerun()
 
@@ -1923,10 +1925,11 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_pos"):
                     st.session_state.ai_positioning = None
                     st.rerun()
-            if st.button("Apply Positioning", key="use_pos"):
-                brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
-                brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
-                st.session_state.ai_positioning = None
+            if not str(pos.get("positioning_short", "")).startswith("Looks good"):
+                if st.button("Apply Positioning", key="use_pos"):
+                    brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
+                    brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
+                    st.session_state.ai_positioning = None
                 st.session_state.current_brief = brief
                 st.rerun()
 
@@ -1990,9 +1993,10 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_msgs"):
                     st.session_state.ai_messages = None
                     st.rerun()
-            if st.button("Apply Messages", key="use_msgs"):
-                if isinstance(msgs, list):
-                    brief["key_messages"] = msgs
+            if not str(msgs[0] if isinstance(msgs, list) else msgs).startswith("Looks good"):
+                if st.button("Apply Messages", key="use_msgs"):
+                    if isinstance(msgs, list):
+                        brief["key_messages"] = msgs
                     brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
                 else:
                     brief["key_messages_text"] = msgs
@@ -2180,7 +2184,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_channels_proofed"):
                     st.session_state.ai_channels_proofed = None
                     st.rerun()
-            if st.button("Apply Channels", key="use_channels_proofed"):
+            if not str(st.session_state.ai_channels_proofed).startswith("Looks good") and st.button("Apply Channels", key="use_channels_proofed"):
                 brief["channel_plan_text"] = st.session_state.ai_channels_proofed
                 st.session_state.ai_channels_proofed = None
                 st.session_state.current_brief = brief
@@ -2280,7 +2284,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_deliverables_proofed"):
                     st.session_state.ai_deliverables_proofed = None
                     st.rerun()
-            if st.button("Apply Deliverables", key="use_deliverables_proofed"):
+            if not str(st.session_state.ai_deliverables_proofed).startswith("Looks good") and st.button("Apply Deliverables", key="use_deliverables_proofed"):
                 brief["deliverables_text"] = st.session_state.ai_deliverables_proofed
                 st.session_state.ai_deliverables_proofed = None
                 st.session_state.current_brief = brief
@@ -2373,7 +2377,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_timeline_proofed"):
                     st.session_state.ai_timeline_proofed = None
                     st.rerun()
-            if st.button("Apply Timeline", key="use_timeline_proofed"):
+            if not str(st.session_state.ai_timeline_proofed).startswith("Looks good") and st.button("Apply Timeline", key="use_timeline_proofed"):
                 brief["timeline_text"] = st.session_state.ai_timeline_proofed
                 st.session_state.ai_timeline_proofed = None
                 st.session_state.current_brief = brief
