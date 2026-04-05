@@ -204,7 +204,8 @@ div[data-testid="stSelectbox"] > div > div {
     background: #FFFFFF !important;
 }
 
-/* Primary buttons (Next, Continue, Check Quality) - Brand Blue CTA */
+/* Primary buttons (Continue, Check Quality) - Brand Blue CTA */
+div[data-testid="stButton"] button[kind="primary"],
 div[data-testid="stButton"] > button[kind="primary"] {
     background: #0064D2 !important;
     border: none !important;
@@ -215,6 +216,7 @@ div[data-testid="stButton"] > button[kind="primary"] {
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
     box-shadow: 0 4px 12px rgba(0,100,210,0.2) !important;
 }
+div[data-testid="stButton"] button[kind="primary"]:hover,
 div[data-testid="stButton"] > button[kind="primary"]:hover {
     background: #004da4 !important;
     box-shadow: 0 4px 20px rgba(0,100,210,0.3) !important;
@@ -222,6 +224,8 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 }
 
 /* Secondary buttons (Help Me Write, Proofread, Generate) - Tonal blue */
+div[data-testid="stButton"] button[kind="secondary"],
+div[data-testid="stButton"] button:not([kind="primary"]),
 div[data-testid="stButton"] > button[kind="secondary"],
 div[data-testid="stButton"] > button:not([kind="primary"]) {
     background: #DCE9F7 !important;
@@ -232,6 +236,8 @@ div[data-testid="stButton"] > button:not([kind="primary"]) {
     cursor: pointer !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
 }
+div[data-testid="stButton"] button[kind="secondary"]:hover,
+div[data-testid="stButton"] button:not([kind="primary"]):hover,
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
 div[data-testid="stButton"] > button:not([kind="primary"]):hover {
     background: #C5DAF0 !important;
@@ -382,20 +388,20 @@ div[data-testid="stDataFrame"] {
 }
 
 /* Download button styling (standard) */
-div[data-testid="stDownloadButton"] > button {
+div[data-testid="stDownloadButton"] button {
     background: transparent !important;
     border: 2px solid #004da4 !important;
     color: #004da4 !important;
     font-weight: 600 !important;
     border-radius: 8px !important;
 }
-div[data-testid="stDownloadButton"] > button:hover {
+div[data-testid="stDownloadButton"] button:hover {
     background: #004da4 !important;
     color: #FFFFFF !important;
 }
 
 /* Primary download button (final export — step 6 climax) */
-.primary-download div[data-testid="stDownloadButton"] > button {
+.primary-download div[data-testid="stDownloadButton"] button {
     background: #0064D2 !important;
     border: none !important;
     color: #FFFFFF !important;
@@ -404,51 +410,51 @@ div[data-testid="stDownloadButton"] > button:hover {
     padding: 0.75rem 1.5rem !important;
     box-shadow: 0 4px 16px rgba(0,100,210,0.25) !important;
 }
-.primary-download div[data-testid="stDownloadButton"] > button:hover {
+.primary-download div[data-testid="stDownloadButton"] button:hover {
     background: #004da4 !important;
     box-shadow: 0 6px 24px rgba(0,100,210,0.35) !important;
     transform: translateY(-1px);
 }
 
 /* Focus-visible ring for keyboard accessibility (WCAG 2.4.7) */
-div[data-testid="stButton"] > button:focus-visible,
-div[data-testid="stDownloadButton"] > button:focus-visible {
+div[data-testid="stButton"] button:focus-visible,
+div[data-testid="stDownloadButton"] button:focus-visible {
     outline: 3px solid #0064D2 !important;
     outline-offset: 2px !important;
     box-shadow: 0 0 0 6px rgba(0,100,210,0.15) !important;
 }
 
 /* Active/pressed feedback — must feel instant */
-div[data-testid="stButton"] > button:active,
-div[data-testid="stDownloadButton"] > button:active {
+div[data-testid="stButton"] button:active,
+div[data-testid="stDownloadButton"] button:active {
     transform: scale(0.97) !important;
     transition: transform 50ms ease !important;
 }
 
 /* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
-    div[data-testid="stButton"] > button,
-    div[data-testid="stDownloadButton"] > button {
+    div[data-testid="stButton"] button,
+    div[data-testid="stDownloadButton"] button {
         transition: none !important;
         transform: none !important;
     }
 }
 
 /* Destructive button styling (Delete) */
-.destructive-btn div[data-testid="stButton"] > button {
+.destructive-btn div[data-testid="stButton"] button {
     background: transparent !important;
     border: 1.5px solid #E53238 !important;
     color: #E53238 !important;
     font-weight: 600 !important;
 }
-.destructive-btn div[data-testid="stButton"] > button:hover {
+.destructive-btn div[data-testid="stButton"] button:hover {
     background: #E53238 !important;
     color: #FFFFFF !important;
     box-shadow: 0 2px 8px rgba(229,50,56,0.25) !important;
 }
 
 /* Dismiss/Close ghost button styling */
-.dismiss-btn div[data-testid="stButton"] > button {
+.dismiss-btn div[data-testid="stButton"] button {
     background: transparent !important;
     border: none !important;
     color: #727785 !important;
@@ -456,7 +462,7 @@ div[data-testid="stDownloadButton"] > button:active {
     padding: 0.3rem 0.6rem !important;
     font-size: 0.85rem !important;
 }
-.dismiss-btn div[data-testid="stButton"] > button:hover {
+.dismiss-btn div[data-testid="stButton"] button:hover {
     background: #f0f2f5 !important;
     color: #141d23 !important;
     box-shadow: none !important;
