@@ -246,30 +246,36 @@ div[data-testid="stButton"] > button:not([kind="primary"]):hover {
     box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
 }
 
-/* AI Suggestion box matching Stitch - blue left border with light blue bg */
+/* AI Suggestion box - clean card style, no left border */
 div[data-testid="stAlert"] div[data-testid="stAlertContentInfo"] {
     background: #E8F1FB !important;
-    border-left: 4px solid #0064D2 !important;
-    border-radius: 0 8px 8px 0 !important;
+    border-left: none !important;
+    border: 1px solid #B8D4F0 !important;
+    border-radius: 8px !important;
 }
 
-/* Success box - green left border */
+/* Success box - clean card style */
 div[data-testid="stAlert"] div[data-testid="stAlertContentSuccess"] {
     background: #f0f8e4 !important;
-    border-left: 4px solid #86B817 !important;
-    border-radius: 0 8px 8px 0 !important;
+    border-left: none !important;
+    border: 1px solid #b5d88c !important;
+    border-radius: 8px !important;
 }
 
-/* Warning box - yellow */
+/* Warning box */
 div[data-testid="stAlert"] div[data-testid="stAlertContentWarning"] {
     background: #FFF7E0 !important;
-    border-left: 4px solid #F5AF02 !important;
+    border-left: none !important;
+    border: 1px solid #f0d68a !important;
+    border-radius: 8px !important;
 }
 
-/* Error box - red */
+/* Error box */
 div[data-testid="stAlert"] div[data-testid="stAlertContentError"] {
     background: #FDE8E9 !important;
-    border-left: 4px solid #E53238 !important;
+    border-left: none !important;
+    border: 1px solid #f0a5a8 !important;
+    border-radius: 8px !important;
 }
 
 /* Quality score circle matching Stitch gradient */
