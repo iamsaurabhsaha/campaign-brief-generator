@@ -290,11 +290,33 @@ div[data-testid="stAlertContentSuccess"] {
     border-left: none !important;
 }
 
-/* Warning box */
+/* Warning box — with close button and auto-fade */
 div[data-testid="stAlertContentWarning"] {
     background: #FFF7E0 !important;
-    border: none !important;
+    border: 1px solid #f0d68a !important;
     border-left: none !important;
+    border-radius: 8px !important;
+    position: relative !important;
+    padding-right: 36px !important;
+    animation: fadeWarning 5s ease-in-out forwards !important;
+}
+div[data-testid="stAlertContentWarning"]::after {
+    content: "\\00d7";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.2rem;
+    color: #b8860b;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+}
+div[data-testid="stAlertContentWarning"]:hover::after {
+    opacity: 1;
+}
+@keyframes fadeWarning {
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; pointer-events: none; }
 }
 
 /* Error box */
