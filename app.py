@@ -1766,7 +1766,6 @@ def render_brief_builder() -> None:
                     st.rerun()
             if st.button("Apply Objective", key="use_obj"):
                 brief["objective"] = st.session_state.ai_generated_objective
-                st.session_state.smart_objective = st.session_state.ai_generated_objective
                 st.session_state.ai_generated_objective = None
                 st.session_state.current_brief = brief
                 st.rerun()
