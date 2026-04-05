@@ -1706,26 +1706,34 @@ def render_brief_builder() -> None:
                         f"Create a campaign objective for: {brief.get('campaign_name', 'feature launch')}."
                         f"{bg_context}"
                     )
+                current_objective = objective.strip() or brief.get("objective", "").strip()
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating SMART objective..."):
                         try:
                             smart = generator.make_objective_smart(smart_input)
-                            st.session_state.smart_objective = _proofread_or_approve(
-                                objective.strip(), smart
-                            ).replace(
-                                "Your text is clear and well-written.",
-                                "Your objective is already SMART — specific, measurable, achievable, relevant, and time-bound."
-                            )
+                            if current_objective:
+                                st.session_state.smart_objective = _proofread_or_approve(
+                                    current_objective, smart
+                                ).replace(
+                                    "Your text is clear and well-written.",
+                                    "Your objective is already SMART — specific, measurable, achievable, relevant, and time-bound."
+                                )
+                            else:
+                                st.session_state.smart_objective = smart
                         except Exception as e:
                             st.error(f"Error: {e}")
                 else:
-                    st.session_state.smart_objective = (
-                        "Looks good — no changes needed. Your objective is already SMART — specific, measurable, achievable, relevant, and time-bound."
-                        if objective.strip() and len(objective.strip()) > 50
-                        else "Increase Magical Listing adoption by 40% (from 25% to 35% of total listings) "
-                        "among professional sellers (500+ active listings) within 90 days of "
-                        "campaign launch, measured via product analytics dashboard."
-                    )
+                    if current_objective and len(current_objective) > 50:
+                        st.session_state.smart_objective = (
+                            "Looks good — no changes needed. Your objective is already SMART "
+                            "— specific, measurable, achievable, relevant, and time-bound."
+                        )
+                    else:
+                        st.session_state.smart_objective = (
+                            "Increase Magical Listing adoption by 40% (from 25% to 35% of total listings) "
+                            "among professional sellers (500+ active listings) within 90 days of "
+                            "campaign launch, measured via product analytics dashboard."
+                        )
                 st.rerun()
         with col_gen_obj:
             if st.button("Generate Objective", use_container_width=True, key="btn_gen_obj"):
