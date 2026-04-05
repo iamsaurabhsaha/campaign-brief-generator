@@ -1216,8 +1216,7 @@ def render_brief_builder() -> None:
                 placeholder="e.g., AI Listing Magic Launch",
             )
         with col2:
-            st.write("")
-            st.write("")
+            st.markdown("<div style='height: 28px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating name suggestions..."):
