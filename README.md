@@ -1,133 +1,109 @@
-# Campaign Brief Generator
+# AI Campaign Brief Generator
 
 **Live App:** [campaign-brief-generator.streamlit.app](https://campaign-brief-generator.streamlit.app)
 
-An AI-powered tool that helps Product Marketing Managers create comprehensive, high-quality campaign briefs in minutes instead of hours. Built with Streamlit and the Anthropic Claude API.
+An AI-powered tool that helps Product Marketing Managers create comprehensive, high-quality campaign briefs in minutes. Built with Streamlit and powered by Claude API.
 
 ## What It Does
 
-This tool guides you through creating a complete campaign brief using a 6-step wizard with AI assistance at every stage. It can also check the quality of existing briefs and generate creative concepts.
-
-### 3 Core Features
-
-**1. AI Brief Builder** - A 6-step guided wizard that walks you through creating a complete campaign brief:
+A 6-step guided wizard that walks you through creating a complete campaign brief with AI assistance at every stage — from strategy to export.
 
 | Step | What You Do |
 |------|-------------|
-| **Setup** | Name your campaign, select launch tier (Tier 0-3), choose brief type |
-| **Strategy** | Define background/context, objective (with SMART formatting), target audience |
-| **Messaging** | Key insight, positioning statements, key messages, single-minded proposition |
-| **Execution** | Channel plan, content deliverables, timeline, budget allocation |
-| **Governance** | KPIs/success metrics, RACI matrix, approvals checklist |
-| **Review & Export** | Preview full brief, download as Word (.docx) or Markdown, generate creative brief |
+| **Setup** | Name your campaign, select launch tier (Full Brief or Light Brief) |
+| **Strategy** | Define background/context, upload supporting documents, set objective (with SMART formatting), define target audience |
+| **Messaging** | Key insight, positioning statements, key messages, single-minded proposition (SMP) |
+| **Execution** | Channel plan, content deliverables, campaign timeline, budget allocation |
+| **Governance** | KPIs/success metrics, RACI matrix |
+| **Review & Export** | Preview full brief, download as Word (.docx) |
 
-Every field has AI-powered buttons:
-- **"Help Me Write"** - Expands your notes into full paragraphs
-- **"Proofread"** - Refines grammar, clarity, and tone
-- **"Generate"** - Creates content from scratch based on your context
-- **"Make it SMART"** - Reformats objectives into Specific, Measurable, Achievable, Relevant, Time-bound goals
-- **"Use This"** - Accept AI suggestions into your brief
+### AI-Powered Buttons
 
-**2. Brief Quality Checker** - Paste an existing brief or upload a document (PDF, Word, TXT) and get:
-- Overall quality score (1-10) with letter grade
-- Radar chart of 5 dimensions (Clarity, Specificity, Actionability, Audience Focus, Measurability)
-- Issues found with severity levels (Critical, Warning, Suggestion)
-- Strengths identified
-- Prioritized improvement recommendations
+Every section has AI assistance:
 
-**3. Creative Concepts Generator** - Paste or upload a completed brief, then:
-- Generate 1-5 creative concept directions (theme, headline, tagline, tone, sample copy, appeal score)
-- Generate a 5-email drip campaign sequence
-- Download concepts and email sequences as Word documents
+| Button | What It Does |
+|--------|-------------|
+| **Help Me Write** | Expands your notes into full paragraphs using campaign context |
+| **Proofread** | Refines grammar, clarity, and tone — shows "Looks good" if no changes needed |
+| **Generate** | Creates content from scratch based on all previously filled sections |
+| **Make it SMART** | Reformats objectives into Specific, Measurable, Achievable, Relevant, Time-bound goals |
+| **Extract Insight** | Pulls the key human insight from your background and audience |
+| **Insert** | Accept AI suggestions into your brief |
+
+### Smart Features
+
+- **Context chaining** — each generation step uses all previously filled sections as context
+- **Coherence check** — warns if your campaign name doesn't match the background/uploaded documents
+- **Proofread approval** — when text is already well-written, shows "Looks good" instead of returning near-identical text
+- **Validation** — requires context before generating (e.g., background must be filled before generating objectives)
+- **No specific dates** — objectives and timelines use relative timeframes ("within 90 days of launch"), never calendar dates
+- **Green checkmarks** — field labels show ✓ when filled so you can track progress at a glance
+- **Bookmarkable URLs** — each step has its own URL (`?step=strategy`, `?step=messaging`, etc.)
+
+### Word Document Export
+
+The exported .docx includes:
+- Professional formatting (Calibri 11pt, 1.15 line spacing, narrow margins)
+- Page border
+- Numbered tables with centered headers for Channel Plan, Timeline, KPIs, RACI
+- Clean markdown-to-Word conversion (bold text, no markdown artifacts)
+- Formatted budget with $ sign and commas
 
 ## Demo Mode
 
-The app works **without an API key** using sample data. Every feature is functional in demo mode so you can explore the full workflow before adding your API key.
+The app works **without an API key** using sample data. Every feature is functional in demo mode so you can explore the full workflow.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.9+
-- An Anthropic API key (optional - app works in demo mode without one)
+- An API key from a supported LLM provider (optional — app works in demo mode)
 
 ### Installation
 
-1. **Clone the repository:**
+```bash
+git clone https://github.com/iamsaurabhsaha/campaign-brief-generator.git
+cd campaign-brief-generator
+pip install -r requirements.txt
+```
 
-   ```bash
-   git clone https://github.com/iamsaurabhsaha/campaign-brief-generator.git
-   cd campaign-brief-generator
-   ```
+### Add your API key (optional)
 
-2. **Install dependencies:**
+```bash
+cp .env.example .env
+# Edit .env and set your preferred LLM provider + API key
+```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+Supported providers: Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, Ollama
 
-3. **Add your API key (optional):**
+### Run
 
-   ```bash
-   cp .env.example .env
-   # Edit .env and set your preferred LLM provider + API key
-   # Supports: Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, Ollama
-   ```
+```bash
+streamlit run app.py
+```
 
-4. **Run the app:**
+Opens at `http://localhost:8501`
 
-   ```bash
-   streamlit run app.py
-   ```
+### Deploy to Streamlit Cloud
 
-   The app opens at `http://localhost:8501`
-
-### Deploy to Streamlit Cloud (Get a shareable link)
-
-1. Push this repo to your GitHub
+1. Push to your GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub repo
-4. Add your `ANTHROPIC_API_KEY` in Settings > Secrets
-5. Deploy - you'll get a public URL to share
-
-## How to Use
-
-### Creating Your First Brief
-
-1. Open the app and click the **"AI Brief Builder"** tab
-2. **Step 1 (Setup):** Enter a campaign name like "AI Magic Listing Launch", select Tier 1, choose Campaign Brief
-3. **Step 2 (Strategy):** Describe the background, or click "Help Me Write" to get AI assistance. Upload supporting docs if you have them. Click "Make it SMART" to refine your objective.
-4. **Step 3 (Messaging):** Click "Extract Insight" to generate your key insight, then "Generate Positioning", "Generate Key Messages", and "Generate SMP"
-5. **Step 4 (Execution):** Click "Generate Channel Plan", "Generate Deliverables", and "Generate Timeline" to create your execution plan
-6. **Step 5 (Governance):** Click "Generate KPIs" and "Generate RACI" for success metrics and responsibility matrix
-7. **Step 6 (Review):** Preview your complete brief, download as Word document, or generate a Creative Brief
-
-### Checking an Existing Brief
-
-1. Click the **"Brief Quality Checker"** tab
-2. Paste your brief text or upload a document
-3. Select the brief type and launch tier
-4. Click "Check Quality" for AI-powered analysis
-
-### Generating Creative Concepts
-
-1. Click the **"Creative Concepts"** tab
-2. Paste your brief text or upload a document
-3. Choose how many concepts (1-5)
-4. Click "Generate Concepts" to see creative directions
-5. Click "Generate Email Sequence" for a 5-email drip campaign
-6. Download as Word documents
+3. Connect your repo
+4. Add your API key in Settings > Secrets
+5. Deploy
 
 ## Project Structure
 
 ```
 campaign-brief-generator/
-├── app.py                 # Streamlit dashboard (3 tabs, 6-step wizard)
-├── brief_generator.py     # Claude API - generates all 14 brief sections
-├── quality_checker.py     # AI-powered brief quality analysis
-├── creative_engine.py     # Creative concepts + email sequence generation
+├── app.py                 # Streamlit app (6-step wizard, custom CSS)
+├── brief_generator.py     # LLM API — generates all brief sections
+├── llm_provider.py        # Multi-provider LLM abstraction layer
+├── quality_checker.py     # Brief quality analysis
+├── creative_engine.py     # Creative concepts generation
 ├── templates.py           # Pre-built campaign templates
-├── config.py              # Settings, constants, color scheme
+├── config.py              # Constants and configuration
 ├── requirements.txt       # Python dependencies
 ├── .env.example           # API key template
 ├── .streamlit/
@@ -137,15 +113,14 @@ campaign-brief-generator/
 
 ## Tech Stack
 
-- **Frontend:** [Streamlit](https://streamlit.io/) with custom CSS (Inter font, light theme)
-- **AI:** [Anthropic Claude API](https://www.anthropic.com/) (claude-sonnet-4-20250514) — also supports OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, and Ollama via `.env` config
-- **Charts:** Plotly
+- **Frontend:** [Streamlit](https://streamlit.io/) with custom CSS
+- **AI:** [Anthropic Claude API](https://www.anthropic.com/) (claude-sonnet-4-6) — also supports OpenAI, Google Gemini, AWS Bedrock, Azure OpenAI, and Ollama
 - **Export:** python-docx (Word documents)
-- **Design:** E-commerce-inspired color scheme (Blue #0064D2, Red #E53238, Yellow #F5AF02, Green #86B817)
+- **Charts:** Plotly (budget allocation pie chart)
 
 ## Brief Framework
 
-The tool follows the industry-standard **14-section campaign brief framework** used by leading PMM teams:
+Follows the industry-standard **14-section campaign brief framework**:
 
 1. Campaign Name
 2. Background/Context
@@ -160,17 +135,19 @@ The tool follows the industry-standard **14-section campaign brief framework** u
 11. Timeline
 12. Budget
 13. Success Metrics/KPIs
-14. RACI Matrix + Approvals
+14. RACI Matrix
 
-### Launch Tier System
+### Launch Tiers
 
 | Tier | Scale | Brief Depth |
 |------|-------|-------------|
-| Tier 0 | Company-defining (new platform) | Full brief + war room |
-| Tier 1 | Major feature launch | Full brief |
-| Tier 2 | Enhancement or update | Light brief |
-| Tier 3 | Bug fix / minor | No brief needed |
+| **Full Brief** | Major launch or new feature | All 14 sections required |
+| **Light Brief** | Enhancement or update | Key sections only (Background, Objective, Key Messages, Deliverables) |
+
+## Built By
+
+**Saurabh Saha** — [GitHub](https://github.com/iamsaurabhsaha) · [LinkedIn](https://www.linkedin.com/in/iamsaurabhsaha/) · [saurabhsaha700@gmail.com](mailto:saurabhsaha700@gmail.com)
 
 ## License
 
-MIT License - feel free to use and modify.
+MIT License
