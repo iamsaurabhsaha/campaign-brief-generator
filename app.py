@@ -629,7 +629,7 @@ def _proofread_or_approve(original: str, result: str) -> str:
 def _label(name: str, value) -> str:
     """Return field label with a green checkmark if the value is non-empty."""
     if value and str(value).strip():
-        return f":green[\\u2713] {name}"
+        return f":green[✓] {name}"
     return name
 
 
