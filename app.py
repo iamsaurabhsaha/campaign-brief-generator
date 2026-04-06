@@ -642,29 +642,47 @@ div[data-testid="stTextInput"] {
         padding-top: 1rem !important;
     }
 
-    /* Step badges: smaller, wrap nicely */
+    /* Step badges: compact 3x2 grid */
     .step-container {
-        gap: 4px !important;
+        gap: 6px !important;
         margin-bottom: 16px !important;
+        justify-content: center !important;
     }
     .step-badge {
-        padding: 6px 12px !important;
-        font-size: 0.7em !important;
+        padding: 5px 10px !important;
+        font-size: 0.65em !important;
+        flex: 0 0 auto !important;
     }
 
     /* Stack columns vertically on mobile */
     div[data-testid="stHorizontalBlock"] {
         flex-wrap: wrap !important;
+        gap: 8px !important;
     }
     div[data-testid="stHorizontalBlock"] > div {
         flex: 1 1 100% !important;
         min-width: 100% !important;
     }
 
-    /* Keep Back + Continue side by side (they're narrow enough) */
+    /* Keep Back + Continue side by side */
     div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div {
         flex: 1 1 48% !important;
         min-width: 48% !important;
+    }
+
+    /* Alert + dismiss rows: keep side by side */
+    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) > div:first-child {
+        flex: 1 1 85% !important;
+        min-width: 85% !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) > div:last-child {
+        flex: 0 0 auto !important;
+        min-width: auto !important;
+    }
+
+    /* Stacked buttons: make full width */
+    div[data-testid="stButton"] button {
+        width: 100% !important;
     }
 
     /* Buttons: ensure min touch target 44px */
