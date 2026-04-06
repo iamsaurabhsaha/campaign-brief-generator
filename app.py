@@ -557,6 +557,11 @@ hr {
     margin: 16px 0 !important;
 }
 
+/* Align button columns to bottom so buttons sit next to inputs */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]) {
+    align-items: flex-end !important;
+}
+
 /* Larger, bolder field labels */
 div[data-testid="stTextInput"] label p,
 div[data-testid="stTextArea"] label p,
@@ -1511,7 +1516,7 @@ def render_brief_builder() -> None:
                 brief["campaign_name"] = campaign_name
                 st.session_state.current_brief = brief
         with col2:
-            st.markdown("<div style='height: 44px'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height: 2px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
                 if not campaign_name.strip():
                     st.session_state.name_warning = "Please enter a campaign name or description first, then click Suggest Names."
