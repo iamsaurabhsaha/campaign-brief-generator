@@ -1431,7 +1431,8 @@ def brief_to_markdown(brief: dict) -> str:
 
     if brief.get("budget"):
         lines.append("## Budget")
-        lines.append(f"**Total:** {brief['budget']}")
+        budget_val = str(brief['budget']).replace("$", "").replace(",", "").strip()
+        lines.append(f"**Total:** ${int(budget_val):,}" if budget_val.isdigit() else f"**Total:** {brief['budget']}")
         lines.append("")
 
     return "\n".join(lines)
@@ -3135,7 +3136,8 @@ def render_brief_builder() -> None:
 
             if brief.get("budget"):
                 doc.add_heading("Budget", level=2)
-                doc.add_paragraph(f"Total: {brief['budget']}")
+                budget_val = str(brief['budget']).replace("$", "").replace(",", "").strip()
+                doc.add_paragraph(f"Total: ${int(budget_val):,}" if budget_val.isdigit() else f"Total: {brief['budget']}")
 
             if brief.get("kpis"):
                 doc.add_heading("Success Metrics / KPIs", level=2)
