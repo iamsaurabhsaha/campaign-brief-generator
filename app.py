@@ -1514,6 +1514,11 @@ def render_brief_builder() -> None:
                 Built by <strong>Saurabh Saha</strong>
             </p>
             <p style="font-size: 0.9rem; color: #727785;">
+                <a href="https://github.com/iamsaurabhsaha" target="_blank"
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
+                   GitHub
+                </a>
+                &nbsp;&nbsp;·&nbsp;&nbsp;
                 <a href="https://www.linkedin.com/in/iamsaurabhsaha/" target="_blank"
                    style="color: #0064D2; text-decoration: none; font-weight: 600;">
                    LinkedIn
