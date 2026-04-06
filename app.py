@@ -685,6 +685,22 @@ div[data-testid="stTextInput"] {
         width: 100% !important;
     }
 
+    /* Header: badge goes below title on mobile */
+    .app-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    /* Warning + dismiss: keep dismiss inline, not stacked */
+    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlertContentWarning"]) > div {
+        flex: unset !important;
+        min-width: unset !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlertContentWarning"]) {
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+    }
+
     /* Buttons: ensure min touch target 44px */
     div[data-testid="stButton"] button,
     div[data-testid="stDownloadButton"] button {
@@ -4346,7 +4362,7 @@ def main() -> None:
     _hdr_badge_bg = "#f0faf0" if _hdr_configured else "#fdf0f0"
     _hdr_badge_border = "#c3e6c3" if _hdr_configured else "#f5c6c6"
     st.markdown(f"""
-    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start;">
+    <div class="app-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
         <div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
                 AI Campaign Brief Generator
