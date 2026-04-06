@@ -3068,6 +3068,13 @@ def render_brief_builder() -> None:
             style.paragraph_format.space_after = Pt(6)
             style.paragraph_format.line_spacing = 1.15
 
+            # 1) Narrow margins
+            for section in doc.sections:
+                section.top_margin = Inches(0.5)
+                section.bottom_margin = Inches(0.5)
+                section.left_margin = Inches(0.75)
+                section.right_margin = Inches(0.75)
+
             # Helper: add markdown-aware paragraph (handles **bold**)
             import re as _re
 
@@ -3100,6 +3107,18 @@ def render_brief_builder() -> None:
                     else:
                         p.add_run(part)
                 return p
+
+            def _center_cell(cell):
+                """Center-align text in a table cell."""
+                for paragraph in cell.paragraphs:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+            def _format_table_headers(table, center_col_indices=None):
+                """Center-align all header cells and optionally mark specific columns for centering."""
+                for cell in table.rows[0].cells:
+                    _center_cell(cell)
+                    for run in cell.paragraphs[0].runs:
+                        run.bold = True
 
             def _add_section(title, content):
                 """Add a headed section with proper spacing."""
@@ -3191,16 +3210,22 @@ def render_brief_builder() -> None:
             if brief.get("channel_plan"):
                 h = doc.add_heading("Channel Plan", level=2)
                 h.paragraph_format.space_before = Pt(18)
-                table = doc.add_table(rows=1, cols=4)
+                h.paragraph_format.space_after = Pt(10)
+                table = doc.add_table(rows=1, cols=5)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
-                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = "Channel", "Tactic", "Rationale", "Budget %"
-                for ch in brief["channel_plan"]:
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text, hdr[4].text = "#", "Channel", "Tactic", "Rationale", "Budget %"
+                _format_table_headers(table)
+                for idx, ch in enumerate(brief["channel_plan"], 1):
                     row = table.add_row().cells
-                    row[0].text = str(ch.get("channel", ""))
-                    row[1].text = str(ch.get("tactic", ""))
-                    row[2].text = str(ch.get("rationale", ""))
-                    row[3].text = str(ch.get("budget_pct", ""))
+                    row[0].text = str(idx)
+                    _center_cell(row[0])
+                    row[1].text = str(ch.get("channel", ""))
+                    _center_cell(row[1])
+                    row[2].text = str(ch.get("tactic", ""))
+                    row[3].text = str(ch.get("rationale", ""))
+                    row[4].text = str(ch.get("budget_pct", ""))
+                    _center_cell(row[4])
                 _add_table_spacing()
 
             if brief.get("deliverables"):
@@ -3217,16 +3242,21 @@ def render_brief_builder() -> None:
             if brief.get("timeline"):
                 h = doc.add_heading("Timeline", level=2)
                 h.paragraph_format.space_before = Pt(18)
-                table = doc.add_table(rows=1, cols=3)
+                h.paragraph_format.space_after = Pt(10)
+                table = doc.add_table(rows=1, cols=4)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
-                hdr[0].text, hdr[1].text, hdr[2].text = "Phase", "Duration", "Activities"
-                for t in brief["timeline"]:
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = "#", "Phase", "Duration", "Activities"
+                _format_table_headers(table)
+                for idx, t in enumerate(brief["timeline"], 1):
                     row = table.add_row().cells
-                    row[0].text = str(t.get("phase", ""))
-                    row[1].text = str(t.get("duration", ""))
+                    row[0].text = str(idx)
+                    _center_cell(row[0])
+                    row[1].text = str(t.get("phase", ""))
+                    _center_cell(row[1])
+                    row[2].text = str(t.get("duration", ""))
                     acts = t.get("actions", t.get("activities", ""))
-                    row[2].text = ", ".join(acts) if isinstance(acts, list) else str(acts)
+                    row[3].text = ", ".join(acts) if isinstance(acts, list) else str(acts)
                 _add_table_spacing()
 
             if brief.get("budget"):
@@ -3240,31 +3270,39 @@ def render_brief_builder() -> None:
             if brief.get("kpis"):
                 h = doc.add_heading("Success Metrics / KPIs", level=2)
                 h.paragraph_format.space_before = Pt(18)
-                table = doc.add_table(rows=1, cols=3)
+                h.paragraph_format.space_after = Pt(10)
+                table = doc.add_table(rows=1, cols=4)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
-                hdr[0].text, hdr[1].text, hdr[2].text = "Metric", "Target", "Measurement"
-                for k in brief["kpis"]:
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = "#", "Metric", "Target", "Measurement"
+                _format_table_headers(table)
+                for idx, k in enumerate(brief["kpis"], 1):
                     row = table.add_row().cells
-                    row[0].text = str(k.get("metric", ""))
-                    row[1].text = str(k.get("target", ""))
-                    row[2].text = str(k.get("measurement", ""))
+                    row[0].text = str(idx)
+                    _center_cell(row[0])
+                    row[1].text = str(k.get("metric", ""))
+                    row[2].text = str(k.get("target", ""))
+                    row[3].text = str(k.get("measurement", ""))
                 _add_table_spacing()
 
             if brief.get("raci"):
                 h = doc.add_heading("RACI Matrix", level=2)
                 h.paragraph_format.space_before = Pt(18)
-                table = doc.add_table(rows=1, cols=5)
+                h.paragraph_format.space_after = Pt(10)
+                table = doc.add_table(rows=1, cols=6)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
-                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text, hdr[4].text = "Task", "Responsible", "Accountable", "Consulted", "Informed"
-                for r in brief["raci"]:
+                hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text, hdr[4].text, hdr[5].text = "#", "Task", "Responsible", "Accountable", "Consulted", "Informed"
+                _format_table_headers(table)
+                for idx, r in enumerate(brief["raci"], 1):
                     row = table.add_row().cells
-                    row[0].text = str(r.get("task", ""))
-                    row[1].text = str(r.get("responsible", ""))
-                    row[2].text = str(r.get("accountable", ""))
-                    row[3].text = str(r.get("consulted", ""))
-                    row[4].text = str(r.get("informed", ""))
+                    row[0].text = str(idx)
+                    _center_cell(row[0])
+                    row[1].text = str(r.get("task", ""))
+                    row[2].text = str(r.get("responsible", ""))
+                    row[3].text = str(r.get("accountable", ""))
+                    row[4].text = str(r.get("consulted", ""))
+                    row[5].text = str(r.get("informed", ""))
                 _add_table_spacing()
 
             # Save to bytes
