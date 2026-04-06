@@ -1491,7 +1491,7 @@ def render_brief_builder() -> None:
 
     # --- Step 1: Setup ---
     if step == 1:
-        st.subheader("Step 1: Campaign Setup")
+        st.markdown("<h3><u>Step 1</u>: Campaign Setup</h3>", unsafe_allow_html=True)
         if st.session_state.get("name_warning"):
             col_warn, col_warn_dismiss = st.columns([11, 1])
             with col_warn:
@@ -1588,7 +1588,7 @@ def render_brief_builder() -> None:
 
     # --- Step 2: Strategy ---
     elif step == 2:
-        st.subheader("Step 2: Strategy")
+        st.markdown("<h3><u>Step 2</u>: Strategy</h3>", unsafe_allow_html=True)
         is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
@@ -2033,7 +2033,7 @@ def render_brief_builder() -> None:
 
     # --- Step 3: Messaging ---
     elif step == 3:
-        st.subheader("Step 3: Messaging")
+        st.markdown("<h3><u>Step 3</u>: Messaging</h3>", unsafe_allow_html=True)
         is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
@@ -2474,7 +2474,7 @@ def render_brief_builder() -> None:
 
     # --- Step 4: Execution ---
     elif step == 4:
-        st.subheader("Step 4: Execution Plan")
+        st.markdown("<h3><u>Step 4</u>: Execution Plan</h3>", unsafe_allow_html=True)
         is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
@@ -2936,7 +2936,7 @@ def render_brief_builder() -> None:
 
     # --- Step 5: Governance ---
     elif step == 5:
-        st.subheader("Step 5: Governance")
+        st.markdown("<h3><u>Step 5</u>: Governance</h3>", unsafe_allow_html=True)
         is_light_brief = brief.get("launch_tier") == "Light Brief"
 
         if is_light_brief:
@@ -3097,7 +3097,7 @@ def render_brief_builder() -> None:
 
     # --- Step 6: Review & Export ---
     elif step == 6:
-        st.subheader("Step 6: Review & Export")
+        st.markdown("<h3><u>Step 6</u>: Review & Export</h3>", unsafe_allow_html=True)
 
         brief["created"] = brief.get("created", datetime.now().isoformat())
         md = brief_to_markdown(brief)
