@@ -624,6 +624,16 @@ def _proofread_or_approve(original: str, result: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Field label with green checkmark when filled
+# ---------------------------------------------------------------------------
+def _label(name: str, value) -> str:
+    """Return field label with a green checkmark if the value is non-empty."""
+    if value and str(value).strip():
+        return f":green[\\u2713] {name}"
+    return name
+
+
+# ---------------------------------------------------------------------------
 # Sync brief with current form values before calling generators
 # ---------------------------------------------------------------------------
 def _sync_brief_with_form(brief: dict, **kwargs) -> dict:
@@ -1471,7 +1481,7 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns([3, 1])
         with col1:
             campaign_name = st.text_input(
-                "Campaign Name",
+                _label("Campaign Name", brief.get("campaign_name", "")),
                 value=brief.get("campaign_name", ""),
                 placeholder="e.g., AI Listing Magic Launch",
             )
@@ -1514,7 +1524,7 @@ def render_brief_builder() -> None:
         current_tier = brief.get("launch_tier", "")
         tier_index = tier_options.index(current_tier) if current_tier in tier_options else 0
         launch_tier = st.selectbox(
-            "Select Launch Tier",
+            _label("Select Launch Tier", current_tier),
             options=tier_options,
             index=tier_index,
             format_func=lambda t: "Select a launch tier..." if t == "" else f"{t} -- {TIER_DESCRIPTIONS[t]}",
@@ -1556,7 +1566,7 @@ def render_brief_builder() -> None:
             st.info("Light Brief mode — only Background and Objective are required.")
 
         background = st.text_area(
-            "Background / Context",
+            _label("Background / Context", brief.get("background", "")),
             value=brief.get("background", ""),
             height=120,
             placeholder="Why is this campaign needed now? What market conditions or competitive moves prompted it?",
@@ -1704,9 +1714,10 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         # --- Objective (full width) with buttons below ---
+        obj_value = brief.get("objective", st.session_state.smart_objective or "")
         objective = st.text_input(
-            "Objective",
-            value=brief.get("objective", st.session_state.smart_objective or ""),
+            _label("Objective", obj_value),
+            value=obj_value,
             placeholder="What is the single most important goal?",
         )
 
@@ -1816,9 +1827,11 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         # --- Target Audience (full width) with buttons below ---
+        ta_value = brief.get("target_audience", "")
+        ta_label = "Target Audience" + (" (optional for Light Brief)" if is_light_brief else "")
         target_audience = st.text_area(
-            "Target Audience" + (" (optional for Light Brief)" if is_light_brief else ""),
-            value=brief.get("target_audience", ""),
+            _label(ta_label, ta_value),
+            value=ta_value,
             height=100,
             placeholder="Who are we talking to? Be specific about demographics, behaviors, and needs.",
         )
@@ -1988,7 +2001,7 @@ def render_brief_builder() -> None:
 
         # --- Key Insight (skip for Light Brief) ---
         if not is_light_brief:
-            st.markdown("#### Key Insight")
+            st.markdown(f"#### {_label('Key Insight', brief.get('key_insight', ''))}")
             key_insight = st.text_area(
                 "Key Insight",
                 value=brief.get("key_insight", ""),
@@ -2091,7 +2104,8 @@ def render_brief_builder() -> None:
             key_insight = brief.get("key_insight", "")
 
         # --- Short Positioning ---
-        st.markdown("#### Positioning Statement -- Short (25 words)" + (" (optional)" if is_light_brief else ""))
+        pos_short_val = brief.get("positioning_short", "")
+        st.markdown(f"#### {_label('Positioning Statement -- Short (25 words)' + (' (optional)' if is_light_brief else ''), pos_short_val)}")
         positioning_short = st.text_input(
             "Short Positioning",
             value=brief.get("positioning_short", ""),
@@ -2101,7 +2115,7 @@ def render_brief_builder() -> None:
 
         # --- Detailed Positioning (skip for Light Brief) ---
         if not is_light_brief:
-            st.markdown("#### Positioning Statement -- Detailed (100 words)")
+            st.markdown(f"#### {_label('Positioning Statement -- Detailed (100 words)', brief.get('positioning_detailed', ''))}")
             positioning_detailed = st.text_area(
                 "Detailed Positioning",
                 value=brief.get("positioning_detailed", ""),
@@ -2210,7 +2224,7 @@ def render_brief_builder() -> None:
         st.divider()
 
         # --- Key Messages ---
-        st.markdown("#### Key Messages (3-5 ranked)")
+        st.markdown(f"#### {_label('Key Messages (3-5 ranked)', brief.get('key_messages_text', '') or brief.get('key_messages', ''))}")
         key_messages = st.text_area(
             "Key Messages",
             value=brief.get("key_messages_text", "\n".join(brief.get("key_messages", [])) if isinstance(brief.get("key_messages"), list) else brief.get("key_messages", "")),
@@ -2427,7 +2441,7 @@ def render_brief_builder() -> None:
             st.info("Light brief mode — only Content Deliverables are required.")
 
         # --- Channel Plan ---
-        st.markdown("#### Channel Plan" + (" (optional)" if is_light_brief else ""))
+        st.markdown(f"#### {_label('Channel Plan' + (' (optional)' if is_light_brief else ''), brief.get('channel_plan_text', '') or brief.get('channel_plan', ''))}")
         channel_plan_text = st.text_area(
             "Channel Plan",
             value=brief.get("channel_plan_text", ""),
@@ -2552,7 +2566,7 @@ def render_brief_builder() -> None:
         st.divider()
 
         # --- Content Deliverables ---
-        st.markdown("#### Content Deliverables")
+        st.markdown(f"#### {_label('Content Deliverables', brief.get('deliverables_text', '') or brief.get('deliverables', ''))}")
         deliverables_text = st.text_area(
             "Deliverables",
             value=brief.get("deliverables_text", ""),
@@ -2676,7 +2690,7 @@ def render_brief_builder() -> None:
         st.divider()
 
         # --- Timeline ---
-        st.markdown("#### Campaign Timeline" + (" (optional)" if is_light_brief else ""))
+        st.markdown(f"#### {_label('Campaign Timeline' + (' (optional)' if is_light_brief else ''), brief.get('timeline_text', '') or brief.get('timeline', ''))}")
         timeline_text = st.text_area(
             "Timeline",
             value=brief.get("timeline_text", ""),
@@ -2890,7 +2904,7 @@ def render_brief_builder() -> None:
 
         # --- Success Metrics / KPIs ---
         kpis_text = st.text_area(
-            "Success Metrics / KPIs",
+            _label("Success Metrics / KPIs", brief.get("kpis_text", "") or brief.get("kpis", "")),
             value=brief.get("kpis_text", ""),
             height=120,
             placeholder="What metrics will define success? Include targets and how you'll measure them.",
@@ -2952,7 +2966,7 @@ def render_brief_builder() -> None:
             st.divider()
 
             raci_text = st.text_area(
-                "RACI Matrix",
+                _label("RACI Matrix", brief.get("raci_text", "") or brief.get("raci", "")),
                 value=brief.get("raci_text", ""),
                 height=120,
                 placeholder="Who is Responsible, Accountable, Consulted, and Informed for each workstream?",
