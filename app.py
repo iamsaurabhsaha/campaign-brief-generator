@@ -1497,6 +1497,12 @@ def render_brief_builder() -> None:
     # --- Step 1: Setup ---
     if step == 1:
         st.markdown("<h3><u>Step 1</u>: Campaign Setup</h3>", unsafe_allow_html=True)
+
+        # Show success message if returning from Done
+        if st.session_state.get("brief_completed"):
+            st.success(f"Campaign brief \"{st.session_state.brief_completed}\" completed and exported successfully.")
+            st.session_state.brief_completed = None
+
         if st.session_state.get("name_warning"):
             col_warn, col_warn_dismiss = st.columns([11, 1])
             with col_warn:
@@ -3418,42 +3424,38 @@ def render_brief_builder() -> None:
             st.warning("python-docx not installed. Install it with: `pip install python-docx`")
 
         st.write("")
-        col_back2, col_reset = st.columns(2)
+        col_back2, col_done = st.columns(2)
         with col_back2:
-
             if st.button("← Back", use_container_width=True, key="back6"):
                 st.session_state.wizard_step = 5
                 st.rerun()
-        with col_reset:
-            if st.session_state.get("confirm_new_brief"):
-                st.markdown('<div class="destructive-btn">', unsafe_allow_html=True)
-                if st.button("Confirm: discard and start fresh?", use_container_width=True):
-                    st.session_state.confirm_new_brief = False
-                    st.session_state.wizard_step = 1
-                    st.session_state.current_brief = {}
-                    st.session_state.generated_names = []
-                    st.session_state.ai_insight = None
-                    st.session_state.ai_positioning = None
-                    st.session_state.ai_messages = None
-                    st.session_state.ai_smp = None
-                    st.session_state.ai_channels = None
-                    st.session_state.ai_deliverables = None
-                    st.session_state.ai_timeline = None
-                    st.session_state.generated_kpis = None
-                    st.session_state.generated_raci = None
-                    st.session_state.generated_creative_brief = None
-                    st.session_state.audience_profile = None
-                    st.session_state.smart_objective = None
-                    st.session_state.budget_breakdown = None
-                    st.session_state.ai_background = None
-                    st.session_state.ai_generated_objective = None
-                    st.session_state.ai_generated_audience = None
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                if st.button("Start New Brief", use_container_width=True):
-                    st.session_state.confirm_new_brief = True
-                    st.rerun()
+        with col_done:
+            if st.button("Done ✓", type="primary", use_container_width=True, key="done_brief"):
+                # Save the brief to library
+                brief["completed"] = True
+                st.session_state.current_brief = brief
+                # Reset wizard to Step 1 with success message
+                st.session_state.wizard_step = 1
+                st.session_state.brief_completed = brief.get("campaign_name", "Brief")
+                st.session_state.current_brief = {}
+                st.session_state.generated_names = []
+                st.session_state.ai_insight = None
+                st.session_state.ai_positioning = None
+                st.session_state.ai_messages = None
+                st.session_state.ai_smp = None
+                st.session_state.ai_channels = None
+                st.session_state.ai_deliverables = None
+                st.session_state.ai_timeline = None
+                st.session_state.generated_kpis = None
+                st.session_state.generated_raci = None
+                st.session_state.generated_creative_brief = None
+                st.session_state.audience_profile = None
+                st.session_state.smart_objective = None
+                st.session_state.budget_breakdown = None
+                st.session_state.ai_background = None
+                st.session_state.ai_generated_objective = None
+                st.session_state.ai_generated_audience = None
+                st.rerun()
 
 
 # ---------------------------------------------------------------------------
