@@ -2795,11 +2795,19 @@ def render_brief_builder() -> None:
             st.divider()
 
             st.markdown("#### Budget (optional)")
-            budget_input = st.text_input(
-                "Total Budget",
+            budget_raw = st.text_input(
+                "Total Budget ($)",
                 value=brief.get("budget", ""),
-                placeholder="e.g., $150,000",
+                placeholder="e.g., 150000",
             )
+            # Format with $ sign and commas if numeric
+            budget_input = budget_raw.strip().replace("$", "").replace(",", "")
+            if budget_input.isdigit():
+                formatted = f"${int(budget_input):,}"
+                st.caption(formatted)
+                budget_input = budget_raw
+            else:
+                budget_input = budget_raw
 
             # Show budget pie chart if we have channel plan with budget %
             if budget_input and brief.get("channel_plan"):
