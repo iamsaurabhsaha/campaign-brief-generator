@@ -1494,14 +1494,66 @@ def render_brief_builder() -> None:
     brief = st.session_state.current_brief
     generator = _get_generator()
 
+    # --- Done page ---
+    if step == 7:
+        brief_name = st.session_state.get("brief_completed", "your campaign brief")
+        st.markdown(f"""
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 4rem; margin-bottom: 16px;">🎉</div>
+            <h2 style="font-size: 2rem; font-weight: 800; color: #141d23; margin-bottom: 8px;">
+                Brief Complete!
+            </h2>
+            <p style="font-size: 1.1rem; color: #475569; margin-bottom: 8px;">
+                <strong>"{brief_name}"</strong> has been successfully generated and is ready for download.
+            </p>
+            <p style="font-size: 1rem; color: #727785; margin-bottom: 32px;">
+                Thank you for using AI Campaign Brief Generator.
+            </p>
+            <hr style="border: 1px solid #e0e4e8; margin: 24px auto; max-width: 400px;">
+            <p style="font-size: 0.95rem; color: #475569; margin-bottom: 12px;">
+                Built by <strong>Saurabh Saha</strong>
+            </p>
+            <p style="font-size: 0.9rem; color: #727785;">
+                <a href="https://www.linkedin.com/in/iamsaurabhsaha/" target="_blank"
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
+                   LinkedIn
+                </a>
+                &nbsp;&nbsp;·&nbsp;&nbsp;
+                <a href="mailto:saurabhsaha700@gmail.com"
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
+                   saurabhsaha700@gmail.com
+                </a>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("Start New Brief →", type="primary", use_container_width=True):
+            st.session_state.wizard_step = 1
+            st.session_state.current_brief = {}
+            st.session_state.brief_completed = None
+            st.session_state.generated_names = []
+            st.session_state.ai_insight = None
+            st.session_state.ai_positioning = None
+            st.session_state.ai_messages = None
+            st.session_state.ai_smp = None
+            st.session_state.ai_channels = None
+            st.session_state.ai_deliverables = None
+            st.session_state.ai_timeline = None
+            st.session_state.generated_kpis = None
+            st.session_state.generated_raci = None
+            st.session_state.generated_creative_brief = None
+            st.session_state.audience_profile = None
+            st.session_state.smart_objective = None
+            st.session_state.budget_breakdown = None
+            st.session_state.ai_background = None
+            st.session_state.ai_generated_objective = None
+            st.session_state.ai_generated_audience = None
+            st.rerun()
+        return
+
     # --- Step 1: Setup ---
     if step == 1:
         st.markdown("<h3><u>Step 1</u>: Campaign Setup</h3>", unsafe_allow_html=True)
-
-        # Show success message if returning from Done
-        if st.session_state.get("brief_completed"):
-            st.success(f"Campaign brief \"{st.session_state.brief_completed}\" completed and exported successfully.")
-            st.session_state.brief_completed = None
 
         if st.session_state.get("name_warning"):
             col_warn, col_warn_dismiss = st.columns([11, 1])
@@ -3431,30 +3483,8 @@ def render_brief_builder() -> None:
                 st.rerun()
         with col_done:
             if st.button("Done ✓", type="primary", use_container_width=True, key="done_brief"):
-                # Save the brief to library
-                brief["completed"] = True
-                st.session_state.current_brief = brief
-                # Reset wizard to Step 1 with success message
-                st.session_state.wizard_step = 1
                 st.session_state.brief_completed = brief.get("campaign_name", "Brief")
-                st.session_state.current_brief = {}
-                st.session_state.generated_names = []
-                st.session_state.ai_insight = None
-                st.session_state.ai_positioning = None
-                st.session_state.ai_messages = None
-                st.session_state.ai_smp = None
-                st.session_state.ai_channels = None
-                st.session_state.ai_deliverables = None
-                st.session_state.ai_timeline = None
-                st.session_state.generated_kpis = None
-                st.session_state.generated_raci = None
-                st.session_state.generated_creative_brief = None
-                st.session_state.audience_profile = None
-                st.session_state.smart_objective = None
-                st.session_state.budget_breakdown = None
-                st.session_state.ai_background = None
-                st.session_state.ai_generated_objective = None
-                st.session_state.ai_generated_audience = None
+                st.session_state.wizard_step = 7
                 st.rerun()
 
 
