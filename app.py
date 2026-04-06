@@ -78,7 +78,7 @@ WIZARD_STEPS = {
 # Page config & custom CSS
 # ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Campaign Brief Generator",
+    page_title="AI Campaign Brief Generator",
     page_icon="📋",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -4081,7 +4081,7 @@ def main() -> None:
     <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
-                Campaign Brief Generator
+                AI Campaign Brief Generator
             </h1>
             <p style="color: #727785; font-size: 0.9rem;">
                 AI-powered campaign brief creation with industry best practices
@@ -4105,21 +4105,7 @@ def main() -> None:
             "Supports Anthropic, OpenAI, Azure, Gemini, Bedrock, and Ollama."
         )
 
-    # Tabs
-    tab1, tab2, tab3 = st.tabs([
-        "AI Brief Builder",
-        "Brief Quality Checker",
-        "Creative Concepts",
-    ])
-
-    with tab1:
-        render_brief_builder()
-
-    with tab2:
-        render_quality_checker()
-
-    with tab3:
-        render_creative_concepts()
+    render_brief_builder()
 
 
 if __name__ == "__main__":
