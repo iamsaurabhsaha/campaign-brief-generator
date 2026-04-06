@@ -144,6 +144,84 @@ def _parse_json_response(raw_text: str) -> Any:
                         except json.JSONDecodeError:
                             pass
 
+    # Strategy 5: repair truncated JSON (e.g. from max_tokens cutoff)
+    # Look for a JSON object/array that starts but doesn't close properly.
+    # Find the last complete array element (closing '}') and close the structure.
+    first_brace = text.find('{')
+    first_bracket = text.find('[')
+    if first_brace == -1 and first_bracket == -1:
+        pass  # no JSON-like content at all
+    else:
+        start = min(
+            first_brace if first_brace != -1 else len(text),
+            first_bracket if first_bracket != -1 else len(text),
+        )
+        candidate = text[start:]
+        # Walk the string tracking nesting; find the last position where a '}' closes
+        # a complete inner object while we are still inside an array
+        in_string = False
+        escape_next = False
+        depth_brace = 0
+        depth_bracket = 0
+        last_complete_obj_end = -1
+        for i, ch in enumerate(candidate):
+            if escape_next:
+                escape_next = False
+                continue
+            if ch == '\\' and in_string:
+                escape_next = True
+                continue
+            if ch == '"' and not escape_next:
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if ch == '{':
+                depth_brace += 1
+            elif ch == '}':
+                depth_brace -= 1
+                # If we just closed an inner object (depth_brace >= 1 means outer object still open)
+                # and we're inside an array, record this as a safe trim point
+                if depth_brace >= 1 and depth_bracket >= 1:
+                    last_complete_obj_end = i
+            elif ch == '[':
+                depth_bracket += 1
+            elif ch == ']':
+                depth_bracket -= 1
+
+        if last_complete_obj_end > 0:
+            trimmed = candidate[:last_complete_obj_end + 1]
+            # Count remaining open brackets/braces in the trimmed portion
+            ob, ob2 = 0, 0
+            s_in = False
+            s_esc = False
+            for ch in trimmed:
+                if s_esc:
+                    s_esc = False
+                    continue
+                if ch == '\\' and s_in:
+                    s_esc = True
+                    continue
+                if ch == '"':
+                    s_in = not s_in
+                    continue
+                if s_in:
+                    continue
+                if ch == '[': ob += 1
+                elif ch == ']': ob -= 1
+                elif ch == '{': ob2 += 1
+                elif ch == '}': ob2 -= 1
+            repaired = trimmed + ']' * ob + '}' * ob2
+            try:
+                result = json.loads(repaired)
+                logger.warning(
+                    "Recovered partial JSON via truncation repair (%d chars trimmed)",
+                    len(candidate) - last_complete_obj_end - 1,
+                )
+                return result
+            except json.JSONDecodeError:
+                pass
+
     logger.error("All JSON parsing strategies failed for: %s", text[:500])
     raise json.JSONDecodeError("Could not extract JSON from response", text, 0)
 
@@ -408,6 +486,32 @@ class BriefGenerator:
         """Rate limiter — no-op, API handles its own rate limiting."""
         pass
 
+    @staticmethod
+    def _trim_brief_context(brief_context: dict, max_background_chars: int = 500) -> dict:
+        """Create a trimmed copy of brief_context for use in prompts.
+
+        Removes bulky keys (uploaded doc text, pre-generated text fields, channel plans)
+        and truncates the background to avoid blowing up the prompt token count.
+        """
+        # Keys that are essential for context
+        keep_keys = {
+            "campaign_name", "launch_tier", "brief_type", "objective",
+            "target_audience", "key_insight", "positioning_short",
+            "positioning_detailed", "key_messages", "smp", "background",
+        }
+        trimmed = {}
+        for k, v in brief_context.items():
+            if k not in keep_keys:
+                continue
+            if k == "background" and isinstance(v, str) and len(v) > max_background_chars:
+                # Truncate long backgrounds (which may include uploaded doc dumps)
+                trimmed[k] = v[:max_background_chars] + "..."
+            elif isinstance(v, str) and len(v) > 1000:
+                trimmed[k] = v[:1000] + "..."
+            else:
+                trimmed[k] = v
+        return trimmed
+
     def _call_claude(self, user_prompt: str, max_tokens: int = 4096) -> dict[str, Any]:
         """Send a prompt to the configured LLM and return parsed JSON.
 
@@ -420,11 +524,19 @@ class BriefGenerator:
         """
         logger.info("Calling LLM API (%d max tokens)...", max_tokens)
 
-        raw_text = llm_provider.generate(
-            system=self.system_prompt,
-            user_prompt=user_prompt + "\n\nIMPORTANT: Return ONLY valid JSON. No markdown fences, no explanatory text before or after the JSON.",
-            max_tokens=max_tokens,
-        )
+        try:
+            raw_text = llm_provider.generate(
+                system=self.system_prompt,
+                user_prompt=user_prompt + "\n\nIMPORTANT: Return ONLY valid JSON. No markdown fences, no explanatory text before or after the JSON.",
+                max_tokens=max_tokens,
+            )
+        except Exception as e:
+            logger.error("LLM API call failed: %s", e)
+            return {}
+
+        if not raw_text:
+            logger.error("LLM returned empty/None response")
+            return {}
 
         raw_text = raw_text.strip()
         logger.debug("Raw API response length: %d chars", len(raw_text))
@@ -433,17 +545,22 @@ class BriefGenerator:
             result = _parse_json_response(raw_text)
             return result
         except json.JSONDecodeError:
-            logger.error("JSON parse failed. Raw response: %s", raw_text[:500])
-            # Try one more time with a stricter prompt
+            logger.error("JSON parse failed. Raw response (first 500 chars): %s", raw_text[:500])
+            logger.error("Raw response (last 200 chars): %s", raw_text[-200:])
+            # Try one more time with a stricter prompt and higher token limit
             try:
+                retry_max_tokens = min(max_tokens * 2, 8192)
                 retry_text = llm_provider.generate(
                     system="You are a JSON generator. Return ONLY valid JSON. No other text.",
-                    user_prompt=user_prompt + "\n\nReturn ONLY a valid JSON object or array. No markdown, no explanations.",
-                    max_tokens=max_tokens,
+                    user_prompt=user_prompt + "\n\nReturn ONLY a valid JSON object or array. No markdown, no explanations. Keep the response concise.",
+                    max_tokens=retry_max_tokens,
                 )
+                if not retry_text:
+                    logger.error("Retry returned empty/None response")
+                    return {}
                 return _parse_json_response(retry_text.strip())
-            except Exception:
-                logger.error("Retry also failed.")
+            except Exception as exc:
+                logger.error("Retry also failed: %s", exc)
                 return {}
 
     # ------------------------------------------------------------------
@@ -1054,8 +1171,9 @@ Return a JSON object:
                     "require copywriting skills and hours of effort."
                 ),
             }
+        trimmed_ctx = self._trim_brief_context(brief_context)
         prompt = (
-            f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
+            f"Brief context: {json.dumps(trimmed_ctx, default=str)}\n\n"
             "Generate positioning statements. Return JSON with:\n"
             '"positioning_short": 25-word max positioning statement\n'
             '"positioning_detailed": 100-word detailed positioning statement'
@@ -1078,8 +1196,9 @@ Return a JSON object:
                 "Focus on sourcing great products — let AI handle the listing.",
                 "From photo to published in under 60 seconds.",
             ]
+        trimmed_ctx = self._trim_brief_context(brief_context)
         prompt = (
-            f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
+            f"Brief context: {json.dumps(trimmed_ctx, default=str)}\n\n"
             "Generate 3-5 key messages ranked by impact. "
             'Return JSON: {"messages": ["msg1", "msg2", ...]}'
         )
@@ -1105,12 +1224,14 @@ Return a JSON object:
                 {"asset": "Social Posts (x5)", "spec": "Platform-native formats, 280 chars max", "owner": "Social"},
                 {"asset": "Help Center Article", "spec": "Step-by-step guide with screenshots", "owner": "Support"},
             ]
+        trimmed_ctx = self._trim_brief_context(brief_context)
         prompt = (
-            f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
-            "Generate a list of content deliverables needed for this campaign. "
+            f"Brief context: {json.dumps(trimmed_ctx, default=str)}\n\n"
+            "Generate a list of 6-8 content deliverables needed for this campaign. "
+            "Keep each spec under 15 words. "
             'Return JSON: {"deliverables": [{"asset": str, "spec": str, "owner": str}, ...]}'
         )
-        result = self._call_claude(prompt, max_tokens=2048)
+        result = self._call_claude(prompt, max_tokens=4096)
         # Handle various response formats
         if isinstance(result, list):
             return result
@@ -1131,8 +1252,9 @@ Return a JSON object:
                 {"phase": "Sustain", "duration": "Week 4-6", "actions": ["Tutorial content", "Success stories", "Retargeting ads"]},
                 {"phase": "Optimize", "duration": "Week 7+", "actions": ["Analyze metrics", "A/B test refinements", "Scale winning channels"]},
             ]
+        trimmed_ctx = self._trim_brief_context(brief_context)
         prompt = (
-            f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
+            f"Brief context: {json.dumps(trimmed_ctx, default=str)}\n\n"
             "Generate a phased campaign timeline with 4 phases: Awareness, Launch, Sustain, Optimize.\n\n"
             "IMPORTANT RULES:\n"
             "- Use RELATIVE durations only: 'Week 1-2', 'Week 3', 'Week 4-6', 'Week 7+'\n"
@@ -1141,7 +1263,7 @@ Return a JSON object:
             "- List 3-5 actions per phase, not more\n\n"
             'Return JSON: {"timeline": [{"phase": str, "duration": str, "actions": [str]}, ...]}'
         )
-        result = self._call_claude(prompt, max_tokens=2048)
+        result = self._call_claude(prompt, max_tokens=4096)
         if isinstance(result, list):
             return result
         timeline = result.get("timeline", []) if result else []
@@ -1162,8 +1284,9 @@ Return a JSON object:
                 {"metric": "Time to First AI Listing", "target": "<5 minutes", "measurement": "User session data"},
                 {"metric": "Seller Satisfaction (CSAT)", "target": ">80%", "measurement": "Post-use survey"},
             ]
+        trimmed_ctx = self._trim_brief_context(brief_context)
         prompt = (
-            f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
+            f"Brief context: {json.dumps(trimmed_ctx, default=str)}\n\n"
             "Generate 5-7 success metrics/KPIs for this campaign. "
             'Return JSON: {"kpis": [{"metric": str, "target": str, "measurement": str}, ...]}'
         )
