@@ -551,7 +551,11 @@ div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
 }
 
 /* Divider */
-hr { border-color: rgba(194,198,213,0.15) !important; }
+hr {
+    border: none !important;
+    border-top: 2px solid #c2c6d5 !important;
+    margin: 16px 0 !important;
+}
 
 /* Larger, bolder field labels */
 div[data-testid="stTextInput"] label p,
