@@ -3071,10 +3071,28 @@ def render_brief_builder() -> None:
             # Helper: add markdown-aware paragraph (handles **bold**)
             import re as _re
 
+            def _clean_markdown(text):
+                """Remove markdown escape characters and artifacts for Word output."""
+                text = str(text)
+                # Remove backslash escapes: \$ \# \* \_ \[ \] \( \) etc.
+                text = _re.sub(r'\\([\\$#*_\[\](){}|>~`!+\-.])', r'\1', text)
+                # Remove markdown link syntax: [text](url) → text
+                text = _re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+                # Remove markdown image syntax: ![alt](url) → alt
+                text = _re.sub(r'!\[([^\]]*)\]\([^)]+\)', r'\1', text)
+                # Remove horizontal rules (---, ***, ___)
+                text = _re.sub(r'^[\-\*_]{3,}\s*$', '', text, flags=_re.MULTILINE)
+                # Remove heading markers: ### text → text
+                text = _re.sub(r'^#{1,6}\s+', '', text, flags=_re.MULTILINE)
+                return text.strip()
+
             def _add_rich_paragraph(doc, text, style_name="Normal"):
                 """Add a paragraph that converts **bold** markers to actual bold runs."""
+                text = _clean_markdown(str(text))
+                if not text:
+                    return None
                 p = doc.add_paragraph(style=style_name)
-                parts = _re.split(r'(\*\*.*?\*\*)', str(text))
+                parts = _re.split(r'(\*\*.*?\*\*)', text)
                 for part in parts:
                     if part.startswith("**") and part.endswith("**"):
                         run = p.add_run(part[2:-2])
@@ -3134,11 +3152,11 @@ def render_brief_builder() -> None:
                 h.paragraph_format.space_before = Pt(18)
                 p = doc.add_paragraph()
                 p.add_run("Short: ").bold = True
-                p.add_run(brief["positioning_short"])
+                p.add_run(_clean_markdown(brief["positioning_short"]))
                 if brief.get("positioning_detailed"):
                     p2 = doc.add_paragraph()
                     p2.add_run("Detailed: ").bold = True
-                    p2.add_run(brief["positioning_detailed"])
+                    p2.add_run(_clean_markdown(brief["positioning_detailed"]))
 
             if brief.get("key_messages"):
                 h = doc.add_heading("Key Messages", level=2)
@@ -3146,8 +3164,7 @@ def render_brief_builder() -> None:
                 msgs = brief["key_messages"]
                 if isinstance(msgs, list):
                     for i, m in enumerate(msgs, 1):
-                        # Clean up any JSON artifacts
-                        m_clean = str(m).strip().strip('"').strip("'")
+                        m_clean = _clean_markdown(str(m).strip().strip('"').strip("'"))
                         p = doc.add_paragraph(style="List Number")
                         p.add_run(m_clean)
                 elif isinstance(msgs, str):
@@ -3156,13 +3173,13 @@ def render_brief_builder() -> None:
                         if line:
                             _add_rich_paragraph(doc, line)
                 else:
-                    doc.add_paragraph(str(msgs))
+                    doc.add_paragraph(_clean_markdown(str(msgs)))
 
             if brief.get("smp"):
                 h = doc.add_heading("Single-Minded Proposition (SMP)", level=2)
                 h.paragraph_format.space_before = Pt(18)
                 p = doc.add_paragraph()
-                p.add_run(brief["smp"]).bold = True
+                p.add_run(_clean_markdown(brief["smp"])).bold = True
                 p.paragraph_format.space_after = Pt(4)
                 if brief.get("smp_pass") is not None:
                     qc = doc.add_paragraph()
