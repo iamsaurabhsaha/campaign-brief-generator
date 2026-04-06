@@ -1893,7 +1893,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_profile"):
                     st.session_state.audience_profile = None
                     st.rerun()
-            if st.button("**Insert** Profile", key="use_profile"):
+            if st.button("**Insert** Target Audience", key="use_profile"):
                 brief["target_audience"] = st.session_state.audience_profile
                 st.session_state.current_brief = brief
                 st.session_state.audience_profile = None
