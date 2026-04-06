@@ -632,6 +632,121 @@ div[data-testid="stTextInput"] {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* ====== Mobile Responsive (screens under 768px) ====== */
+@media (max-width: 768px) {
+    /* Reduce container padding */
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 1rem !important;
+    }
+
+    /* Step badges: smaller, wrap nicely */
+    .step-container {
+        gap: 4px !important;
+        margin-bottom: 16px !important;
+    }
+    .step-badge {
+        padding: 6px 12px !important;
+        font-size: 0.7em !important;
+    }
+
+    /* Stack columns vertically on mobile */
+    div[data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+
+    /* Keep Back + Continue side by side (they're narrow enough) */
+    div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div {
+        flex: 1 1 48% !important;
+        min-width: 48% !important;
+    }
+
+    /* Buttons: ensure min touch target 44px */
+    div[data-testid="stButton"] button,
+    div[data-testid="stDownloadButton"] button {
+        min-height: 44px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Primary buttons: slightly less padding on mobile */
+    div[data-testid="stButton"] button[kind="primary"],
+    div[data-testid="stButton"] > button[kind="primary"] {
+        padding: 0.5rem 1rem !important;
+    }
+
+    /* Field labels: slightly smaller on mobile */
+    div[data-testid="stTextInput"] label p,
+    div[data-testid="stTextArea"] label p,
+    div[data-testid="stSelectbox"] label p,
+    div[data-testid="stFileUploader"] label p {
+        font-size: 1rem !important;
+    }
+
+    /* Step headings smaller */
+    h3 {
+        font-size: 1.3rem !important;
+    }
+
+    /* App title smaller */
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Markdown h4 sections (Key Insight, Positioning, etc.) */
+    h4 {
+        font-size: 1rem !important;
+    }
+
+    /* Tables: smaller text, horizontal scroll */
+    div[data-testid="stDataFrame"] {
+        overflow-x: auto !important;
+    }
+
+    /* Expanders: less padding */
+    .stExpander {
+        padding: 8px !important;
+    }
+
+    /* Metric cards: smaller */
+    .metric-card {
+        padding: 12px !important;
+    }
+    .metric-value {
+        font-size: 1.6em !important;
+    }
+}
+
+/* Extra small screens (under 480px) */
+@media (max-width: 480px) {
+    .block-container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Step badges: even more compact */
+    .step-badge {
+        padding: 4px 8px !important;
+        font-size: 0.65em !important;
+    }
+
+    /* Force all columns to stack */
+    div[data-testid="stHorizontalBlock"] > div {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+
+    /* Back + Continue also stack on very small screens */
+    div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+}
 </style>
 """
 
