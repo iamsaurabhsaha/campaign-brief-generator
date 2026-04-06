@@ -654,12 +654,12 @@ div[data-testid="stTextInput"] {
         flex: 0 0 auto !important;
     }
 
-    /* Stack columns vertically on mobile */
-    div[data-testid="stHorizontalBlock"] {
+    /* Stack columns vertically on mobile — except alert+dismiss rows */
+    div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stAlert"])) {
         flex-wrap: wrap !important;
         gap: 8px !important;
     }
-    div[data-testid="stHorizontalBlock"] > div {
+    div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stAlert"])) > div {
         flex: 1 1 100% !important;
         min-width: 100% !important;
     }
@@ -691,15 +691,6 @@ div[data-testid="stTextInput"] {
         align-items: flex-start !important;
     }
 
-    /* Warning + dismiss: keep dismiss inline, not stacked */
-    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlertContentWarning"]) > div {
-        flex: unset !important;
-        min-width: unset !important;
-    }
-    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlertContentWarning"]) {
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-    }
 
     /* Buttons: ensure min touch target 44px */
     div[data-testid="stButton"] button,
