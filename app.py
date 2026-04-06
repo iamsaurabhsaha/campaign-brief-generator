@@ -3075,6 +3075,20 @@ def render_brief_builder() -> None:
                 section.left_margin = Inches(0.75)
                 section.right_margin = Inches(0.75)
 
+                # Page border: Box style, solid line, ½pt width, black
+                from docx.oxml.ns import qn, nsdecls
+                from docx.oxml import parse_xml
+                sectPr = section._sectPr
+                pgBorders = parse_xml(
+                    f'<w:pgBorders {nsdecls("w")} w:offsetFrom="page">'
+                    '  <w:top w:val="single" w:sz="4" w:space="24" w:color="auto"/>'
+                    '  <w:left w:val="single" w:sz="4" w:space="24" w:color="auto"/>'
+                    '  <w:bottom w:val="single" w:sz="4" w:space="24" w:color="auto"/>'
+                    '  <w:right w:val="single" w:sz="4" w:space="24" w:color="auto"/>'
+                    '</w:pgBorders>'
+                )
+                sectPr.append(pgBorders)
+
             # Helper: add markdown-aware paragraph (handles **bold**)
             import re as _re
 
@@ -3113,12 +3127,15 @@ def render_brief_builder() -> None:
                 for paragraph in cell.paragraphs:
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-            def _format_table_headers(table, center_col_indices=None):
-                """Center-align all header cells and optionally mark specific columns for centering."""
+            def _format_table_headers(table):
+                """Center-align and bold all header cells."""
                 for cell in table.rows[0].cells:
-                    _center_cell(cell)
-                    for run in cell.paragraphs[0].runs:
-                        run.bold = True
+                    # Re-set text via a bold run for reliable formatting
+                    text = cell.text
+                    cell.paragraphs[0].clear()
+                    run = cell.paragraphs[0].add_run(text)
+                    run.bold = True
+                    cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
             def _add_section(title, content):
                 """Add a headed section with proper spacing."""
