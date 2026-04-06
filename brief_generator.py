@@ -1102,16 +1102,11 @@ Return a JSON object:
             "Generate a list of content deliverables needed for this campaign. "
             'Return JSON: {"deliverables": [{"asset": str, "spec": str, "owner": str}, ...]}'
         )
-        self._rate_limit()
-        try:
-            raw_text = llm_provider.generate(
-                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
-            )
-            result = _parse_json_response(raw_text)
-            return result.get("deliverables", []) if result else []
-        except Exception as e:
-            logger.error("generate_deliverables error: %s", e)
-            return []
+        result = self._call_claude(prompt, max_tokens=2048)
+        deliverables = result.get("deliverables", []) if result else []
+        if not deliverables:
+            raise ValueError("Failed to generate deliverables. Please try again.")
+        return deliverables
 
     def generate_timeline(self, brief_context: dict) -> list:
         """Generate phased campaign timeline."""
@@ -1124,19 +1119,19 @@ Return a JSON object:
             ]
         prompt = (
             f"Brief context: {json.dumps(brief_context, default=str)}\n\n"
-            "Generate a phased campaign timeline with 4 phases: Awareness, Launch, Sustain, Optimize. "
+            "Generate a phased campaign timeline with 4 phases: Awareness, Launch, Sustain, Optimize.\n\n"
+            "IMPORTANT RULES:\n"
+            "- Use RELATIVE durations only: 'Week 1-2', 'Week 3', 'Week 4-6', 'Week 7+'\n"
+            "- NEVER use specific calendar dates, months, or years (no 'October 2016', no 'Q4 2026')\n"
+            "- Keep each action to ONE concise sentence (under 20 words)\n"
+            "- List 3-5 actions per phase, not more\n\n"
             'Return JSON: {"timeline": [{"phase": str, "duration": str, "actions": [str]}, ...]}'
         )
-        self._rate_limit()
-        try:
-            raw_text = llm_provider.generate(
-                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
-            )
-            result = _parse_json_response(raw_text)
-            return result.get("timeline", []) if result else []
-        except Exception as e:
-            logger.error("generate_timeline error: %s", e)
-            return []
+        result = self._call_claude(prompt, max_tokens=2048)
+        timeline = result.get("timeline", []) if result else []
+        if not timeline:
+            raise ValueError("Failed to generate timeline. Please try again.")
+        return timeline
 
     def generate_kpis(self, brief_context: dict) -> list:
         """Generate success metrics and KPIs."""
@@ -1153,16 +1148,11 @@ Return a JSON object:
             "Generate 5-7 success metrics/KPIs for this campaign. "
             'Return JSON: {"kpis": [{"metric": str, "target": str, "measurement": str}, ...]}'
         )
-        self._rate_limit()
-        try:
-            raw_text = llm_provider.generate(
-                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
-            )
-            result = _parse_json_response(raw_text)
-            return result.get("kpis", []) if result else []
-        except Exception as e:
-            logger.error("generate_kpis error: %s", e)
-            return []
+        result = self._call_claude(prompt, max_tokens=2048)
+        kpis = result.get("kpis", []) if result else []
+        if not kpis:
+            raise ValueError("Failed to generate KPIs. Please try again.")
+        return kpis
 
     # ------------------------------------------------------------------
     # 13. help_write_background
