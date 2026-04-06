@@ -740,6 +740,7 @@ def _check_coherence(campaign_name: str, background: str, objective: str) -> str
 def init_session_state() -> None:
     """Initialize all session state variables."""
     if "wizard_step" not in st.session_state:
+        st.session_state._nav_from_button = True
         st.session_state.wizard_step = 1
     if "current_brief" not in st.session_state:
         st.session_state.current_brief = {}
@@ -1490,19 +1491,26 @@ _NAME_TO_STEP = {v: k for k, v in _STEP_NAMES.items()}
 
 def render_brief_builder() -> None:
     """Render the AI Brief Builder wizard tab."""
-    # Sync query params → session state (on page load / browser back-forward)
-    url_step = st.query_params.get("step", "")
-    if url_step and url_step in _NAME_TO_STEP:
-        url_step_num = _NAME_TO_STEP[url_step]
-        if url_step_num != st.session_state.wizard_step:
-            st.session_state.wizard_step = url_step_num
-
     step = st.session_state.wizard_step
 
-    # Sync session state → query params
+    # Sync session state → URL (update URL to match current step)
     expected_name = _STEP_NAMES.get(step, "setup")
-    if st.query_params.get("step") != expected_name:
-        st.query_params["step"] = expected_name
+    current_url_step = st.query_params.get("step", "")
+
+    if current_url_step != expected_name:
+        # Check if URL changed externally (browser back/forward or direct URL)
+        # vs internally (button click changed wizard_step)
+        if current_url_step in _NAME_TO_STEP and not st.session_state.get("_nav_from_button"):
+            # URL was changed by browser — follow the URL
+            st.session_state.wizard_step = _NAME_TO_STEP[current_url_step]
+            step = st.session_state.wizard_step
+            expected_name = _STEP_NAMES.get(step, "setup")
+        else:
+            # Step was changed by button — update URL to match
+            st.query_params["step"] = expected_name
+
+    # Clear the navigation flag
+    st.session_state._nav_from_button = False
 
     render_step_indicators(step)
 
@@ -1553,6 +1561,7 @@ def render_brief_builder() -> None:
         """, unsafe_allow_html=True)
 
         if st.button("Start New Brief →", type="primary", use_container_width=True):
+            st.session_state._nav_from_button = True
             st.session_state.wizard_step = 1
             st.session_state.current_brief = {}
             st.session_state.brief_completed = None
@@ -1671,6 +1680,7 @@ def render_brief_builder() -> None:
                 brief["launch_tier"] = launch_tier
                 brief["brief_type"] = "Campaign Brief"
                 st.session_state.current_brief = brief
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 2
                 st.rerun()
 
@@ -2081,6 +2091,7 @@ def render_brief_builder() -> None:
         with col_back:
 
             if st.button("← Back", use_container_width=True):
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 1
                 st.rerun()
         with col_next:
@@ -2116,6 +2127,7 @@ def render_brief_builder() -> None:
                     st.session_state.current_brief = brief
                     st.session_state.coherence_override = False
                     st.session_state.coherence_mismatch = None
+                    st.session_state._nav_from_button = True
                     st.session_state.wizard_step = 3
                     st.rerun()
 
@@ -2542,6 +2554,7 @@ def render_brief_builder() -> None:
         with col_back:
 
             if st.button("← Back", use_container_width=True, key="back3"):
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 2
                 st.rerun()
         with col_next:
@@ -2576,6 +2589,7 @@ def render_brief_builder() -> None:
                     validation_placeholder.error(f"Please fill in: {', '.join(missing)}")
                 else:
                     st.session_state.current_brief = brief
+                    st.session_state._nav_from_button = True
                     st.session_state.wizard_step = 4
                     st.rerun()
 
@@ -3005,6 +3019,7 @@ def render_brief_builder() -> None:
         with col_back:
 
             if st.button("← Back", use_container_width=True, key="back4"):
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 3
                 st.rerun()
         with col_next:
@@ -3038,6 +3053,7 @@ def render_brief_builder() -> None:
                     validation_placeholder.error(f"Please fill in: {', '.join(missing)}")
                 else:
                     st.session_state.current_brief = brief
+                    st.session_state._nav_from_button = True
                     st.session_state.wizard_step = 5
                     st.rerun()
 
@@ -3181,6 +3197,7 @@ def render_brief_builder() -> None:
         with col_back:
 
             if st.button("← Back", use_container_width=True, key="back5"):
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 4
                 st.rerun()
         with col_next:
@@ -3199,6 +3216,7 @@ def render_brief_builder() -> None:
                     if st.session_state.generated_raci:
                         brief["raci"] = st.session_state.generated_raci
                     st.session_state.current_brief = brief
+                    st.session_state._nav_from_button = True
                     st.session_state.wizard_step = 6
                     st.rerun()
 
@@ -3504,11 +3522,13 @@ def render_brief_builder() -> None:
         col_back2, col_done = st.columns(2)
         with col_back2:
             if st.button("← Back", use_container_width=True, key="back6"):
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 5
                 st.rerun()
         with col_done:
             if st.button("Done ✓", type="primary", use_container_width=True, key="done_brief"):
                 st.session_state.brief_completed = brief.get("campaign_name", "Brief")
+                st.session_state._nav_from_button = True
                 st.session_state.wizard_step = 7
                 st.rerun()
 
@@ -3974,6 +3994,7 @@ def render_brief_library() -> None:
                     with btn_cols[0]:
                         if st.button("Edit", key=f"edit_{i}", use_container_width=True):
                             st.session_state.current_brief = brief.copy()
+                            st.session_state._nav_from_button = True
                             st.session_state.wizard_step = 1
                             st.info("Brief loaded into Builder. Switch to the AI Brief Builder tab to edit.")
                     with btn_cols[1]:
@@ -4139,6 +4160,7 @@ def render_templates() -> None:
                 ):
                     st.session_state.current_brief = template["defaults"].copy()
                     st.session_state.current_brief["campaign_name"] = ""
+                    st.session_state._nav_from_button = True
                     st.session_state.wizard_step = 1
                     # Reset generated content
                     st.session_state.generated_names = []
