@@ -2081,51 +2081,58 @@ def render_brief_builder() -> None:
 
 
                         st.rerun()
+            # Track if Extract Insight was clicked
+            _do_extract = False
+            _do_proof_insight = False
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("Extract Insight", key="btn_extract_insight", use_container_width=True):
-                    # Sync current form values so generator has full context
-                    brief["key_insight"] = key_insight or brief.get("key_insight", "")
-                    st.session_state.current_brief = brief
-                    if generator and not st.session_state.demo_mode:
-                        with st.spinner("Extracting key insight... (this may take a few seconds)"):
-                            try:
-                                # Use background without uploaded doc dump for faster processing
-                                bg_for_insight = brief.get("background", "")
-                                if "--- Uploaded Documents ---" in bg_for_insight:
-                                    bg_for_insight = bg_for_insight.split("--- Uploaded Documents ---")[0].strip()
-                                insight = generator.extract_insight(
-                                    bg_for_insight[:3000],
-                                    brief.get("target_audience", "")[:2000],
-                                )
-                                st.session_state.ai_insight = insight
-                            except Exception as e:
-                                st.error(f"Error: {e}")
-                                st.stop()
-                    else:
-                        st.session_state.ai_insight = (
-                            "Professional sellers spend 15+ hours per week on listing creation -- "
-                            "they want more time selling, not typing descriptions. The tedium of "
-                            "manual listing isn't just annoying, it's actively costing them money."
-                        )
-                    st.rerun()
+                    _do_extract = True
+            # Handle Extract Insight outside the column so spinner is full-width
+            if _do_extract:
+                brief["key_insight"] = key_insight or brief.get("key_insight", "")
+                st.session_state.current_brief = brief
+                if generator and not st.session_state.demo_mode:
+                    bg_for_insight = brief.get("background", "")
+                    if "--- Uploaded Documents ---" in bg_for_insight:
+                        bg_for_insight = bg_for_insight.split("--- Uploaded Documents ---")[0].strip()
+                    with st.spinner("Extracting key insight... (this may take a few seconds)"):
+                        try:
+                            insight = generator.extract_insight(
+                                bg_for_insight[:3000],
+                                brief.get("target_audience", "")[:2000],
+                            )
+                            st.session_state.ai_insight = insight
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+                            st.stop()
+                else:
+                    st.session_state.ai_insight = (
+                        "Professional sellers spend 15+ hours per week on listing creation -- "
+                        "they want more time selling, not typing descriptions. The tedium of "
+                        "manual listing isn't just annoying, it's actively costing them money."
+                    )
+                st.rerun()
             with col2:
                 if st.button("Proofread", key="btn_proof_insight", use_container_width=True):
-                    if not key_insight.strip():
-                        st.session_state.insight_warning = "Please type an insight first before proofreading."
-                        st.rerun()
-                    elif generator and not st.session_state.demo_mode:
-                        with st.spinner("Proofreading..."):
-                            try:
-                                proofed = generator.proofread_text(key_insight)
-                                st.session_state.ai_insight = _proofread_or_approve(key_insight, proofed)
-                            except Exception as e:
-                                st.error(f"Error: {e}")
-                                st.stop()
-                        st.rerun()
-                    else:
-                        st.session_state.ai_insight = key_insight.strip() + " [Proofread: looks good -- clear and emotionally resonant.]"
-                        st.rerun()
+                    _do_proof_insight = True
+            # Handle Proofread outside the column
+            if _do_proof_insight:
+                if not key_insight.strip():
+                    st.session_state.insight_warning = "Please type an insight first before proofreading."
+                    st.rerun()
+                elif generator and not st.session_state.demo_mode:
+                    with st.spinner("Proofreading..."):
+                        try:
+                            proofed = generator.proofread_text(key_insight)
+                            st.session_state.ai_insight = _proofread_or_approve(key_insight, proofed)
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+                            st.stop()
+                    st.rerun()
+                else:
+                    st.session_state.ai_insight = key_insight.strip() + " [Proofread: looks good -- clear and emotionally resonant.]"
+                    st.rerun()
 
             if st.session_state.get("ai_insight"):
                 col_ins_info, col_ins_close = st.columns([11, 1])
