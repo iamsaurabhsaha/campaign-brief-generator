@@ -1487,6 +1487,7 @@ def render_brief_builder() -> None:
                             st.session_state.generated_names = names
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.generated_names = [
                         "AI Listing Magic",
@@ -1648,6 +1649,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_background = result
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_background = (
                             f"Based on your input about '{background[:50]}...', here is an expanded background:\n\n"
@@ -1673,6 +1675,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_background = _proofread_or_approve(background, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_background = (
                             "Looks good — no changes needed. Your text is clear and well-written."
@@ -1743,6 +1746,7 @@ def render_brief_builder() -> None:
                                 st.session_state.smart_objective = smart
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     if current_objective and len(current_objective) > 50:
                         st.session_state.smart_objective = (
@@ -1770,6 +1774,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_generated_objective = obj
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_generated_objective = (
                         f"Increase {campaign_name_val or 'feature'} adoption by 40% among professional "
@@ -1842,6 +1847,7 @@ def render_brief_builder() -> None:
                             st.session_state.audience_profile = _format_audience_profile(profile)
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.audience_profile = (
                         "**Primary Persona: The Efficiency-Driven Pro Seller**\n\n"
@@ -1867,6 +1873,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_generated_audience = aud
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_generated_audience = (
                         f"Primary audience for {campaign_name_val or 'this campaign'}: Professional users "
@@ -2035,6 +2042,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_insight = insight
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_insight = (
                             "Professional sellers spend 15+ hours per week on listing creation -- "
@@ -2054,6 +2062,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_insight = _proofread_or_approve(key_insight, proofed)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                         st.rerun()
                     else:
                         st.session_state.ai_insight = key_insight.strip() + " [Proofread: looks good -- clear and emotionally resonant.]"
@@ -2138,6 +2147,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_positioning = pos
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_positioning = {
                         "positioning_short": "eBay Magical Listing turns a single photo into a complete, optimized listing in seconds.",
@@ -2167,6 +2177,7 @@ def render_brief_builder() -> None:
                             }
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                     st.rerun()
                 else:
                     st.session_state.ai_positioning = {
@@ -2243,6 +2254,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_messages = msgs
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_messages = [
                         "List in seconds, not hours -- snap a photo and let AI do the rest.",
@@ -2264,6 +2276,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_messages = _proofread_or_approve(key_messages, proofed)
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                     st.rerun()
                 else:
                     st.session_state.ai_messages = key_messages.strip() + "\n[Proofread: messages are clear and prioritized.]"
@@ -2321,6 +2334,7 @@ def render_brief_builder() -> None:
                             st.session_state.ai_smp = smp
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_smp = {
                         "smp": "One photo. One tap. One perfect listing.",
@@ -2465,6 +2479,7 @@ def render_brief_builder() -> None:
                                 st.rerun()
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.ai_channels = [
                         {"channel": "Email", "tactic": "Segmented drip campaign to pro sellers", "rationale": "High engagement with seller comms", "budget_pct": 25},
@@ -2488,6 +2503,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_channels_proofed = _proofread_or_approve(channel_plan_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_channels_proofed = (
                             channel_plan_text.rstrip(".") + ". "
@@ -2613,6 +2629,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_deliverables_proofed = _proofread_or_approve(deliverables_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_deliverables_proofed = (
                             deliverables_text.rstrip(".") + ". "
@@ -2730,6 +2747,7 @@ def render_brief_builder() -> None:
                                 st.session_state.ai_timeline_proofed = _proofread_or_approve(timeline_text, result)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+                                st.stop()
                     else:
                         st.session_state.ai_timeline_proofed = (
                             timeline_text.rstrip(".") + ". "
@@ -2880,6 +2898,7 @@ def render_brief_builder() -> None:
                         st.session_state.generated_kpis = kpis
                     except Exception as e:
                         st.error(f"Error: {e}")
+                        st.stop()
             else:
                 st.session_state.generated_kpis = [
                     {"metric": "Magical Listing Adoption Rate", "target": "+40% from baseline", "measurement": "Product analytics dashboard"},
@@ -2941,6 +2960,7 @@ def render_brief_builder() -> None:
                             st.session_state.generated_raci = raci
                         except Exception as e:
                             st.error(f"Error: {e}")
+                            st.stop()
                 else:
                     st.session_state.generated_raci = [
                         {"task": "Campaign Strategy & Brief", "responsible": "PMM Lead", "accountable": "VP Marketing", "consulted": "Product, Data Science", "informed": "Executive Team"},
@@ -3279,6 +3299,7 @@ def render_quality_checker() -> None:
                         st.session_state.quality_result = result
                     except Exception as e:
                         st.error(f"Error: {e}")
+                        st.stop()
             else:
                 st.session_state.quality_result = _get_demo_quality_result()
 
@@ -3440,6 +3461,7 @@ def render_creative_concepts() -> None:
                         st.session_state.creative_concepts = concepts
                     except Exception as e:
                         st.error(f"Error: {e}")
+                        st.stop()
             else:
                 st.session_state.creative_concepts = _get_demo_concepts()[:num_concepts]
 
@@ -3507,6 +3529,7 @@ def render_creative_concepts() -> None:
                         st.session_state.email_sequence = emails
                     except Exception as e:
                         st.error(f"Error: {e}")
+                        st.stop()
             else:
                 st.session_state.email_sequence = _get_demo_email_sequence()
 
