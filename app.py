@@ -553,6 +553,24 @@ div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
 /* Divider */
 hr { border-color: rgba(194,198,213,0.15) !important; }
 
+/* Larger, bolder field labels */
+div[data-testid="stTextInput"] label p,
+div[data-testid="stTextArea"] label p,
+div[data-testid="stSelectbox"] label p,
+div[data-testid="stFileUploader"] label p,
+div[data-testid="stMultiSelect"] label p {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: #141d23 !important;
+}
+
+/* Visual separator between form sections — top border on text areas
+   and inputs that follow other inputs (not the first one) */
+div[data-testid="stTextArea"],
+div[data-testid="stTextInput"] {
+    padding-top: 8px !important;
+}
+
 /* Section headers matching Stitch uppercase labels */
 .section-label {
     font-size: 0.7rem;
@@ -1523,6 +1541,7 @@ def render_brief_builder() -> None:
                     st.session_state.generated_names = []
                     st.rerun()
 
+        st.divider()
         tier_options = [""] + list(TIER_DESCRIPTIONS.keys())
         current_tier = brief.get("launch_tier", "")
         tier_index = tier_options.index(current_tier) if current_tier in tier_options else 0
@@ -1723,6 +1742,7 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         # --- Objective (full width) with buttons below ---
+        st.divider()
         obj_value = brief.get("objective", st.session_state.smart_objective or "")
         objective = st.text_input(
             _label("Objective", obj_value),
@@ -1839,6 +1859,7 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         # --- Target Audience (full width) with buttons below ---
+        st.divider()
         ta_value = brief.get("target_audience", "")
         ta_label = "Target Audience" + (" (optional for Light Brief)" if is_light_brief else "")
         target_audience = st.text_area(
