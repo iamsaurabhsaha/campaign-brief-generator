@@ -1765,7 +1765,7 @@ def render_brief_builder() -> None:
                 if not full_background.strip():
                     st.session_state.obj_warning = "Fill in Background/Context first so an objective can be generated."
                     st.rerun()
-                _sync_brief_with_form(brief, background=full_background, objective=objective, target_audience=target_audience)
+                _sync_brief_with_form(brief, background=full_background, objective=objective)
                 campaign_name_val = brief.get("campaign_name", "")
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating objective..."):
