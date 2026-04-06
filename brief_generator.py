@@ -541,7 +541,7 @@ The SMP must be single-minded. If it contains "and", "also", "plus", or communic
         if self.demo_mode:
             return (
                 f"Achieve the following: {raw_objective} — specifically, increase the "
-                "target metric by 30% within 90 days (Q2 2026), measured through "
+                "target metric by 30% within 90 days of campaign launch, measured through "
                 "platform analytics, with weekly progress check-ins against baseline."
             )
 
@@ -554,7 +554,9 @@ SMART criteria:
 - Measurable: How will success be measured? What's the metric?
 - Achievable: Is it realistic given typical resources?
 - Relevant: Does it tie to a business outcome?
-- Time-bound: What's the deadline?
+- Time-bound: Use RELATIVE timeframes only (e.g., "within 90 days of campaign launch", "within 4 months", "in the first 12 weeks"). NEVER use specific calendar dates, months, or years. The timeframe should be relative to the campaign start.
+
+IMPORTANT: Do NOT include any specific calendar dates (no "by December 2016", no "in Q2 2026", etc.). Always use relative durations like "within X days/weeks/months of launch".
 
 Return a JSON object with one key:
 - "smart_objective": string (the reformatted objective, 2-3 sentences max)"""
@@ -1320,8 +1322,8 @@ Return a JSON object with one key:
         if self.demo_mode:
             return (
                 f"Increase {campaign_name or 'feature'} adoption by 40% among professional "
-                "users (those with 50+ monthly transactions) within 90 days of campaign launch "
-                "in Q2 2026, measured through product analytics dashboard with weekly progress "
+                "users (those with 50+ monthly transactions) within 90 days of campaign launch, "
+                "measured through product analytics dashboard with weekly progress "
                 "tracking against the pre-campaign baseline."
             )
 
@@ -1335,7 +1337,9 @@ The objective must be:
 - Measurable: What's the metric and target number?
 - Achievable: Realistic given typical marketing resources
 - Relevant: Tied to a business outcome
-- Time-bound: Has a clear deadline
+- Time-bound: Use RELATIVE timeframes only (e.g., "within 90 days of campaign launch", "within 4 months"). NEVER use specific calendar dates, months, or years.
+
+IMPORTANT: Do NOT include any specific calendar dates. Always use relative durations like "within X days/weeks/months of launch".
 
 Return a JSON object with one key:
 - "objective": string (1-2 sentences, SMART-formatted)"""
