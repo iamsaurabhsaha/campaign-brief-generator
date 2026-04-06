@@ -2088,11 +2088,15 @@ def render_brief_builder() -> None:
                     brief["key_insight"] = key_insight or brief.get("key_insight", "")
                     st.session_state.current_brief = brief
                     if generator and not st.session_state.demo_mode:
-                        with st.spinner("Extracting key insight..."):
+                        with st.spinner("Extracting key insight... (this may take a few seconds)"):
                             try:
+                                # Use background without uploaded doc dump for faster processing
+                                bg_for_insight = brief.get("background", "")
+                                if "--- Uploaded Documents ---" in bg_for_insight:
+                                    bg_for_insight = bg_for_insight.split("--- Uploaded Documents ---")[0].strip()
                                 insight = generator.extract_insight(
-                                    brief.get("background", ""),
-                                    brief.get("target_audience", ""),
+                                    bg_for_insight[:3000],
+                                    brief.get("target_audience", "")[:2000],
                                 )
                                 st.session_state.ai_insight = insight
                             except Exception as e:
