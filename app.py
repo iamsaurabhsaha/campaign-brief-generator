@@ -1481,9 +1481,29 @@ def brief_to_markdown(brief: dict) -> str:
 # ---------------------------------------------------------------------------
 # Tab 1: AI Brief Builder
 # ---------------------------------------------------------------------------
+_STEP_NAMES = {
+    1: "setup", 2: "strategy", 3: "messaging", 4: "execution",
+    5: "governance", 6: "review", 7: "done",
+}
+_NAME_TO_STEP = {v: k for k, v in _STEP_NAMES.items()}
+
+
 def render_brief_builder() -> None:
     """Render the AI Brief Builder wizard tab."""
+    # Sync query params → session state (on page load / browser back-forward)
+    url_step = st.query_params.get("step", "")
+    if url_step and url_step in _NAME_TO_STEP:
+        url_step_num = _NAME_TO_STEP[url_step]
+        if url_step_num != st.session_state.wizard_step:
+            st.session_state.wizard_step = url_step_num
+
     step = st.session_state.wizard_step
+
+    # Sync session state → query params
+    expected_name = _STEP_NAMES.get(step, "setup")
+    if st.query_params.get("step") != expected_name:
+        st.query_params["step"] = expected_name
+
     render_step_indicators(step)
 
     if st.session_state.demo_mode:
