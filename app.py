@@ -3058,22 +3058,73 @@ def render_brief_builder() -> None:
 
             doc = DocxDocument()
 
-            # Title
-            title = doc.add_heading(f"Campaign Brief: {brief.get('campaign_name', 'Untitled')}", level=0)
+            # -- Document-wide defaults --
+            style = doc.styles["Normal"]
+            style.font.name = "Calibri"
+            style.font.size = Pt(11)
+            style.paragraph_format.space_after = Pt(6)
+            style.paragraph_format.line_spacing = 1.15
+
+            # Helper: add markdown-aware paragraph (handles **bold**)
+            import re as _re
+
+            def _add_rich_paragraph(doc, text, style_name="Normal"):
+                """Add a paragraph that converts **bold** markers to actual bold runs."""
+                p = doc.add_paragraph(style=style_name)
+                parts = _re.split(r'(\*\*.*?\*\*)', str(text))
+                for part in parts:
+                    if part.startswith("**") and part.endswith("**"):
+                        run = p.add_run(part[2:-2])
+                        run.bold = True
+                    else:
+                        p.add_run(part)
+                return p
+
+            def _add_section(title, content):
+                """Add a headed section with proper spacing."""
+                h = doc.add_heading(title, level=2)
+                h.paragraph_format.space_before = Pt(18)
+                h.paragraph_format.space_after = Pt(6)
+                if content:
+                    # Split multi-line content into separate paragraphs
+                    for line in str(content).split("\n"):
+                        line = line.strip()
+                        if line:
+                            _add_rich_paragraph(doc, line)
+                else:
+                    doc.add_paragraph("Not specified")
+
+            def _add_table_spacing():
+                """Add a small spacer paragraph after tables."""
+                spacer = doc.add_paragraph()
+                spacer.paragraph_format.space_before = Pt(2)
+                spacer.paragraph_format.space_after = Pt(2)
+
+            # -- Title --
+            title_heading = doc.add_heading(f"Campaign Brief: {brief.get('campaign_name', 'Untitled')}", level=0)
+            title_heading.paragraph_format.space_after = Pt(4)
+
             meta = doc.add_paragraph()
-            meta.add_run(f"Type: {brief.get('brief_type', 'N/A')}  |  Tier: {brief.get('launch_tier', 'N/A')}  |  Date: {brief.get('created', '')[:10]}").font.size = Pt(10)
+            meta_run = meta.add_run(
+                f"Type: {brief.get('brief_type', 'N/A')}  |  "
+                f"Tier: {brief.get('launch_tier', 'N/A')}  |  "
+                f"Date: {brief.get('created', '')[:10]}"
+            )
+            meta_run.font.size = Pt(10)
+            meta_run.font.color.rgb = RGBColor(0x72, 0x77, 0x85)
+            meta.paragraph_format.space_after = Pt(12)
 
-            def _docx_section(title, content):
-                doc.add_heading(title, level=2)
-                doc.add_paragraph(str(content) if content else "Not specified")
+            # -- Sections --
+            _add_section("Background & Context", brief.get("background"))
+            _add_section("Objective", brief.get("objective"))
+            _add_section("Target Audience", brief.get("target_audience"))
 
-            _docx_section("Background & Context", brief.get("background"))
-            _docx_section("Objective", brief.get("objective"))
-            _docx_section("Target Audience", brief.get("target_audience"))
-            _docx_section("Key Insight", brief.get("key_insight"))
+            if brief.get("key_insight"):
+                _add_section("Key Insight", brief.get("key_insight"))
 
             if brief.get("positioning_short"):
-                doc.add_heading("Positioning Statement", level=2)
+                h = doc.add_heading("Positioning Statement", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 p = doc.add_paragraph()
                 p.add_run("Short: ").bold = True
                 p.add_run(brief["positioning_short"])
@@ -3083,23 +3134,39 @@ def render_brief_builder() -> None:
                     p2.add_run(brief["positioning_detailed"])
 
             if brief.get("key_messages"):
-                doc.add_heading("Key Messages", level=2)
+                h = doc.add_heading("Key Messages", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 msgs = brief["key_messages"]
                 if isinstance(msgs, list):
                     for i, m in enumerate(msgs, 1):
-                        doc.add_paragraph(f"{m}", style="List Number")
+                        # Clean up any JSON artifacts
+                        m_clean = str(m).strip().strip('"').strip("'")
+                        p = doc.add_paragraph(style="List Number")
+                        p.add_run(m_clean)
+                elif isinstance(msgs, str):
+                    for line in msgs.split("\n"):
+                        line = line.strip()
+                        if line:
+                            _add_rich_paragraph(doc, line)
                 else:
                     doc.add_paragraph(str(msgs))
 
             if brief.get("smp"):
-                doc.add_heading("Single-Minded Proposition (SMP)", level=2)
+                h = doc.add_heading("Single-Minded Proposition (SMP)", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 p = doc.add_paragraph()
                 p.add_run(brief["smp"]).bold = True
+                p.paragraph_format.space_after = Pt(4)
                 if brief.get("smp_pass") is not None:
-                    doc.add_paragraph(f"Quality Check: {'PASS' if brief['smp_pass'] else 'FAIL'}")
+                    qc = doc.add_paragraph()
+                    label = "PASS" if brief["smp_pass"] else "FAIL"
+                    qc_run = qc.add_run(f"Quality Check: {label}")
+                    qc_run.font.size = Pt(9)
+                    qc_run.font.color.rgb = RGBColor(0x27, 0xAE, 0x60) if brief["smp_pass"] else RGBColor(0xE5, 0x32, 0x38)
 
             if brief.get("channel_plan"):
-                doc.add_heading("Channel Plan", level=2)
+                h = doc.add_heading("Channel Plan", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 table = doc.add_table(rows=1, cols=4)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
@@ -3110,9 +3177,11 @@ def render_brief_builder() -> None:
                     row[1].text = str(ch.get("tactic", ""))
                     row[2].text = str(ch.get("rationale", ""))
                     row[3].text = str(ch.get("budget_pct", ""))
+                _add_table_spacing()
 
             if brief.get("deliverables"):
-                doc.add_heading("Content Deliverables", level=2)
+                h = doc.add_heading("Content Deliverables", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 for d in brief["deliverables"]:
                     if isinstance(d, dict):
                         p = doc.add_paragraph(style="List Bullet")
@@ -3122,7 +3191,8 @@ def render_brief_builder() -> None:
                         doc.add_paragraph(str(d), style="List Bullet")
 
             if brief.get("timeline"):
-                doc.add_heading("Timeline", level=2)
+                h = doc.add_heading("Timeline", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 table = doc.add_table(rows=1, cols=3)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
@@ -3133,14 +3203,19 @@ def render_brief_builder() -> None:
                     row[1].text = str(t.get("duration", ""))
                     acts = t.get("actions", t.get("activities", ""))
                     row[2].text = ", ".join(acts) if isinstance(acts, list) else str(acts)
+                _add_table_spacing()
 
             if brief.get("budget"):
-                doc.add_heading("Budget", level=2)
+                h = doc.add_heading("Budget", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 budget_val = str(brief['budget']).replace("$", "").replace(",", "").strip()
-                doc.add_paragraph(f"Total: ${int(budget_val):,}" if budget_val.isdigit() else f"Total: {brief['budget']}")
+                p = doc.add_paragraph()
+                p.add_run("Total: ").bold = True
+                p.add_run(f"${int(budget_val):,}" if budget_val.isdigit() else brief['budget'])
 
             if brief.get("kpis"):
-                doc.add_heading("Success Metrics / KPIs", level=2)
+                h = doc.add_heading("Success Metrics / KPIs", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 table = doc.add_table(rows=1, cols=3)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
@@ -3150,9 +3225,11 @@ def render_brief_builder() -> None:
                     row[0].text = str(k.get("metric", ""))
                     row[1].text = str(k.get("target", ""))
                     row[2].text = str(k.get("measurement", ""))
+                _add_table_spacing()
 
             if brief.get("raci"):
-                doc.add_heading("RACI Matrix", level=2)
+                h = doc.add_heading("RACI Matrix", level=2)
+                h.paragraph_format.space_before = Pt(18)
                 table = doc.add_table(rows=1, cols=5)
                 table.style = "Light Grid Accent 1"
                 hdr = table.rows[0].cells
@@ -3164,6 +3241,7 @@ def render_brief_builder() -> None:
                     row[2].text = str(r.get("accountable", ""))
                     row[3].text = str(r.get("consulted", ""))
                     row[4].text = str(r.get("informed", ""))
+                _add_table_spacing()
 
             # Save to bytes
             _docx_buffer = io.BytesIO()
