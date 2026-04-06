@@ -1515,10 +1515,8 @@ def render_brief_builder() -> None:
             index=tier_index,
             format_func=lambda t: "Select a launch tier..." if t == "" else f"{t} -- {TIER_DESCRIPTIONS[t]}",
             help=(
-                "**Full Brief:** New platform or company-wide initiative. "
-                "Requires a full 14-section brief plus a dedicated war room.\n\n"
-                "**Full Brief:** Significant new capability. "
-                "Requires a full campaign brief with cross-functional alignment.\n\n"
+                "**Full Brief:** New platform, company-wide initiative, or significant new capability. "
+                "Requires a full 14-section brief with cross-functional alignment.\n\n"
                 "**Light Brief:** Improvement to an existing feature. "
                 "A lighter brief covering key sections is sufficient."
             ),
