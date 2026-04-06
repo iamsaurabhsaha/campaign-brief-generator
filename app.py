@@ -4197,12 +4197,11 @@ def main() -> None:
                 AI-powered campaign brief creation with industry best practices
             </p>
         </div>
-        <div style="background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 8px; padding: 8px 14px; text-align: right; white-space: nowrap;">
-            <div style="display: flex; align-items: center; gap: 6px; justify-content: flex-end;">
-                <div style="width: 7px; height: 7px; border-radius: 50%; background: {_hdr_color};"></div>
-                <span style="font-size: 0.8rem; font-weight: 600; color: #141d23;">{_hdr_label}</span>
-            </div>
-            <div style="font-size: 0.68rem; color: #727785; margin-top: 2px;">{_hdr_model}</div>
+        <div style="display: flex; align-items: center; gap: 8px; background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 20px; padding: 6px 14px; white-space: nowrap;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: {_hdr_color}; flex-shrink: 0;"></div>
+            <span style="font-size: 0.8rem; font-weight: 600; color: #141d23;">{_hdr_label}</span>
+            <span style="font-size: 0.75rem; color: #727785;">·</span>
+            <span style="font-size: 0.75rem; color: #727785;">{_hdr_model}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
