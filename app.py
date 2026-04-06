@@ -2147,8 +2147,8 @@ def render_brief_builder() -> None:
                     if st.button("**Insert** Insight", key="use_insight"):
                         brief["key_insight"] = st.session_state.ai_insight
                         st.session_state.ai_insight = None
-                    st.session_state.current_brief = brief
-                    st.rerun()
+                        st.session_state.current_brief = brief
+                        st.rerun()
 
             st.divider()
         else:
@@ -2199,34 +2199,38 @@ def render_brief_builder() -> None:
 
 
                     st.rerun()
+        _do_gen_pos = False
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Positioning", key="btn_gen_pos", use_container_width=True):
-                brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
-                brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
-                if not is_light_brief:
-                    brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
-                st.session_state.current_brief = brief
-                if generator and not st.session_state.demo_mode:
-                    with st.spinner("Generating positioning statements..."):
-                        try:
-                            pos = generator.generate_positioning(brief)
-                            st.session_state.ai_positioning = pos
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                            st.stop()
-                else:
-                    st.session_state.ai_positioning = {
-                        "positioning_short": "eBay Magical Listing turns a single photo into a complete, optimized listing in seconds.",
-                        "positioning_detailed": (
-                            "For professional sellers who are tired of spending hours on manual listings, "
-                            "eBay Magical Listing is an AI-powered tool that transforms a single product "
-                            "photo into a fully optimized listing with title, description, item specifics, "
-                            "and pricing -- saving up to 80% of listing time while improving listing "
-                            "quality and conversion rates compared to manual creation."
-                        ),
-                    }
-                st.rerun()
+                _do_gen_pos = True
+        # Handle outside column for full-width spinner
+        if _do_gen_pos:
+            brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
+            brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
+            if not is_light_brief:
+                brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
+            st.session_state.current_brief = brief
+            if generator and not st.session_state.demo_mode:
+                with st.spinner("Generating positioning statements..."):
+                    try:
+                        pos = generator.generate_positioning(brief)
+                        st.session_state.ai_positioning = pos
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+                        st.stop()
+            else:
+                st.session_state.ai_positioning = {
+                    "positioning_short": "eBay Magical Listing turns a single photo into a complete, optimized listing in seconds.",
+                    "positioning_detailed": (
+                        "For professional sellers who are tired of spending hours on manual listings, "
+                        "eBay Magical Listing is an AI-powered tool that transforms a single product "
+                        "photo into a fully optimized listing with title, description, item specifics, "
+                        "and pricing -- saving up to 80% of listing time while improving listing "
+                        "quality and conversion rates compared to manual creation."
+                    ),
+                }
+            st.rerun()
         with col2:
             if st.button("Proofread", key="btn_proof_pos", use_container_width=True):
                 combined = f"{positioning_short}\n\n{positioning_detailed}".strip()
@@ -2269,8 +2273,8 @@ def render_brief_builder() -> None:
                     brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
                     brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
                     st.session_state.ai_positioning = None
-                st.session_state.current_brief = brief
-                st.rerun()
+                    st.session_state.current_brief = brief
+                    st.rerun()
 
         st.divider()
 
@@ -2306,31 +2310,35 @@ def render_brief_builder() -> None:
 
 
                     st.rerun()
+        _do_gen_msgs = False
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Key Messages", key="btn_gen_msgs", use_container_width=True):
-                brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
-                brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
-                if not is_light_brief:
-                    brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
-                st.session_state.current_brief = brief
-                if generator and not st.session_state.demo_mode:
-                    with st.spinner("Generating key messages..."):
-                        try:
-                            msgs = generator.generate_key_messages(brief)
-                            st.session_state.ai_messages = msgs
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                            st.stop()
-                else:
-                    st.session_state.ai_messages = [
-                        "List in seconds, not hours -- snap a photo and let AI do the rest.",
-                        "AI-optimized titles and descriptions that buyers actually search for.",
-                        "Over 10 million sellers already use Magical Listing -- join them.",
-                        "Focus on what you do best: sourcing and selling.",
-                        "Better listings mean better visibility, more traffic, and more sales.",
-                    ]
-                st.rerun()
+                _do_gen_msgs = True
+        # Handle outside column for full-width spinner
+        if _do_gen_msgs:
+            brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
+            brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
+            if not is_light_brief:
+                brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
+            st.session_state.current_brief = brief
+            if generator and not st.session_state.demo_mode:
+                with st.spinner("Generating key messages..."):
+                    try:
+                        msgs = generator.generate_key_messages(brief)
+                        st.session_state.ai_messages = msgs
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+                        st.stop()
+            else:
+                st.session_state.ai_messages = [
+                    "List in seconds, not hours -- snap a photo and let AI do the rest.",
+                    "AI-optimized titles and descriptions that buyers actually search for.",
+                    "Over 10 million sellers already use Magical Listing -- join them.",
+                    "Focus on what you do best: sourcing and selling.",
+                    "Better listings mean better visibility, more traffic, and more sales.",
+                ]
+            st.rerun()
         with col2:
             if st.button("Proofread", key="btn_proof_msgs", use_container_width=True):
                 if not key_messages.strip():
@@ -2366,12 +2374,12 @@ def render_brief_builder() -> None:
                 if st.button("**Insert** Messages", key="use_msgs"):
                     if isinstance(msgs, list):
                         brief["key_messages"] = msgs
-                    brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
-                else:
-                    brief["key_messages_text"] = msgs
-                st.session_state.ai_messages = None
-                st.session_state.current_brief = brief
-                st.rerun()
+                        brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
+                    else:
+                        brief["key_messages_text"] = msgs
+                    st.session_state.ai_messages = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
 
         # --- Single-Minded Proposition (SMP) (skip for Light Brief) ---
         if not is_light_brief:

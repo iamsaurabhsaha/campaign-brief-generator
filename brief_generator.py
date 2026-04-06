@@ -405,9 +405,8 @@ class BriefGenerator:
     # ------------------------------------------------------------------
 
     def _rate_limit(self):
-        """Simple rate limiter."""
-        import time
-        time.sleep(0.5)
+        """Rate limiter — no-op, API handles its own rate limiting."""
+        pass
 
     def _call_claude(self, user_prompt: str, max_tokens: int = 4096) -> dict[str, Any]:
         """Send a prompt to the configured LLM and return parsed JSON.
@@ -628,7 +627,7 @@ Context:
 - Objective: {brief_context.get('objective', 'N/A')}
 - Audience: {brief_context.get('target_audience', 'N/A')}
 - Key Insight: {brief_context.get('key_insight', 'N/A')}
-- Feature: {brief_context.get('feature_description', 'N/A')}
+- Background: {brief_context.get('background', 'N/A')}
 
 An SMP is the ONE thing the audience should take away. It must be:
 - Single-focused (ONE benefit, ONE idea)
@@ -1061,17 +1060,10 @@ Return a JSON object:
             '"positioning_short": 25-word max positioning statement\n'
             '"positioning_detailed": 100-word detailed positioning statement'
         )
-        self._rate_limit()
-        try:
-            raw_text = llm_provider.generate(
-                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
-            )
-            return _parse_json_response(raw_text) or {
-                "positioning_short": "", "positioning_detailed": ""
-            }
-        except Exception as e:
-            logger.error("generate_positioning error: %s", e)
-            return {"positioning_short": "", "positioning_detailed": ""}
+        result = self._call_claude(prompt, max_tokens=2048)
+        if not result or (not result.get("positioning_short") and not result.get("positioning_detailed")):
+            raise ValueError("Failed to generate positioning statements. Please try again.")
+        return result
 
     def generate_key_messages(self, brief_context: dict) -> list:
         """Generate 3-5 ranked key messages."""
@@ -1088,16 +1080,11 @@ Return a JSON object:
             "Generate 3-5 key messages ranked by impact. "
             'Return JSON: {"messages": ["msg1", "msg2", ...]}'
         )
-        self._rate_limit()
-        try:
-            raw_text = llm_provider.generate(
-                system=self.system_prompt, user_prompt=prompt, max_tokens=2048,
-            )
-            result = _parse_json_response(raw_text)
-            return result.get("messages", []) if result else []
-        except Exception as e:
-            logger.error("generate_key_messages error: %s", e)
-            return []
+        result = self._call_claude(prompt, max_tokens=2048)
+        messages = result.get("messages", []) if result else []
+        if not messages:
+            raise ValueError("Failed to generate key messages. Please try again.")
+        return messages
 
     def generate_deliverables(self, brief_context: dict) -> list:
         """Generate list of content deliverables with specs."""
