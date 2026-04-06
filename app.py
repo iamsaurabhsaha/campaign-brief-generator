@@ -1485,6 +1485,9 @@ def render_brief_builder() -> None:
                 value=brief.get("campaign_name", ""),
                 placeholder="e.g., AI Listing Magic Launch",
             )
+            if campaign_name != brief.get("campaign_name", ""):
+                brief["campaign_name"] = campaign_name
+                st.session_state.current_brief = brief
         with col2:
             st.markdown("<div style='height: 28px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
@@ -1535,6 +1538,9 @@ def render_brief_builder() -> None:
                 "A lighter brief covering key sections is sufficient."
             ),
         )
+        if launch_tier != brief.get("launch_tier", ""):
+            brief["launch_tier"] = launch_tier
+            st.session_state.current_brief = brief
 
         st.write("")
         # Validation message placeholder (above buttons)
@@ -1571,6 +1577,9 @@ def render_brief_builder() -> None:
             height=120,
             placeholder="Why is this campaign needed now? What market conditions or competitive moves prompted it?",
         )
+        if background != brief.get("background", ""):
+            brief["background"] = background
+            st.session_state.current_brief = brief
 
         uploaded_files = st.file_uploader(
             "Upload supporting documents (optional)",
@@ -1720,6 +1729,9 @@ def render_brief_builder() -> None:
             value=obj_value,
             placeholder="What is the single most important goal?",
         )
+        if objective != brief.get("objective", ""):
+            brief["objective"] = objective
+            st.session_state.current_brief = brief
 
         if st.session_state.get("obj_warning"):
             col_warn, col_warn_dismiss = st.columns([11, 1])
@@ -1835,6 +1847,9 @@ def render_brief_builder() -> None:
             height=100,
             placeholder="Who are we talking to? Be specific about demographics, behaviors, and needs.",
         )
+        if target_audience != brief.get("target_audience", ""):
+            brief["target_audience"] = target_audience
+            st.session_state.current_brief = brief
 
         if st.session_state.get("aud_warning"):
             col_warn, col_warn_dismiss = st.columns([11, 1])
