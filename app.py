@@ -98,134 +98,66 @@ st.components.v1.html(
     height=0,
 )
 
-def _build_css(dark: bool = False) -> str:
-    """Generate the full CSS string for light or dark mode."""
-    # Theme color palette
-    if dark:
-        T = {
-            "bg": "#0F1117", "surface": "#1E1E2E", "surface2": "#262637",
-            "text": "#E0E0E0", "text2": "#9CA3AF", "text_dark": "#E0E0E0",
-            "border": "#374151", "border_light": "rgba(255,255,255,0.08)",
-            "input_bg": "#1E1E2E", "input_border": "#4B5563",
-            "primary": "#4A9EFF", "primary_hover": "#3B8AE8", "primary_shadow": "rgba(74,158,255,0.2)",
-            "primary_dark": "#2563EB",
-            "sec_bg": "#1E3A5F", "sec_border": "#2D5A8E", "sec_text": "#7CB8FF",
-            "sec_hover_bg": "#254B73", "sec_hover_border": "#4A9EFF", "sec_hover_text": "#A5CFFF",
-            "refine_bg": "#2D2640", "refine_border": "#4A3D6B", "refine_text": "#B89CDB",
-            "refine_hover_bg": "#3A3055", "refine_hover_border": "#7C5BAD", "refine_hover_text": "#D4BEF0",
-            "back_bg": "#64748B", "back_hover": "#4B5E73", "back_shadow": "rgba(100,116,139,0.2)",
-            "dismiss_bg": "#2A2A3A", "dismiss_border": "#4B5563", "dismiss_text": "#9CA3AF",
-            "dismiss_hover_bg": "#333345", "dismiss_hover_text": "#E0E0E0",
-            "destruct_border": "#FF6B6B", "destruct_text": "#FF6B6B",
-            "destruct_hover_bg": "#FF6B6B",
-            "success_bg": "#1A2E0F", "warning_bg": "#332B00", "error_bg": "#3D1012",
-            "divider": "#374151",
-            "badge_bg": "#1E1E2E", "badge_border": "#374151", "badge_active_bg": "#2563EB",
-            "badge_completed_bg": "#1A2E0F", "badge_completed_border": "#3D6B20", "badge_completed_text": "#86B817",
-            "focus_ring": "#4A9EFF", "focus_shadow": "rgba(74,158,255,0.2)",
-            "sidebar_bg1": "#0A0E17", "sidebar_bg2": "#111827",
-            "card_bg": "#1E1E2E", "card_border": "rgba(255,255,255,0.08)",
-            "download_border": "#4A9EFF", "download_text": "#4A9EFF",
-            "file_uploader_bg": "#1E1E2E", "file_uploader_hover": "#262637",
-            "tab_border": "#374151", "tab_text": "#9CA3AF", "tab_hover_bg": "#1E3A5F",
-            "label_color": "#E0E0E0",
-            "section_label": "#9CA3AF",
-            "metric_bg": "#1E1E2E",
-        }
-    else:
-        T = {
-            "bg": "#f6faff", "surface": "#FFFFFF", "surface2": "#f8f9fa",
-            "text": "#141d23", "text2": "#727785", "text_dark": "#141d23",
-            "border": "#d0d5dd", "border_light": "rgba(194,198,213,0.15)",
-            "input_bg": "#FFFFFF", "input_border": "#d0d5dd",
-            "primary": "#0064D2", "primary_hover": "#004da4", "primary_shadow": "rgba(0,100,210,0.2)",
-            "primary_dark": "#004da4",
-            "sec_bg": "#DCE9F7", "sec_border": "#90B8E0", "sec_text": "#0054B4",
-            "sec_hover_bg": "#C5DAF0", "sec_hover_border": "#0064D2", "sec_hover_text": "#004da4",
-            "refine_bg": "#EDE9F3", "refine_border": "#C4B5D6", "refine_text": "#5B3E8A",
-            "refine_hover_bg": "#DDD6E8", "refine_hover_border": "#7C5BAD", "refine_hover_text": "#4A2D75",
-            "back_bg": "#475569", "back_hover": "#334155", "back_shadow": "rgba(71,85,105,0.15)",
-            "dismiss_bg": "#F3F4F6", "dismiss_border": "#D1D5DB", "dismiss_text": "#6B7280",
-            "dismiss_hover_bg": "#E5E7EB", "dismiss_hover_text": "#374151",
-            "destruct_border": "#E53238", "destruct_text": "#E53238",
-            "destruct_hover_bg": "#E53238",
-            "success_bg": "#f0f8e4", "warning_bg": "#FFF7E0", "error_bg": "#FDE8E9",
-            "divider": "#c2c6d5",
-            "badge_bg": "#f8f9fa", "badge_border": "#e0e4e8", "badge_active_bg": "#004da4",
-            "badge_completed_bg": "#f0f8e4", "badge_completed_border": "#507200", "badge_completed_text": "#507200",
-            "focus_ring": "#0064D2", "focus_shadow": "rgba(0,100,210,0.15)",
-            "sidebar_bg1": "#0A1628", "sidebar_bg2": "#132238",
-            "card_bg": "white", "card_border": "rgba(194,198,213,0.15)",
-            "download_border": "#004da4", "download_text": "#004da4",
-            "file_uploader_bg": "#ffffff", "file_uploader_hover": "#ecf5fe",
-            "tab_border": "#e0e4e8", "tab_text": "#727785", "tab_hover_bg": "#E8F1FB",
-            "label_color": "#141d23",
-            "section_label": "#727785",
-            "metric_bg": "#ffffff",
-        }
-
-    return f"""
+CUSTOM_CSS = """
 <style>
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* Base */
-html, body, [class*="css"] {{ font-family: 'Inter', sans-serif !important; }}
-#MainMenu {{visibility: hidden;}}
-footer {{visibility: hidden;}}
-header {{visibility: hidden;}}
-
-/* Dark mode: override Streamlit's default background */
-.stApp {{ background-color: {T["bg"]} !important; }}
-.stMain {{ background-color: {T["bg"]} !important; }}
+html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
 
 /* Reduce padding */
-.block-container {{ padding-top: 2rem; padding-bottom: 1rem; max-width: 1200px; }}
+.block-container { padding-top: 2rem; padding-bottom: 1rem; max-width: 1200px; }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, {T["sidebar_bg1"]} 0%, {T["sidebar_bg2"]} 100%) !important;
-}}
-section[data-testid="stSidebar"] * {{ color: #C8D0DA !important; }}
+/* Dark Sidebar matching Stitch #0A1628 */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0A1628 0%, #132238 100%) !important;
+}
+section[data-testid="stSidebar"] * { color: #C8D0DA !important; }
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {{ color: #FFFFFF !important; }}
-section[data-testid="stSidebar"] hr {{ border-color: {T["border_light"]} !important; }}
+section[data-testid="stSidebar"] h3 { color: #FFFFFF !important; }
+section[data-testid="stSidebar"] hr { border-color: rgba(255,255,255,0.08) !important; }
+section[data-testid="stSidebar"] .stSelectbox label,
+section[data-testid="stSidebar"] .stMultiSelect label { color: #C8D0DA !important; }
 
-/* Tab styling */
-.stTabs [data-baseweb="tab-list"] {{
+/* Tab styling matching Stitch - blue underline active */
+.stTabs [data-baseweb="tab-list"] {
     gap: 0;
-    border-bottom: 2px solid {T["tab_border"]};
+    border-bottom: 2px solid #e0e4e8;
     background: transparent;
-}}
-.stTabs [data-baseweb="tab"] {{
+}
+.stTabs [data-baseweb="tab"] {
     padding: 12px 24px;
     font-weight: 500;
     font-size: 0.9rem;
-    color: {T["tab_text"]};
+    color: #727785;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
-}}
-.stTabs [data-baseweb="tab"]:hover {{
-    color: {T["primary"]};
-    background: {T["tab_hover_bg"]};
-}}
-.stTabs [aria-selected="true"] {{
-    color: {T["primary"]} !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #0064D2;
+    background: #E8F1FB;
+}
+.stTabs [aria-selected="true"] {
+    color: #0064D2 !important;
     font-weight: 700 !important;
-    border-bottom: 3px solid {T["primary"]} !important;
-}}
+    border-bottom: 3px solid #0064D2 !important;
+}
 
-/* Step indicator badges */
-.step-container {{
+/* Step indicator badges matching Stitch */
+.step-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
     margin-bottom: 28px;
     flex-wrap: wrap;
-}}
-.step-badge {{
+}
+.step-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -233,239 +165,322 @@ section[data-testid="stSidebar"] hr {{ border-color: {T["border_light"]} !import
     border-radius: 24px;
     font-size: 0.8em;
     font-weight: 600;
-    border: 2px solid {T["badge_border"]};
-    color: {T["text2"]};
-    background: {T["badge_bg"]};
+    border: 2px solid #e0e4e8;
+    color: #727785;
+    background: #f8f9fa;
     transition: all 0.2s ease;
-}}
-.step-badge.active {{
-    border-color: {T["badge_active_bg"]};
-    background: {T["badge_active_bg"]};
+}
+.step-badge.active {
+    border-color: #004da4;
+    background: #004da4;
     color: #FFFFFF;
     font-weight: 700;
-    box-shadow: 0 2px 8px {T["primary_shadow"]};
-}}
-.step-badge.completed {{
-    border-color: {T["badge_completed_border"]};
-    background: {T["badge_completed_bg"]};
-    color: {T["badge_completed_text"]};
+    box-shadow: 0 2px 8px rgba(0,77,164,0.25);
+}
+.step-badge.completed {
+    border-color: #507200;
+    background: #f0f8e4;
+    color: #507200;
     font-weight: 600;
-}}
+}
 
-/* Form inputs */
+/* Form inputs — neutral white to contrast with blue action buttons */
 div[data-testid="stTextInput"] input,
-div[data-testid="stTextArea"] textarea {{
+div[data-testid="stTextArea"] textarea {
     border-radius: 8px !important;
-    border: 1.5px solid {T["input_border"]} !important;
-    background: {T["input_bg"]} !important;
-    color: {T["text"]} !important;
+    border: 1.5px solid #d0d5dd !important;
+    background: #FFFFFF !important;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}}
+}
 div[data-testid="stTextInput"] input:focus,
-div[data-testid="stTextArea"] textarea:focus {{
-    border-color: {T["primary"]} !important;
-    box-shadow: 0 0 0 3px {T["focus_shadow"]} !important;
-    background: {T["input_bg"]} !important;
-}}
+div[data-testid="stTextArea"] textarea:focus {
+    border-color: #0064D2 !important;
+    box-shadow: 0 0 0 3px rgba(0,100,210,0.12) !important;
+    background: #FFFFFF !important;
+}
 
-/* Selectbox */
-div[data-testid="stSelectbox"] > div > div {{
-    background: {T["input_bg"]} !important;
-}}
+/* Selectbox — neutral white to match inputs */
+div[data-testid="stSelectbox"] > div > div {
+    background: #FFFFFF !important;
+}
 
-/* Primary buttons */
+/* Primary buttons (Continue, Check Quality) - Brand Blue CTA */
 div[data-testid="stButton"] button[kind="primary"],
-div[data-testid="stButton"] > button[kind="primary"] {{
-    background: {T["primary"]} !important;
+div[data-testid="stButton"] > button[kind="primary"] {
+    background: #0064D2 !important;
     border: none !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     padding: 0.6rem 1.5rem !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
-    box-shadow: 0 4px 12px {T["primary_shadow"]} !important;
-}}
+    box-shadow: 0 4px 12px rgba(0,100,210,0.2) !important;
+}
 div[data-testid="stButton"] button[kind="primary"]:hover,
-div[data-testid="stButton"] > button[kind="primary"]:hover {{
-    background: {T["primary_hover"]} !important;
-    box-shadow: 0 4px 20px {T["primary_shadow"]} !important;
+div[data-testid="stButton"] > button[kind="primary"]:hover {
+    background: #004da4 !important;
+    box-shadow: 0 4px 20px rgba(0,100,210,0.3) !important;
     transform: translateY(-1px);
-}}
+}
 
-/* Secondary buttons */
+/* Secondary buttons (Help Me Write, Proofread, Generate) - Tonal blue */
 div[data-testid="stButton"] button[kind="secondary"],
 div[data-testid="stButton"] button:not([kind="primary"]),
 div[data-testid="stButton"] > button[kind="secondary"],
-div[data-testid="stButton"] > button:not([kind="primary"]) {{
-    background: {T["sec_bg"]} !important;
-    border: 1.5px solid {T["sec_border"]} !important;
-    color: {T["sec_text"]} !important;
+div[data-testid="stButton"] > button:not([kind="primary"]) {
+    background: #DCE9F7 !important;
+    border: 1.5px solid #90B8E0 !important;
+    color: #0054B4 !important;
     font-weight: 600 !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
-}}
+}
 div[data-testid="stButton"] button[kind="secondary"]:hover,
 div[data-testid="stButton"] button:not([kind="primary"]):hover,
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
-div[data-testid="stButton"] > button:not([kind="primary"]):hover {{
-    background: {T["sec_hover_bg"]} !important;
-    border-color: {T["sec_hover_border"]} !important;
-    color: {T["sec_hover_text"]} !important;
-    box-shadow: 0 2px 8px {T["primary_shadow"]} !important;
-}}
+div[data-testid="stButton"] > button:not([kind="primary"]):hover {
+    background: #C5DAF0 !important;
+    border-color: #0064D2 !important;
+    color: #004da4 !important;
+    box-shadow: 0 2px 8px rgba(0,100,210,0.18) !important;
+}
 
-/* Refinement buttons */
+/* Refinement buttons (Proofread, Make it SMART) — second column in
+   2-column layouts where both buttons are secondary (no primary present).
+   Uses a warm purple tonal to distinguish from blue generative buttons. */
 div[data-testid="stHorizontalBlock"]:not(:has(button[kind="primary"]))
-  > div:last-child button:not([kind="primary"]) {{
-    background: {T["refine_bg"]} !important;
-    border: 1.5px solid {T["refine_border"]} !important;
-    color: {T["refine_text"]} !important;
-}}
+  > div:last-child button:not([kind="primary"]) {
+    background: #EDE9F3 !important;
+    border: 1.5px solid #C4B5D6 !important;
+    color: #5B3E8A !important;
+}
 div[data-testid="stHorizontalBlock"]:not(:has(button[kind="primary"]))
-  > div:last-child button:not([kind="primary"]):hover {{
-    background: {T["refine_hover_bg"]} !important;
-    border-color: {T["refine_hover_border"]} !important;
-    color: {T["refine_hover_text"]} !important;
-}}
+  > div:last-child button:not([kind="primary"]):hover {
+    background: #DDD6E8 !important;
+    border-color: #7C5BAD !important;
+    color: #4A2D75 !important;
+    box-shadow: 0 2px 8px rgba(91,62,138,0.15) !important;
+}
 
-/* Alert containers */
-div[data-testid="stAlert"] {{
+/* Remove double-box: make outer alert container transparent */
+div[data-testid="stAlert"] {
     background: transparent !important;
     border: none !important;
     padding: 0 !important;
-}}
-div[data-testid="stAlertContentInfo"] {{
+}
+
+/* Info box - clean, no background */
+div[data-testid="stAlertContentInfo"] {
     background: transparent !important;
     border: none !important;
     border-left: none !important;
     padding-left: 0 !important;
-}}
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) {{
-    align-items: center !important;
-}}
-div[data-testid="stAlertContentSuccess"] {{
-    background: {T["success_bg"]} !important;
-    border: none !important;
-    border-left: none !important;
-}}
-div[data-testid="stAlertContentWarning"] {{
-    background: {T["warning_bg"]} !important;
-    border: none !important;
-    border-left: none !important;
-}}
-div[data-testid="stAlertContentError"] {{
-    background: {T["error_bg"]} !important;
-    border: none !important;
-    border-left: none !important;
-}}
+}
 
-/* Cards */
-.brief-card {{
-    border: 1px solid {T["card_border"]};
+/* Vertically center columns that contain alert + dismiss button pairs */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) {
+    align-items: center !important;
+}
+
+/* Success box */
+div[data-testid="stAlertContentSuccess"] {
+    background: #f0f8e4 !important;
+    border: none !important;
+    border-left: none !important;
+}
+
+/* Warning box */
+div[data-testid="stAlertContentWarning"] {
+    background: #FFF7E0 !important;
+    border: none !important;
+    border-left: none !important;
+}
+
+/* Error box */
+div[data-testid="stAlertContentError"] {
+    background: #FDE8E9 !important;
+    border: none !important;
+    border-left: none !important;
+}
+
+/* Quality score circle matching Stitch gradient */
+.quality-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    font-size: 2.2em;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+.quality-score.green  { background: linear-gradient(135deg, #86B817, #507200); box-shadow: 0 4px 12px rgba(134,184,23,0.3); }
+.quality-score.yellow { background: linear-gradient(135deg, #F5AF02, #C48D02); box-shadow: 0 4px 12px rgba(245,175,2,0.3); }
+.quality-score.red    { background: linear-gradient(135deg, #E53238, #930014); box-shadow: 0 4px 12px rgba(229,50,56,0.3); }
+
+/* Tier badges */
+.tier-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: white;
+}
+
+/* Severity badges matching Stitch */
+.severity-critical {
+    display: inline-block; padding: 2px 10px; border-radius: 4px;
+    background: #ffdad6; color: #93000a; font-size: 0.7em; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.severity-warning {
+    display: inline-block; padding: 2px 10px; border-radius: 4px;
+    background: #FFF8E1; color: #F5AF02; font-size: 0.7em; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.severity-suggestion {
+    display: inline-block; padding: 2px 10px; border-radius: 4px;
+    background: #d8e2ff; color: #004da4; font-size: 0.7em; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* Brief card styling */
+.brief-card {
+    border: 1px solid rgba(194,198,213,0.15);
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 12px;
-    background: {T["card_bg"]};
+    background: white;
     transition: box-shadow 0.2s;
-}}
-.template-card {{
-    border: 2px solid {T["card_border"]};
+    box-shadow: 0 4px 20px rgba(0,77,164,0.06);
+}
+.brief-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Template card */
+.template-card {
+    border: 2px solid rgba(194,198,213,0.15);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-    background: {T["card_bg"]};
+    background: white;
     min-height: 180px;
-}}
-.template-card:hover {{ border-color: {T["primary"]}; }}
+    box-shadow: 0 4px 20px rgba(0,77,164,0.06);
+}
+.template-card:hover {
+    border-color: #0064D2;
+}
 
-.stExpander {{
-    border: 1px solid {T["card_border"]} !important;
+/* Pass/Fail badges */
+.badge-pass {
+    display: inline-block; padding: 3px 14px; border-radius: 4px;
+    background: #86B817; color: #FFFFFF; font-weight: 700; font-size: 0.8em;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-fail {
+    display: inline-block; padding: 3px 14px; border-radius: 4px;
+    background: #E53238; color: #FFFFFF; font-weight: 700; font-size: 0.8em;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* Card styling matching Stitch surface-container-lowest */
+.stExpander {
+    border: 1px solid rgba(194,198,213,0.15) !important;
     border-radius: 12px !important;
-}}
+    box-shadow: 0 4px 20px rgba(0,77,164,0.06) !important;
+}
 
 /* Selectbox styling */
-div[data-testid="stSelectbox"] > div > div {{
+div[data-testid="stSelectbox"] > div > div {
     border-radius: 8px !important;
-    border-color: {T["input_border"]} !important;
-    background: {T["input_bg"]} !important;
-}}
+    border-color: #d0d5dd !important;
+    background: #FFFFFF !important;
+}
 
-/* File uploader */
-div[data-testid="stFileUploader"] > div {{
-    border: 2px dashed {T["border"]} !important;
+/* File uploader matching Stitch dashed border style */
+div[data-testid="stFileUploader"] > div {
+    border: 2px dashed rgba(194,198,213,0.3) !important;
     border-radius: 12px !important;
-    background: {T["input_bg"]} !important;
-}}
-div[data-testid="stFileUploader"] > div:hover {{
-    border-color: {T["primary"]} !important;
-    background: {T["surface2"]} !important;
-}}
+    background: #ffffff !important;
+}
+div[data-testid="stFileUploader"] > div:hover {
+    border-color: #0064D2 !important;
+    background: #ecf5fe !important;
+}
 
-/* Dataframe/table */
-div[data-testid="stDataFrame"] {{
+/* Dataframe/table styling */
+div[data-testid="stDataFrame"] {
     border-radius: 12px !important;
     overflow: hidden;
-}}
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
 
-/* Download button */
-div[data-testid="stDownloadButton"] button {{
+/* Download button styling (standard) */
+div[data-testid="stDownloadButton"] button {
     background: transparent !important;
-    border: 2px solid {T["download_border"]} !important;
-    color: {T["download_text"]} !important;
+    border: 2px solid #004da4 !important;
+    color: #004da4 !important;
     font-weight: 600 !important;
     border-radius: 8px !important;
-}}
-div[data-testid="stDownloadButton"] button:hover {{
-    background: {T["primary_dark"]} !important;
+}
+div[data-testid="stDownloadButton"] button:hover {
+    background: #004da4 !important;
     color: #FFFFFF !important;
-}}
+}
 
-/* Primary download button (step 6 export) */
-.primary-download div[data-testid="stDownloadButton"] button {{
-    background: {T["primary"]} !important;
+/* Primary download button (final export — step 6 climax) */
+.primary-download div[data-testid="stDownloadButton"] button {
+    background: #0064D2 !important;
     border: none !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 1.05rem !important;
     padding: 0.75rem 1.5rem !important;
-    box-shadow: 0 4px 16px {T["primary_shadow"]} !important;
-}}
-.primary-download div[data-testid="stDownloadButton"] button:hover {{
-    background: {T["primary_hover"]} !important;
+    box-shadow: 0 4px 16px rgba(0,100,210,0.25) !important;
+}
+.primary-download div[data-testid="stDownloadButton"] button:hover {
+    background: #004da4 !important;
+    box-shadow: 0 6px 24px rgba(0,100,210,0.35) !important;
     transform: translateY(-1px);
-}}
+}
 
-/* Focus ring (WCAG 2.4.7) */
+/* Focus-visible ring for keyboard accessibility (WCAG 2.4.7) */
 div[data-testid="stButton"] button:focus-visible,
-div[data-testid="stDownloadButton"] button:focus-visible {{
-    outline: 3px solid {T["focus_ring"]} !important;
+div[data-testid="stDownloadButton"] button:focus-visible {
+    outline: 3px solid #0064D2 !important;
     outline-offset: 2px !important;
-    box-shadow: 0 0 0 6px {T["focus_shadow"]} !important;
-}}
+    box-shadow: 0 0 0 6px rgba(0,100,210,0.15) !important;
+}
 
-/* Active/pressed feedback */
+/* Active/pressed feedback — must feel instant */
 div[data-testid="stButton"] button:active,
-div[data-testid="stDownloadButton"] button:active {{
+div[data-testid="stDownloadButton"] button:active {
     transform: scale(0.97) !important;
     transition: transform 50ms ease !important;
-}}
+}
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {{
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
     div[data-testid="stButton"] button,
-    div[data-testid="stDownloadButton"] button {{
+    div[data-testid="stDownloadButton"] button {
         transition: none !important;
         transform: none !important;
-    }}
-}}
+    }
+}
 
-/* Back button — filled slate */
+/* Navigation Back button — filled slate, equal weight to primary.
+   Targets: any secondary button in the first column of a horizontal
+   block that also contains a primary button (the Back + Continue pair).
+   Uses multiple selector variants to handle Streamlit DOM variations. */
 div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]),
 div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button[kind="secondary"],
 [data-testid="stHorizontalBlock"]:has([kind="primary"]) > :first-child button:not([kind="primary"]),
-div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]) {{
-    background: {T["back_bg"]} !important;
+div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]) {
+    background: #475569 !important;
     border: none !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
@@ -473,156 +488,154 @@ div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child butto
     padding: 0.6rem 1.5rem !important;
     cursor: pointer !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
-    box-shadow: 0 4px 12px {T["back_shadow"]} !important;
-}}
+    box-shadow: 0 4px 12px rgba(71,85,105,0.15) !important;
+}
 div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]):hover,
 div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div:first-child button[kind="secondary"]:hover,
 [data-testid="stHorizontalBlock"]:has([kind="primary"]) > :first-child button:not([kind="primary"]):hover,
-div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]):hover {{
-    background: {T["back_hover"]} !important;
+div[data-testid="stColumns"]:has(button[kind="primary"]) > div:first-child button:not([kind="primary"]):hover {
+    background: #334155 !important;
+    box-shadow: 0 4px 20px rgba(71,85,105,0.25) !important;
     transform: translateY(-1px);
-}}
+}
 
-/* Dismiss buttons next to alerts */
+/* Dismiss buttons next to alerts — neutral gray (color only) */
 div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
   > div:last-child button,
 div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
-  > div:last-child button:not([kind="primary"]) {{
-    background: {T["dismiss_bg"]} !important;
-    border-color: {T["dismiss_border"]} !important;
-    color: {T["dismiss_text"]} !important;
-}}
+  > div:last-child button:not([kind="primary"]) {
+    background: #F3F4F6 !important;
+    border-color: #D1D5DB !important;
+    color: #6B7280 !important;
+}
 div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
   > div:last-child button:hover,
 div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"])
-  > div:last-child button:not([kind="primary"]):hover {{
-    background: {T["dismiss_hover_bg"]} !important;
-    color: {T["dismiss_hover_text"]} !important;
+  > div:last-child button:not([kind="primary"]):hover {
+    background: #E5E7EB !important;
+    border-color: #9CA3AF !important;
+    color: #374151 !important;
     box-shadow: none !important;
-}}
+}
 
-/* Destructive button */
+/* Destructive button styling (Delete) */
 .destructive-btn div[data-testid="stButton"] button,
-.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]) {{
+.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]) {
     background: transparent !important;
-    border: 1.5px solid {T["destruct_border"]} !important;
-    color: {T["destruct_text"]} !important;
+    border: 1.5px solid #E53238 !important;
+    color: #E53238 !important;
     font-weight: 600 !important;
-}}
+}
 .destructive-btn div[data-testid="stButton"] button:hover,
-.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {{
-    background: {T["destruct_hover_bg"]} !important;
+.destructive-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {
+    background: #E53238 !important;
     color: #FFFFFF !important;
-}}
+    box-shadow: 0 2px 8px rgba(229,50,56,0.25) !important;
+}
 
-/* Dismiss/Close ghost button */
+/* Dismiss/Close ghost button styling */
 .dismiss-btn div[data-testid="stButton"] button,
-.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]) {{
+.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]) {
     background: transparent !important;
     border: none !important;
-    color: {T["text2"]} !important;
+    color: #727785 !important;
     font-weight: 500 !important;
     padding: 0.3rem 0.6rem !important;
     font-size: 0.85rem !important;
-}}
+}
 .dismiss-btn div[data-testid="stButton"] button:hover,
-.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {{
-    background: {T["surface2"]} !important;
-    color: {T["text"]} !important;
+.dismiss-btn div[data-testid="stButton"] button:not([kind="primary"]):hover {
+    background: #f0f2f5 !important;
+    color: #141d23 !important;
     box-shadow: none !important;
-}}
+}
 
 /* Divider */
-hr {{
+hr {
     border: none !important;
-    border-top: 2px solid {T["divider"]} !important;
+    border-top: 2px solid #c2c6d5 !important;
     margin: 16px 0 !important;
-}}
+}
 
-/* Align button columns to bottom */
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]) {{
+/* Align button columns to bottom so buttons sit next to inputs */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]) {
     align-items: flex-end !important;
-}}
+}
 
 /* Larger, bolder field labels */
 div[data-testid="stTextInput"] label p,
 div[data-testid="stTextArea"] label p,
 div[data-testid="stSelectbox"] label p,
 div[data-testid="stFileUploader"] label p,
-div[data-testid="stMultiSelect"] label p {{
+div[data-testid="stMultiSelect"] label p {
     font-size: 1.2rem !important;
     font-weight: 700 !important;
-    color: {T["label_color"]} !important;
-}}
+    color: #141d23 !important;
+}
 
-/* Form section spacing */
+/* Visual separator between form sections — top border on text areas
+   and inputs that follow other inputs (not the first one) */
 div[data-testid="stTextArea"],
-div[data-testid="stTextInput"] {{
+div[data-testid="stTextInput"] {
     padding-top: 8px !important;
-}}
+}
 
-/* Section labels */
-.section-label {{
+/* Section headers matching Stitch uppercase labels */
+.section-label {
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: {T["section_label"]};
+    color: #727785;
     margin-bottom: 4px;
-}}
+}
+
+/* Appeal bar for creative concepts */
+.appeal-bar-bg {
+    width: 100%; background: #e0e4e8; border-radius: 8px; height: 6px;
+}
+.appeal-bar-fill {
+    height: 6px; border-radius: 8px;
+    background: #86B817;
+    transition: width 0.4s ease;
+}
+
+/* Word count badges */
+.word-badge-optimal {
+    display: inline-block; padding: 2px 10px; border-radius: 4px;
+    background: #86B817; color: #FFFFFF; font-size: 0.75em; font-weight: 600;
+}
+.word-badge-long {
+    display: inline-block; padding: 2px 10px; border-radius: 4px;
+    background: #F5AF02; color: #FFFFFF; font-size: 0.75em; font-weight: 600;
+}
 
 /* Metric card */
-.metric-card {{
-    background: {T["metric_bg"]};
-    border: 1px solid {T["card_border"]};
+.metric-card {
+    background: #ffffff;
+    border: 1px solid rgba(194,198,213,0.15);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
-}}
-.metric-value {{
+    box-shadow: 0 4px 20px rgba(0,77,164,0.06);
+}
+.metric-value {
     font-size: 2.2em;
     font-weight: 800;
-    color: {T["text"]};
-}}
-.metric-label {{
+    color: #141d23;
+}
+.metric-label {
     font-size: 0.7rem;
     font-weight: 700;
-    color: {T["text2"]};
+    color: #727785;
     margin-top: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-}}
-
-/* Quality score circles */
-.quality-score {{
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 96px; height: 96px; border-radius: 50%;
-    font-size: 2.2em; font-weight: 800; color: #FFFFFF;
-}}
-.quality-score.green  {{ background: linear-gradient(135deg, #86B817, #507200); }}
-.quality-score.yellow {{ background: linear-gradient(135deg, #F5AF02, #C48D02); }}
-.quality-score.red    {{ background: linear-gradient(135deg, #E53238, #930014); }}
-
-/* Badges */
-.badge-pass {{ display: inline-block; padding: 3px 14px; border-radius: 4px; background: #86B817; color: #FFFFFF; font-weight: 700; font-size: 0.8em; text-transform: uppercase; }}
-.badge-fail {{ display: inline-block; padding: 3px 14px; border-radius: 4px; background: #E53238; color: #FFFFFF; font-weight: 700; font-size: 0.8em; text-transform: uppercase; }}
-.tier-badge {{ display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; color: white; }}
-
-/* Appeal bar */
-.appeal-bar-bg {{ width: 100%; background: {T["border"]}; border-radius: 8px; height: 6px; }}
-.appeal-bar-fill {{ height: 6px; border-radius: 8px; background: #86B817; transition: width 0.4s ease; }}
-
-/* Word count badges */
-.word-badge-optimal {{ display: inline-block; padding: 2px 10px; border-radius: 4px; background: #86B817; color: #FFFFFF; font-size: 0.75em; font-weight: 600; }}
-.word-badge-long {{ display: inline-block; padding: 2px 10px; border-radius: 4px; background: #F5AF02; color: #FFFFFF; font-size: 0.75em; font-weight: 600; }}
+}
 </style>
 """
 
-# Initialize dark mode in session state
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
-
-st.markdown(_build_css(st.session_state.dark_mode), unsafe_allow_html=True)
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------------------------
@@ -1504,41 +1517,35 @@ def render_brief_builder() -> None:
     # --- Done page ---
     if step == 7:
         brief_name = st.session_state.get("brief_completed", "your campaign brief")
-        _dk = st.session_state.dark_mode
-        _done_text = "#E0E0E0" if _dk else "#141d23"
-        _done_text2 = "#9CA3AF" if _dk else "#475569"
-        _done_text3 = "#6B7280" if _dk else "#727785"
-        _done_divider = "#374151" if _dk else "#c2c6d5"
-        _done_link = "#4A9EFF" if _dk else "#0064D2"
         st.markdown(f"""
         <div style="text-align: center; padding: 60px 20px;">
             <div style="font-size: 4rem; margin-bottom: 16px;">🎉</div>
-            <h2 style="font-size: 2rem; font-weight: 800; color: {_done_text}; margin-bottom: 8px;">
+            <h2 style="font-size: 2rem; font-weight: 800; color: #141d23; margin-bottom: 8px;">
                 Brief Complete!
             </h2>
-            <p style="font-size: 1.1rem; color: {_done_text2}; margin-bottom: 8px;">
+            <p style="font-size: 1.1rem; color: #475569; margin-bottom: 8px;">
                 Your brief on <strong>"{brief_name}"</strong> has been successfully generated and is ready for download.
             </p>
-            <p style="font-size: 1rem; color: {_done_text3}; margin-bottom: 32px;">
+            <p style="font-size: 1rem; color: #727785; margin-bottom: 32px;">
                 Thank you for using AI Campaign Brief Generator.
             </p>
-            <div style="width: 400px; height: 2px; background: {_done_divider}; margin: 24px auto;"></div>
-            <p style="font-size: 0.95rem; color: {_done_text2}; margin-bottom: 12px;">
+            <div style="width: 400px; height: 2px; background: #c2c6d5; margin: 24px auto;"></div>
+            <p style="font-size: 0.95rem; color: #475569; margin-bottom: 12px;">
                 Built by <strong>Saurabh Saha</strong>
             </p>
-            <p style="font-size: 0.9rem; color: {_done_text3};">
+            <p style="font-size: 0.9rem; color: #727785;">
                 <a href="https://github.com/iamsaurabhsaha" target="_blank"
-                   style="color: {_done_link}; text-decoration: none; font-weight: 600;">
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
                    GitHub
                 </a>
                 &nbsp;&nbsp;·&nbsp;&nbsp;
                 <a href="https://www.linkedin.com/in/iamsaurabhsaha/" target="_blank"
-                   style="color: {_done_link}; text-decoration: none; font-weight: 600;">
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
                    LinkedIn
                 </a>
                 &nbsp;&nbsp;·&nbsp;&nbsp;
                 <a href="mailto:saurabhsaha700@gmail.com"
-                   style="color: {_done_link}; text-decoration: none; font-weight: 600;">
+                   style="color: #0064D2; text-decoration: none; font-weight: 600;">
                    saurabhsaha700@gmail.com
                 </a>
             </p>
@@ -4197,53 +4204,32 @@ def main() -> None:
         </div>
         """, unsafe_allow_html=True)
 
-    # Dark mode toggle
-    _dark = st.session_state.dark_mode
-    _text_color = "#E0E0E0" if _dark else "#141d23"
-    _text2_color = "#9CA3AF" if _dark else "#727785"
-
-    # Header with provider badge and theme toggle
+    # Header with provider badge
     _hdr_prov = llm_provider.get_provider()
     _hdr_model = llm_provider.get_model()
     _hdr_configured = llm_provider.is_configured()
     _hdr_color = "#86B817" if _hdr_configured else "#E53238"
     _hdr_label = _hdr_prov.title() if _hdr_prov != "azure" else "Azure OpenAI"
-    if _dark:
-        _hdr_badge_bg = "#1E2E1E" if _hdr_configured else "#2E1E1E"
-        _hdr_badge_border = "#3D6B3D" if _hdr_configured else "#6B3D3D"
-    else:
-        _hdr_badge_bg = "#f0faf0" if _hdr_configured else "#fdf0f0"
-        _hdr_badge_border = "#c3e6c3" if _hdr_configured else "#f5c6c6"
-
-    _toggle_bg = "#1E1E2E" if _dark else "#F3F4F6"
-    _toggle_border = "#374151" if _dark else "#D1D5DB"
-    _toggle_icon = "☀️" if _dark else "🌙"
-
-    col_header, col_toggle = st.columns([11, 1])
-    with col_header:
-        st.markdown(f"""
-        <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <h1 style="font-size: 2rem; font-weight: 800; color: {_text_color}; letter-spacing: -0.02em; margin-bottom: 4px;">
-                    AI Campaign Brief Generator
-                </h1>
-                <p style="color: {_text2_color}; font-size: 0.9rem;">
-                    AI-powered campaign brief creation with industry best practices
-                </p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 20px; padding: 6px 14px; white-space: nowrap;">
-                <div style="width: 8px; height: 8px; border-radius: 50%; background: {_hdr_color}; flex-shrink: 0;"></div>
-                <span style="font-size: 0.8rem; font-weight: 600; color: {_text_color};">{_hdr_label}</span>
-                <span style="font-size: 0.75rem; color: {_text2_color};">|</span>
-                <span style="font-size: 0.75rem; color: {_text2_color};">{_hdr_model}</span>
-            </div>
+    _hdr_badge_bg = "#f0faf0" if _hdr_configured else "#fdf0f0"
+    _hdr_badge_border = "#c3e6c3" if _hdr_configured else "#f5c6c6"
+    st.markdown(f"""
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
+                AI Campaign Brief Generator
+            </h1>
+            <p style="color: #727785; font-size: 0.9rem;">
+                AI-powered campaign brief creation with industry best practices
+            </p>
         </div>
-        """, unsafe_allow_html=True)
-    with col_toggle:
-        st.markdown("<div style='height: 8px'></div>", unsafe_allow_html=True)
-        if st.button(_toggle_icon, key="theme_toggle", help="Toggle dark/light mode"):
-            st.session_state.dark_mode = not st.session_state.dark_mode
-            st.rerun()
+        <div style="display: flex; align-items: center; gap: 8px; background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 20px; padding: 6px 14px; white-space: nowrap;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: {_hdr_color}; flex-shrink: 0;"></div>
+            <span style="font-size: 0.8rem; font-weight: 600; color: #141d23;">{_hdr_label}</span>
+            <span style="font-size: 0.75rem; color: #c2c6d5;">|</span>
+            <span style="font-size: 0.75rem; color: #727785;">{_hdr_model}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Demo mode banner
     if st.session_state.demo_mode:
