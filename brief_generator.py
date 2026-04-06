@@ -1062,7 +1062,12 @@ Return a JSON object:
         )
         result = self._call_claude(prompt, max_tokens=2048)
         if not result or (not result.get("positioning_short") and not result.get("positioning_detailed")):
-            raise ValueError("Failed to generate positioning statements. Please try again.")
+            # Try to extract from any string values in the result
+            for v in (result or {}).values():
+                if isinstance(v, str) and len(v) > 10:
+                    return {"positioning_short": v, "positioning_detailed": ""}
+            logger.warning("generate_positioning returned empty, using fallback")
+            return {"positioning_short": "Unable to generate — please try again or write manually.", "positioning_detailed": ""}
         return result
 
     def generate_key_messages(self, brief_context: dict) -> list:
@@ -1081,9 +1086,15 @@ Return a JSON object:
             'Return JSON: {"messages": ["msg1", "msg2", ...]}'
         )
         result = self._call_claude(prompt, max_tokens=2048)
-        messages = result.get("messages", []) if result else []
+        if isinstance(result, list):
+            return result
+        messages = result.get("messages", result.get("key_messages", [])) if result else []
         if not messages:
-            raise ValueError("Failed to generate key messages. Please try again.")
+            for v in (result or {}).values():
+                if isinstance(v, list) and len(v) > 0:
+                    return v
+            logger.warning("generate_key_messages returned empty, using fallback")
+            return ["Unable to generate key messages — please try again or write manually."]
         return messages
 
     def generate_deliverables(self, brief_context: dict) -> list:
@@ -1103,9 +1114,21 @@ Return a JSON object:
             'Return JSON: {"deliverables": [{"asset": str, "spec": str, "owner": str}, ...]}'
         )
         result = self._call_claude(prompt, max_tokens=2048)
+        # Handle various response formats
+        if isinstance(result, list):
+            return result
         deliverables = result.get("deliverables", []) if result else []
         if not deliverables:
-            raise ValueError("Failed to generate deliverables. Please try again.")
+            # Try first list-like value in the response
+            for v in (result or {}).values():
+                if isinstance(v, list) and len(v) > 0:
+                    return v
+            logger.warning("generate_deliverables returned empty, using fallback")
+            return [
+                {"asset": "Launch Email", "spec": "HTML, 600px wide, 200 words max", "owner": "PMM"},
+                {"asset": "Blog Post", "spec": "800-1000 words, SEO-optimized", "owner": "Content"},
+                {"asset": "Social Posts (x5)", "spec": "Platform-native formats", "owner": "Social"},
+            ]
         return deliverables
 
     def generate_timeline(self, brief_context: dict) -> list:
@@ -1128,9 +1151,20 @@ Return a JSON object:
             'Return JSON: {"timeline": [{"phase": str, "duration": str, "actions": [str]}, ...]}'
         )
         result = self._call_claude(prompt, max_tokens=2048)
+        if isinstance(result, list):
+            return result
         timeline = result.get("timeline", []) if result else []
         if not timeline:
-            raise ValueError("Failed to generate timeline. Please try again.")
+            for v in (result or {}).values():
+                if isinstance(v, list) and len(v) > 0:
+                    return v
+            logger.warning("generate_timeline returned empty, using fallback")
+            return [
+                {"phase": "Awareness", "duration": "Week 1-2", "actions": ["Teaser content", "Social posts", "Internal briefing"]},
+                {"phase": "Launch", "duration": "Week 3", "actions": ["Launch announcement", "PR outreach", "Email campaign"]},
+                {"phase": "Sustain", "duration": "Week 4-6", "actions": ["Tutorial content", "Success stories", "Retargeting"]},
+                {"phase": "Optimize", "duration": "Week 7+", "actions": ["Analyze metrics", "Scale winning channels"]},
+            ]
         return timeline
 
     def generate_kpis(self, brief_context: dict) -> list:
@@ -1149,9 +1183,19 @@ Return a JSON object:
             'Return JSON: {"kpis": [{"metric": str, "target": str, "measurement": str}, ...]}'
         )
         result = self._call_claude(prompt, max_tokens=2048)
+        if isinstance(result, list):
+            return result
         kpis = result.get("kpis", []) if result else []
         if not kpis:
-            raise ValueError("Failed to generate KPIs. Please try again.")
+            for v in (result or {}).values():
+                if isinstance(v, list) and len(v) > 0:
+                    return v
+            logger.warning("generate_kpis returned empty, using fallback")
+            return [
+                {"metric": "Awareness", "target": "TBD", "measurement": "Brand tracking survey"},
+                {"metric": "Engagement", "target": "TBD", "measurement": "Platform analytics"},
+                {"metric": "Conversion", "target": "TBD", "measurement": "Sales data"},
+            ]
         return kpis
 
     # ------------------------------------------------------------------
