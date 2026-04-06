@@ -1695,7 +1695,7 @@ def render_brief_builder() -> None:
                     st.session_state.ai_background = None
                     st.rerun()
             if not st.session_state.ai_background.startswith("Looks good"):
-                if st.button("Apply Background", key="use_bg"):
+                if st.button("**Insert** Background", key="use_bg"):
                     brief["background"] = st.session_state.ai_background
                     st.session_state.ai_background = None
                     st.session_state.current_brief = brief
@@ -1793,7 +1793,7 @@ def render_brief_builder() -> None:
                     st.session_state.smart_objective = None
                     st.rerun()
             if not st.session_state.smart_objective.startswith("Looks good"):
-                if st.button("Apply Objective", key="use_smart"):
+                if st.button("**Insert** Objective", key="use_smart"):
                     brief["objective"] = st.session_state.smart_objective
                     st.session_state.current_brief = brief
                     st.session_state.smart_objective = None
@@ -1807,7 +1807,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_obj"):
                     st.session_state.ai_generated_objective = None
                     st.rerun()
-            if st.button("Apply Objective", key="use_obj"):
+            if st.button("**Insert** Objective", key="use_obj"):
                 brief["objective"] = st.session_state.ai_generated_objective
                 st.session_state.ai_generated_objective = None
                 st.session_state.current_brief = brief
@@ -1893,7 +1893,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_profile"):
                     st.session_state.audience_profile = None
                     st.rerun()
-            if st.button("Apply Profile", key="use_profile"):
+            if st.button("**Insert** Profile", key="use_profile"):
                 brief["target_audience"] = st.session_state.audience_profile
                 st.session_state.current_brief = brief
                 st.session_state.audience_profile = None
@@ -1907,7 +1907,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_aud"):
                     st.session_state.ai_generated_audience = None
                     st.rerun()
-            if st.button("Apply Audience", key="use_aud"):
+            if st.button("**Insert** Audience", key="use_aud"):
                 brief["target_audience"] = st.session_state.ai_generated_audience
                 st.session_state.audience_profile = st.session_state.ai_generated_audience
                 st.session_state.ai_generated_audience = None
@@ -2078,7 +2078,7 @@ def render_brief_builder() -> None:
                         st.session_state.ai_insight = None
                         st.rerun()
                 if not str(st.session_state.ai_insight).startswith("Looks good"):
-                    if st.button("Apply Insight", key="use_insight"):
+                    if st.button("**Insert** Insight", key="use_insight"):
                         brief["key_insight"] = st.session_state.ai_insight
                         st.session_state.ai_insight = None
                     st.session_state.current_brief = brief
@@ -2198,7 +2198,7 @@ def render_brief_builder() -> None:
                     st.session_state.ai_positioning = None
                     st.rerun()
             if not str(pos.get("positioning_short", "")).startswith("Looks good"):
-                if st.button("Apply Positioning", key="use_pos"):
+                if st.button("**Insert** Positioning", key="use_pos"):
                     brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
                     brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
                     st.session_state.ai_positioning = None
@@ -2296,7 +2296,7 @@ def render_brief_builder() -> None:
                     st.session_state.ai_messages = None
                     st.rerun()
             if not str(msgs[0] if isinstance(msgs, list) else msgs).startswith("Looks good"):
-                if st.button("Apply Messages", key="use_msgs"):
+                if st.button("**Insert** Messages", key="use_msgs"):
                     if isinstance(msgs, list):
                         brief["key_messages"] = msgs
                     brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
@@ -2361,7 +2361,7 @@ def render_brief_builder() -> None:
                         st.session_state.ai_smp = None
                         st.rerun()
 
-                if st.button("Apply SMP", key="use_smp"):
+                if st.button("**Insert** SMP", key="use_smp"):
                     brief["smp"] = smp_val
                     brief["smp_pass"] = (qc == "pass" or qc is True)
                     st.session_state.ai_smp = None
@@ -2520,7 +2520,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_channels_proofed"):
                     st.session_state.ai_channels_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_channels_proofed).startswith("Looks good") and st.button("Apply Channels", key="use_channels_proofed"):
+            if not str(st.session_state.ai_channels_proofed).startswith("Looks good") and st.button("**Insert** Channels", key="use_channels_proofed"):
                 brief["channel_plan_text"] = st.session_state.ai_channels_proofed
                 st.session_state.ai_channels_proofed = None
                 st.session_state.current_brief = brief
@@ -2537,7 +2537,7 @@ def render_brief_builder() -> None:
                 })
             df_channels = pd.DataFrame(channel_display)
             st.dataframe(df_channels, use_container_width=True, hide_index=True)
-            if st.button("Apply Channel Plan", key="use_channels"):
+            if st.button("**Insert** Channel Plan", key="use_channels"):
                 brief["channel_plan"] = st.session_state.ai_channels
                 brief["channel_plan_text"] = "\n".join(
                     f"{ch.get('channel', '')}: {ch.get('tactic', '')} ({ch.get('budget_pct', '')}%)"
@@ -2645,7 +2645,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_deliverables_proofed"):
                     st.session_state.ai_deliverables_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_deliverables_proofed).startswith("Looks good") and st.button("Apply Deliverables", key="use_deliverables_proofed"):
+            if not str(st.session_state.ai_deliverables_proofed).startswith("Looks good") and st.button("**Insert** Deliverables", key="use_deliverables_proofed"):
                 brief["deliverables_text"] = st.session_state.ai_deliverables_proofed
                 st.session_state.ai_deliverables_proofed = None
                 st.session_state.current_brief = brief
@@ -2660,7 +2660,7 @@ def render_brief_builder() -> None:
             else:
                 for d in del_data:
                     st.write(f"- {d}")
-            if st.button("Apply Deliverables", key="use_deliverables"):
+            if st.button("**Insert** Deliverables", key="use_deliverables"):
                 brief["deliverables"] = st.session_state.ai_deliverables
                 if isinstance(del_data[0], dict):
                     brief["deliverables_text"] = "\n".join(
@@ -2763,7 +2763,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_timeline_proofed"):
                     st.session_state.ai_timeline_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_timeline_proofed).startswith("Looks good") and st.button("Apply Timeline", key="use_timeline_proofed"):
+            if not str(st.session_state.ai_timeline_proofed).startswith("Looks good") and st.button("**Insert** Timeline", key="use_timeline_proofed"):
                 brief["timeline_text"] = st.session_state.ai_timeline_proofed
                 st.session_state.ai_timeline_proofed = None
                 st.session_state.current_brief = brief
@@ -2782,7 +2782,7 @@ def render_brief_builder() -> None:
                 })
             df_timeline = pd.DataFrame(timeline_display)
             st.dataframe(df_timeline, use_container_width=True, hide_index=True)
-            if st.button("Apply Timeline", key="use_timeline"):
+            if st.button("**Insert** Timeline", key="use_timeline"):
                 brief["timeline"] = st.session_state.ai_timeline
                 brief["timeline_text"] = "\n".join(
                     f"{t.get('phase', '')} ({t.get('duration', '')}): {', '.join(t.get('actions', t.get('activities', []))) if isinstance(t.get('actions', t.get('activities', '')), list) else t.get('actions', t.get('activities', ''))}"
@@ -2926,7 +2926,7 @@ def render_brief_builder() -> None:
                 if st.button("Dismiss", key="close_kpis"):
                     st.session_state.generated_kpis = None
                     st.rerun()
-            if st.button("Apply KPIs", key="use_kpis"):
+            if st.button("**Insert** KPIs", key="use_kpis"):
                 brief["kpis"] = st.session_state.generated_kpis
                 # Also populate the text box with a readable version
                 kpi_lines = []
@@ -2991,7 +2991,7 @@ def render_brief_builder() -> None:
                     if st.button("Dismiss", key="close_raci"):
                         st.session_state.generated_raci = None
                         st.rerun()
-                if st.button("Apply RACI", key="use_raci"):
+                if st.button("**Insert** RACI", key="use_raci"):
                     brief["raci"] = st.session_state.generated_raci
                     # Also populate the text box with a readable version
                     raci_lines = []
