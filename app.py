@@ -1504,12 +1504,12 @@ def render_brief_builder() -> None:
                 Brief Complete!
             </h2>
             <p style="font-size: 1.1rem; color: #475569; margin-bottom: 8px;">
-                <strong>"{brief_name}"</strong> has been successfully generated and is ready for download.
+                Your brief <strong>"{brief_name}"</strong> has been successfully generated and is ready for download.
             </p>
             <p style="font-size: 1rem; color: #727785; margin-bottom: 32px;">
                 Thank you for using AI Campaign Brief Generator.
             </p>
-            <hr style="border: 1px solid #e0e4e8; margin: 24px auto; max-width: 400px;">
+            <hr style="border: none; border-top: 2px solid #c2c6d5; margin: 24px auto; max-width: 400px;">
             <p style="font-size: 0.95rem; color: #475569; margin-bottom: 12px;">
                 Built by <strong>Saurabh Saha</strong>
             </p>
