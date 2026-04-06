@@ -654,30 +654,14 @@ div[data-testid="stTextInput"] {
         flex: 0 0 auto !important;
     }
 
-    /* Stack columns vertically on mobile — except alert+dismiss rows */
-    div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stAlert"])) {
+    /* Let columns wrap on mobile — equal-width columns stack, unequal stay inline */
+    div[data-testid="stHorizontalBlock"] {
         flex-wrap: wrap !important;
-        gap: 8px !important;
+        gap: 4px !important;
     }
-    div[data-testid="stHorizontalBlock"]:not(:has(div[data-testid="stAlert"])) > div {
-        flex: 1 1 100% !important;
-        min-width: 100% !important;
-    }
-
-    /* Keep Back + Continue side by side */
-    div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) > div {
-        flex: 1 1 48% !important;
-        min-width: 48% !important;
-    }
-
-    /* Alert + dismiss rows: keep side by side */
-    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) > div:first-child {
-        flex: 1 1 85% !important;
-        min-width: 85% !important;
-    }
-    div[data-testid="stHorizontalBlock"]:has(div[data-testid="stAlert"]) > div:last-child {
-        flex: 0 0 auto !important;
-        min-width: auto !important;
+    /* Only force full-width on roughly-equal column pairs (like 50/50 button pairs) */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
+        min-width: 45% !important;
     }
 
     /* Stacked buttons: make full width */
