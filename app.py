@@ -624,6 +624,27 @@ def _proofread_or_approve(original: str, result: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Sync brief with current form values before calling generators
+# ---------------------------------------------------------------------------
+def _sync_brief_with_form(brief: dict, **kwargs) -> dict:
+    """Update the brief dict with the latest form field values.
+
+    Accepts keyword arguments for each field. Only updates if the value
+    is non-empty, preserving previously saved values.
+    """
+    for key, value in kwargs.items():
+        if value and str(value).strip():
+            brief[key] = value
+    # Also pull in any accepted AI suggestions from session state
+    if st.session_state.get("smart_objective"):
+        brief["objective"] = st.session_state.smart_objective
+    if st.session_state.get("audience_profile"):
+        brief["target_audience"] = st.session_state.audience_profile
+    st.session_state.current_brief = brief
+    return brief
+
+
+# ---------------------------------------------------------------------------
 # Coherence check: campaign name vs background/context
 # ---------------------------------------------------------------------------
 def _check_coherence(campaign_name: str, background: str, objective: str) -> str | None:
@@ -1740,6 +1761,7 @@ def render_brief_builder() -> None:
                 if not full_background.strip():
                     st.session_state.obj_warning = "Fill in Background/Context first so an objective can be generated."
                     st.rerun()
+                _sync_brief_with_form(brief, background=full_background, objective=objective, target_audience=target_audience)
                 campaign_name_val = brief.get("campaign_name", "")
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating objective..."):
@@ -2000,6 +2022,9 @@ def render_brief_builder() -> None:
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("Extract Insight", key="btn_extract_insight", use_container_width=True):
+                    # Sync current form values so generator has full context
+                    brief["key_insight"] = key_insight or brief.get("key_insight", "")
+                    st.session_state.current_brief = brief
                     if generator and not st.session_state.demo_mode:
                         with st.spinner("Extracting key insight..."):
                             try:
@@ -2101,6 +2126,11 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Positioning", key="btn_gen_pos", use_container_width=True):
+                brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
+                brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
+                if not is_light_brief:
+                    brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
+                st.session_state.current_brief = brief
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating positioning statements..."):
                         try:
@@ -2201,6 +2231,11 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Key Messages", key="btn_gen_msgs", use_container_width=True):
+                brief["key_insight"] = key_insight if not is_light_brief else brief.get("key_insight", "")
+                brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
+                if not is_light_brief:
+                    brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
+                st.session_state.current_brief = brief
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating key messages..."):
                         try:
@@ -2272,6 +2307,13 @@ def render_brief_builder() -> None:
             )
 
             if st.button("Generate SMP", key="btn_gen_smp", use_container_width=True):
+                brief["key_insight"] = key_insight or brief.get("key_insight", "")
+                brief["positioning_short"] = positioning_short or brief.get("positioning_short", "")
+                brief["positioning_detailed"] = positioning_detailed or brief.get("positioning_detailed", "")
+                if key_messages.strip():
+                    brief["key_messages_text"] = key_messages
+                brief["smp"] = smp_text or brief.get("smp", "")
+                st.session_state.current_brief = brief
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating Single-Minded Proposition..."):
                         try:
@@ -2403,6 +2445,7 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Channel Plan", key="btn_gen_channels", use_container_width=True):
+                _sync_brief_with_form(brief, channel_plan_text=channel_plan_text)
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating channel plan... (this may take 10-15 seconds)"):
                         try:
@@ -2525,6 +2568,7 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Deliverables", key="btn_gen_deliverables", use_container_width=True):
+                _sync_brief_with_form(brief, channel_plan_text=channel_plan_text, deliverables_text=deliverables_text)
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating deliverables... (this may take 10-15 seconds)"):
                         try:
@@ -2647,6 +2691,7 @@ def render_brief_builder() -> None:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Generate Timeline", key="btn_gen_timeline", use_container_width=True):
+                _sync_brief_with_form(brief, channel_plan_text=channel_plan_text, deliverables_text=deliverables_text, timeline_text=timeline_text)
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating timeline... (this may take 10-15 seconds)"):
                         try:
@@ -2827,6 +2872,7 @@ def render_brief_builder() -> None:
             st.session_state.current_brief = brief
 
         if st.button("Generate KPIs", use_container_width=True):
+            _sync_brief_with_form(brief, kpis_text=kpis_text)
             if generator and not st.session_state.demo_mode:
                 with st.spinner("Generating KPIs..."):
                     try:
@@ -2887,6 +2933,7 @@ def render_brief_builder() -> None:
                 st.session_state.current_brief = brief
 
             if st.button("Generate RACI", use_container_width=True):
+                _sync_brief_with_form(brief, kpis_text=kpis_text, raci_text=raci_text)
                 if generator and not st.session_state.demo_mode:
                     with st.spinner("Generating RACI matrix..."):
                         try:
