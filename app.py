@@ -1722,7 +1722,7 @@ def render_brief_builder() -> None:
                 if not objective.strip() and not full_background.strip():
                     st.session_state.obj_warning = "Enter an objective or fill in Background/Context first, then click Make it SMART."
                     st.rerun()
-                bg_context = f" Context: {full_background[:300]}" if full_background else ""
+                bg_context = f" Context: {full_background}" if full_background else ""
                 if objective.strip():
                     smart_input = f"{objective.strip()}.{bg_context}"
                 else:
@@ -1837,7 +1837,7 @@ def render_brief_builder() -> None:
                     st.rerun()
                 audience_input = target_audience.strip() if target_audience.strip() else (
                     f"Target audience for: {brief.get('campaign_name', 'campaign')}. "
-                    f"Context: {full_background[:200] if full_background else 'e-commerce feature launch'}. "
+                    f"Context: {full_background if full_background else 'e-commerce feature launch'}. "
                     f"Objective: {brief.get('objective', objective or 'drive adoption')}"
                 )
                 if generator and not st.session_state.demo_mode:
