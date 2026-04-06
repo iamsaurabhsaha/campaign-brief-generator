@@ -4340,7 +4340,7 @@ def main() -> None:
     <div class="app-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
         <div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #141d23; letter-spacing: -0.02em; margin-bottom: 4px;">
-                AI Campaign Brief Generator
+                <a href="?step=setup" target="_self" style="color: #141d23; text-decoration: none;">AI Campaign Brief Generator</a>
             </h1>
             <p style="color: #727785; font-size: 0.9rem;">
                 AI-powered campaign brief creation with industry best practices
