@@ -1511,7 +1511,7 @@ def render_brief_builder() -> None:
                 brief["campaign_name"] = campaign_name
                 st.session_state.current_brief = brief
         with col2:
-            st.markdown("<div style='height: 36px'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height: 44px'></div>", unsafe_allow_html=True)
             if st.button("Suggest Names", use_container_width=True):
                 if not campaign_name.strip():
                     st.session_state.name_warning = "Please enter a campaign name or description first, then click Suggest Names."
