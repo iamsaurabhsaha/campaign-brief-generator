@@ -4200,7 +4200,7 @@ def main() -> None:
         <div style="display: flex; align-items: center; gap: 8px; background: {_hdr_badge_bg}; border: 1px solid {_hdr_badge_border}; border-radius: 20px; padding: 6px 14px; white-space: nowrap;">
             <div style="width: 8px; height: 8px; border-radius: 50%; background: {_hdr_color}; flex-shrink: 0;"></div>
             <span style="font-size: 0.8rem; font-weight: 600; color: #141d23;">{_hdr_label}</span>
-            <span style="font-size: 0.75rem; color: #727785;">·</span>
+            <span style="font-size: 0.75rem; color: #c2c6d5;">|</span>
             <span style="font-size: 0.75rem; color: #727785;">{_hdr_model}</span>
         </div>
     </div>
