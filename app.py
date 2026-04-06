@@ -563,7 +563,7 @@ div[data-testid="stTextArea"] label p,
 div[data-testid="stSelectbox"] label p,
 div[data-testid="stFileUploader"] label p,
 div[data-testid="stMultiSelect"] label p {
-    font-size: 1.05rem !important;
+    font-size: 1.2rem !important;
     font-weight: 700 !important;
     color: #141d23 !important;
 }
