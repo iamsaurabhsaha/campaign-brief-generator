@@ -1336,7 +1336,10 @@ def brief_to_markdown(brief: dict) -> str:
 
     lines.append("---")
     lines.append("## Background & Context")
-    lines.append(brief.get("background", "Not specified"))
+    bg_text = brief.get("background", "Not specified")
+    if "--- Uploaded Documents ---" in bg_text:
+        bg_text = bg_text.split("--- Uploaded Documents ---")[0].strip()
+    lines.append(bg_text)
     lines.append("")
 
     lines.append("## Objective")
@@ -3115,7 +3118,11 @@ def render_brief_builder() -> None:
             meta.paragraph_format.space_after = Pt(12)
 
             # -- Sections --
-            _add_section("Background & Context", brief.get("background"))
+            # Strip uploaded document dump from background for clean export
+            bg_export = brief.get("background", "")
+            if "--- Uploaded Documents ---" in bg_export:
+                bg_export = bg_export.split("--- Uploaded Documents ---")[0].strip()
+            _add_section("Background & Context", bg_export)
             _add_section("Objective", brief.get("objective"))
             _add_section("Target Audience", brief.get("target_audience"))
 
