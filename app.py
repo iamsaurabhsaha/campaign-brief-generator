@@ -237,6 +237,12 @@ div[data-testid="stButton"] > button:not([kind="primary"]) {
     white-space: nowrap !important;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
 }
+
+/* Reduce gap between columns */
+div[data-testid="stHorizontalBlock"] {
+    gap: 0.4rem !important;
+}
+
 div[data-testid="stButton"] button[kind="secondary"]:hover,
 div[data-testid="stButton"] button:not([kind="primary"]):hover,
 div[data-testid="stButton"] > button[kind="secondary"]:hover,
