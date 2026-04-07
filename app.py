@@ -1943,18 +1943,22 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         if st.session_state.get("ai_background"):
-            col_bg_info, col_bg_close = st.columns([11, 1])
-            with col_bg_info:
-                st.info(st.session_state.ai_background)
-            with col_bg_close:
-                if st.button("Dismiss", key="close_bg"):
-                    st.session_state.ai_background = None
-                    st.rerun()
+            st.info(st.session_state.ai_background)
             if not st.session_state.ai_background.startswith("Looks good"):
-                if st.button("**Insert** Background", key="use_bg"):
-                    brief["background"] = st.session_state.ai_background
+                col_insert_bg, col_dismiss_bg = st.columns(2)
+                with col_insert_bg:
+                    if st.button("**Insert** Background", key="use_bg"):
+                        brief["background"] = st.session_state.ai_background
+                        st.session_state.ai_background = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_bg:
+                    if st.button("Dismiss", key="close_bg"):
+                        st.session_state.ai_background = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_bg_ok"):
                     st.session_state.ai_background = None
-                    st.session_state.current_brief = brief
                     st.rerun()
 
         # --- Objective (full width) with buttons below ---
@@ -2046,33 +2050,37 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         if st.session_state.smart_objective:
-            col_smart_info, col_smart_close = st.columns([11, 1])
-            with col_smart_info:
-                st.success(f"**SMART Objective:** {st.session_state.smart_objective}")
-            with col_smart_close:
-                if st.button("Dismiss", key="close_smart"):
+            st.success(f"**SMART Objective:** {st.session_state.smart_objective}")
+            if not st.session_state.smart_objective.startswith("Looks good"):
+                col_insert_smart, col_dismiss_smart = st.columns(2)
+                with col_insert_smart:
+                    if st.button("**Insert** Objective", key="use_smart"):
+                        brief["objective"] = st.session_state.smart_objective
+                        st.session_state.current_brief = brief
+                        st.session_state.smart_objective = None
+                        st.rerun()
+                with col_dismiss_smart:
+                    if st.button("Dismiss", key="close_smart"):
+                        st.session_state.smart_objective = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_smart_ok"):
                     st.session_state.smart_objective = None
                     st.rerun()
-            if not st.session_state.smart_objective.startswith("Looks good"):
-                if st.button("**Insert** Objective", key="use_smart"):
-                    brief["objective"] = st.session_state.smart_objective
-                    st.session_state.current_brief = brief
-                    st.session_state.smart_objective = None
-                st.rerun()
 
         if st.session_state.get("ai_generated_objective"):
-            col_obj_info, col_obj_close = st.columns([11, 1])
-            with col_obj_info:
-                st.info(f"**Generated Objective:** {st.session_state.ai_generated_objective}")
-            with col_obj_close:
+            st.info(f"**Generated Objective:** {st.session_state.ai_generated_objective}")
+            col_insert_obj, col_dismiss_obj = st.columns(2)
+            with col_insert_obj:
+                if st.button("**Insert** Objective", key="use_obj"):
+                    brief["objective"] = st.session_state.ai_generated_objective
+                    st.session_state.ai_generated_objective = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
+            with col_dismiss_obj:
                 if st.button("Dismiss", key="close_obj"):
                     st.session_state.ai_generated_objective = None
                     st.rerun()
-            if st.button("**Insert** Objective", key="use_obj"):
-                brief["objective"] = st.session_state.ai_generated_objective
-                st.session_state.ai_generated_objective = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         # --- Target Audience (full width) with buttons below ---
         st.divider()
@@ -2152,34 +2160,34 @@ def render_brief_builder() -> None:
                 st.rerun()
 
         if st.session_state.audience_profile:
-            col_prof_info, col_prof_close = st.columns([11, 1])
-            with col_prof_info:
-                with st.expander("Generated Audience Profile", expanded=True):
-                    st.markdown(st.session_state.audience_profile)
-            with col_prof_close:
+            with st.expander("Generated Audience Profile", expanded=True):
+                st.markdown(st.session_state.audience_profile)
+            col_insert_profile, col_dismiss_profile = st.columns(2)
+            with col_insert_profile:
+                if st.button("**Insert** Target Audience", key="use_profile"):
+                    brief["target_audience"] = st.session_state.audience_profile
+                    st.session_state.current_brief = brief
+                    st.session_state.audience_profile = None
+                    st.rerun()
+            with col_dismiss_profile:
                 if st.button("Dismiss", key="close_profile"):
                     st.session_state.audience_profile = None
                     st.rerun()
-            if st.button("**Insert** Target Audience", key="use_profile"):
-                brief["target_audience"] = st.session_state.audience_profile
-                st.session_state.current_brief = brief
-                st.session_state.audience_profile = None
-                st.rerun()
 
         if st.session_state.get("ai_generated_audience"):
-            col_aud_info, col_aud_close = st.columns([11, 1])
-            with col_aud_info:
-                st.info(st.session_state.ai_generated_audience)
-            with col_aud_close:
+            st.info(st.session_state.ai_generated_audience)
+            col_insert_aud, col_dismiss_aud = st.columns(2)
+            with col_insert_aud:
+                if st.button("**Insert** Audience", key="use_aud"):
+                    brief["target_audience"] = st.session_state.ai_generated_audience
+                    st.session_state.audience_profile = st.session_state.ai_generated_audience
+                    st.session_state.ai_generated_audience = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
+            with col_dismiss_aud:
                 if st.button("Dismiss", key="close_aud"):
                     st.session_state.ai_generated_audience = None
                     st.rerun()
-            if st.button("**Insert** Audience", key="use_aud"):
-                brief["target_audience"] = st.session_state.ai_generated_audience
-                st.session_state.audience_profile = st.session_state.ai_generated_audience
-                st.session_state.ai_generated_audience = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         st.write("")
 
@@ -2347,19 +2355,22 @@ def render_brief_builder() -> None:
                     st.rerun()
 
             if st.session_state.get("ai_insight"):
-                col_ins_info, col_ins_close = st.columns([11, 1])
-                with col_ins_info:
-                    st.info(st.session_state.ai_insight)
-                with col_ins_close:
-                    st.write("")
-                    if st.button("Dismiss", key="close_insight"):
-                        st.session_state.ai_insight = None
-                        st.rerun()
+                st.info(st.session_state.ai_insight)
                 if not str(st.session_state.ai_insight).startswith("Looks good"):
-                    if st.button("**Insert** Insight", key="use_insight"):
-                        brief["key_insight"] = st.session_state.ai_insight
+                    col_insert_insight, col_dismiss_insight = st.columns(2)
+                    with col_insert_insight:
+                        if st.button("**Insert** Insight", key="use_insight"):
+                            brief["key_insight"] = st.session_state.ai_insight
+                            st.session_state.ai_insight = None
+                            st.session_state.current_brief = brief
+                            st.rerun()
+                    with col_dismiss_insight:
+                        if st.button("Dismiss", key="close_insight"):
+                            st.session_state.ai_insight = None
+                            st.rerun()
+                else:
+                    if st.button("Dismiss", key="close_insight_ok"):
                         st.session_state.ai_insight = None
-                        st.session_state.current_brief = brief
                         st.rerun()
 
             st.divider()
@@ -2471,21 +2482,25 @@ def render_brief_builder() -> None:
 
         if st.session_state.get("ai_positioning"):
             pos = st.session_state.ai_positioning
-            col_pos_info, col_pos_close = st.columns([11, 1])
-            with col_pos_info:
-                st.info(f"**Short:** {pos.get('positioning_short', pos.get('short', ''))}")
-                if not is_light_brief:
-                    st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
-            with col_pos_close:
-                if st.button("Dismiss", key="close_pos"):
-                    st.session_state.ai_positioning = None
-                    st.rerun()
+            st.info(f"**Short:** {pos.get('positioning_short', pos.get('short', ''))}")
+            if not is_light_brief:
+                st.info(f"**Detailed:** {pos.get('positioning_detailed', pos.get('detailed', ''))}")
             if not str(pos.get("positioning_short", "")).startswith("Looks good"):
-                if st.button("**Insert** Positioning", key="use_pos"):
-                    brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
-                    brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
+                col_insert_pos, col_dismiss_pos = st.columns(2)
+                with col_insert_pos:
+                    if st.button("**Insert** Positioning", key="use_pos"):
+                        brief["positioning_short"] = pos.get("positioning_short", pos.get("short", ""))
+                        brief["positioning_detailed"] = pos.get("positioning_detailed", pos.get("detailed", ""))
+                        st.session_state.ai_positioning = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_pos:
+                    if st.button("Dismiss", key="close_pos"):
+                        st.session_state.ai_positioning = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_pos_ok"):
                     st.session_state.ai_positioning = None
-                    st.session_state.current_brief = brief
                     st.rerun()
 
         st.divider()
@@ -2571,26 +2586,30 @@ def render_brief_builder() -> None:
 
         if st.session_state.get("ai_messages"):
             msgs = st.session_state.ai_messages
-            col_msgs_info, col_msgs_close = st.columns([11, 1])
-            with col_msgs_info:
-                if isinstance(msgs, list):
-                    for i, m in enumerate(msgs, 1):
-                        st.info(f"**{i}.** {m}")
-                else:
-                    st.info(msgs)
-            with col_msgs_close:
-                if st.button("Dismiss", key="close_msgs"):
-                    st.session_state.ai_messages = None
-                    st.rerun()
+            if isinstance(msgs, list):
+                for i, m in enumerate(msgs, 1):
+                    st.info(f"**{i}.** {m}")
+            else:
+                st.info(msgs)
             if not str(msgs[0] if isinstance(msgs, list) else msgs).startswith("Looks good"):
-                if st.button("**Insert** Messages", key="use_msgs"):
-                    if isinstance(msgs, list):
-                        brief["key_messages"] = msgs
-                        brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
-                    else:
-                        brief["key_messages_text"] = msgs
+                col_insert_msgs, col_dismiss_msgs = st.columns(2)
+                with col_insert_msgs:
+                    if st.button("**Insert** Messages", key="use_msgs"):
+                        if isinstance(msgs, list):
+                            brief["key_messages"] = msgs
+                            brief["key_messages_text"] = "\n".join(f"{i+1}. {m}" for i, m in enumerate(msgs))
+                        else:
+                            brief["key_messages_text"] = msgs
+                        st.session_state.ai_messages = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_msgs:
+                    if st.button("Dismiss", key="close_msgs"):
+                        st.session_state.ai_messages = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_msgs_ok"):
                     st.session_state.ai_messages = None
-                    st.session_state.current_brief = brief
                     st.rerun()
 
         # --- Single-Minded Proposition (SMP) (skip for Light Brief) ---
@@ -2636,24 +2655,22 @@ def render_brief_builder() -> None:
                 qc = smp_data.get("quality_check", smp_data.get("pass", ""))
                 qr = smp_data.get("quality_reason", smp_data.get("reason", ""))
 
-                col_smp_info, col_smp_close = st.columns([11, 1])
-                with col_smp_info:
-                    if qc == "pass" or qc is True:
-                        st.success(f"**SMP:** {smp_val}  \n**Quality Check:** PASS -- {qr}")
-                    else:
-                        st.error(f"**SMP:** {smp_val}  \n**Quality Check:** FAIL -- {qr}")
-                with col_smp_close:
-                    st.write("")
+                if qc == "pass" or qc is True:
+                    st.success(f"**SMP:** {smp_val}  \n**Quality Check:** PASS -- {qr}")
+                else:
+                    st.error(f"**SMP:** {smp_val}  \n**Quality Check:** FAIL -- {qr}")
+                col_insert_smp, col_dismiss_smp = st.columns(2)
+                with col_insert_smp:
+                    if st.button("**Insert** SMP", key="use_smp"):
+                        brief["smp"] = smp_val
+                        brief["smp_pass"] = (qc == "pass" or qc is True)
+                        st.session_state.ai_smp = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_smp:
                     if st.button("Dismiss", key="close_smp"):
                         st.session_state.ai_smp = None
                         st.rerun()
-
-                if st.button("**Insert** SMP", key="use_smp"):
-                    brief["smp"] = smp_val
-                    brief["smp_pass"] = (qc == "pass" or qc is True)
-                    st.session_state.ai_smp = None
-                    st.session_state.current_brief = brief
-                    st.rerun()
         else:
             smp_text = brief.get("smp", "")
 
@@ -2800,18 +2817,23 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         if st.session_state.get("ai_channels_proofed"):
-            col_ch_info, col_ch_close = st.columns([11, 1])
-            with col_ch_info:
-                st.info(st.session_state.ai_channels_proofed)
-            with col_ch_close:
-                if st.button("Dismiss", key="close_channels_proofed"):
+            st.info(st.session_state.ai_channels_proofed)
+            if not str(st.session_state.ai_channels_proofed).startswith("Looks good"):
+                col_insert_ch_proof, col_dismiss_ch_proof = st.columns(2)
+                with col_insert_ch_proof:
+                    if st.button("**Insert** Channels", key="use_channels_proofed"):
+                        brief["channel_plan_text"] = st.session_state.ai_channels_proofed
+                        st.session_state.ai_channels_proofed = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_ch_proof:
+                    if st.button("Dismiss", key="close_channels_proofed"):
+                        st.session_state.ai_channels_proofed = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_channels_proofed_ok"):
                     st.session_state.ai_channels_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_channels_proofed).startswith("Looks good") and st.button("**Insert** Channels", key="use_channels_proofed"):
-                brief["channel_plan_text"] = st.session_state.ai_channels_proofed
-                st.session_state.ai_channels_proofed = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         if st.session_state.get("ai_channels"):
             channel_display = []
@@ -2925,18 +2947,23 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         if st.session_state.get("ai_deliverables_proofed"):
-            col_del_info, col_del_close = st.columns([11, 1])
-            with col_del_info:
-                st.info(st.session_state.ai_deliverables_proofed)
-            with col_del_close:
-                if st.button("Dismiss", key="close_deliverables_proofed"):
+            st.info(st.session_state.ai_deliverables_proofed)
+            if not str(st.session_state.ai_deliverables_proofed).startswith("Looks good"):
+                col_insert_del_proof, col_dismiss_del_proof = st.columns(2)
+                with col_insert_del_proof:
+                    if st.button("**Insert** Deliverables", key="use_deliverables_proofed"):
+                        brief["deliverables_text"] = st.session_state.ai_deliverables_proofed
+                        st.session_state.ai_deliverables_proofed = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_del_proof:
+                    if st.button("Dismiss", key="close_deliverables_proofed"):
+                        st.session_state.ai_deliverables_proofed = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_deliverables_proofed_ok"):
                     st.session_state.ai_deliverables_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_deliverables_proofed).startswith("Looks good") and st.button("**Insert** Deliverables", key="use_deliverables_proofed"):
-                brief["deliverables_text"] = st.session_state.ai_deliverables_proofed
-                st.session_state.ai_deliverables_proofed = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         if st.session_state.get("ai_deliverables"):
             del_data = st.session_state.ai_deliverables
@@ -3043,18 +3070,23 @@ def render_brief_builder() -> None:
                     st.rerun()
 
         if st.session_state.get("ai_timeline_proofed"):
-            col_tl_info, col_tl_close = st.columns([11, 1])
-            with col_tl_info:
-                st.info(st.session_state.ai_timeline_proofed)
-            with col_tl_close:
-                if st.button("Dismiss", key="close_timeline_proofed"):
+            st.info(st.session_state.ai_timeline_proofed)
+            if not str(st.session_state.ai_timeline_proofed).startswith("Looks good"):
+                col_insert_tl_proof, col_dismiss_tl_proof = st.columns(2)
+                with col_insert_tl_proof:
+                    if st.button("**Insert** Timeline", key="use_timeline_proofed"):
+                        brief["timeline_text"] = st.session_state.ai_timeline_proofed
+                        st.session_state.ai_timeline_proofed = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_tl_proof:
+                    if st.button("Dismiss", key="close_timeline_proofed"):
+                        st.session_state.ai_timeline_proofed = None
+                        st.rerun()
+            else:
+                if st.button("Dismiss", key="close_timeline_proofed_ok"):
                     st.session_state.ai_timeline_proofed = None
                     st.rerun()
-            if not str(st.session_state.ai_timeline_proofed).startswith("Looks good") and st.button("**Insert** Timeline", key="use_timeline_proofed"):
-                brief["timeline_text"] = st.session_state.ai_timeline_proofed
-                st.session_state.ai_timeline_proofed = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         if st.session_state.get("ai_timeline"):
             timeline_display = []
@@ -3214,23 +3246,23 @@ def render_brief_builder() -> None:
                     "Measurement": k.get("measurement", k.get("measurement_method", "")),
                 })
             df_kpis = pd.DataFrame(kpi_display)
-            col_kpi_info, col_kpi_close = st.columns([11, 1])
-            with col_kpi_info:
-                st.dataframe(df_kpis, use_container_width=True, hide_index=True)
-            with col_kpi_close:
+            st.dataframe(df_kpis, use_container_width=True, hide_index=True)
+            col_insert_kpis, col_dismiss_kpis = st.columns(2)
+            with col_insert_kpis:
+                if st.button("**Insert** KPIs", key="use_kpis"):
+                    brief["kpis"] = st.session_state.generated_kpis
+                    # Also populate the text box with a readable version
+                    kpi_lines = []
+                    for k in st.session_state.generated_kpis:
+                        kpi_lines.append(f"- {k.get('metric', '')}: {k.get('target', '')} (measured via {k.get('measurement', k.get('measurement_method', ''))})")
+                    brief["kpis_text"] = "\n".join(kpi_lines)
+                    st.session_state.generated_kpis = None
+                    st.session_state.current_brief = brief
+                    st.rerun()
+            with col_dismiss_kpis:
                 if st.button("Dismiss", key="close_kpis"):
                     st.session_state.generated_kpis = None
                     st.rerun()
-            if st.button("**Insert** KPIs", key="use_kpis"):
-                brief["kpis"] = st.session_state.generated_kpis
-                # Also populate the text box with a readable version
-                kpi_lines = []
-                for k in st.session_state.generated_kpis:
-                    kpi_lines.append(f"- {k.get('metric', '')}: {k.get('target', '')} (measured via {k.get('measurement', k.get('measurement_method', ''))})")
-                brief["kpis_text"] = "\n".join(kpi_lines)
-                st.session_state.generated_kpis = None
-                st.session_state.current_brief = brief
-                st.rerun()
 
         # --- RACI Matrix (skip for Light Brief) ---
         if not is_light_brief:
@@ -3278,24 +3310,23 @@ def render_brief_builder() -> None:
                         "Informed": r.get("informed", r.get("I", "")),
                     })
                 df_raci = pd.DataFrame(raci_display)
-                col_raci_info, col_raci_close = st.columns([11, 1])
-                with col_raci_info:
-                    st.dataframe(df_raci, use_container_width=True, hide_index=True)
-                with col_raci_close:
-                    st.write("")
+                st.dataframe(df_raci, use_container_width=True, hide_index=True)
+                col_insert_raci, col_dismiss_raci = st.columns(2)
+                with col_insert_raci:
+                    if st.button("**Insert** RACI", key="use_raci"):
+                        brief["raci"] = st.session_state.generated_raci
+                        # Also populate the text box with a readable version
+                        raci_lines = []
+                        for r in st.session_state.generated_raci:
+                            raci_lines.append(f"- {r.get('task', r.get('role', ''))}: R={r.get('responsible', '')} | A={r.get('accountable', '')} | C={r.get('consulted', '')} | I={r.get('informed', '')}")
+                        brief["raci_text"] = "\n".join(raci_lines)
+                        st.session_state.generated_raci = None
+                        st.session_state.current_brief = brief
+                        st.rerun()
+                with col_dismiss_raci:
                     if st.button("Dismiss", key="close_raci"):
                         st.session_state.generated_raci = None
                         st.rerun()
-                if st.button("**Insert** RACI", key="use_raci"):
-                    brief["raci"] = st.session_state.generated_raci
-                    # Also populate the text box with a readable version
-                    raci_lines = []
-                    for r in st.session_state.generated_raci:
-                        raci_lines.append(f"- {r.get('task', r.get('role', ''))}: R={r.get('responsible', '')} | A={r.get('accountable', '')} | C={r.get('consulted', '')} | I={r.get('informed', '')}")
-                    brief["raci_text"] = "\n".join(raci_lines)
-                    st.session_state.generated_raci = None
-                    st.session_state.current_brief = brief
-                    st.rerun()
 
         st.write("")
         # Validation message placeholder (above buttons)
